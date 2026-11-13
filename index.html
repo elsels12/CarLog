@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.11</title>
+<title>CarLog beta 0.9.15</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -182,6 +182,56 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-item .adetail{font-size:10px;color:var(--paper-dim);font-family:var(--font-mono);margin-top:2px;line-height:1.35;font-weight:600;}
 .alert-item .meta{font-size:10px;color:var(--paper-dim);font-family:var(--font-mono);text-align:right;font-weight:700;}
 .link-btn{background:none;border:0;color:var(--amber);font-size:10px;font-weight:700;padding:0 0 0 4px;cursor:pointer;vertical-align:baseline;}
+.alert-card{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;
+  column-gap:8px;row-gap:4px;align-items:center;padding:14px 16px;margin:0 0 8px;
+  border:1px solid var(--line);border-radius:var(--radius-card);background:var(--kpi-bg);box-sizing:border-box;}
+.alert-card:last-child{margin-bottom:0;}
+.alert-card-head{grid-column:1;grid-row:1;display:flex;align-items:center;gap:8px;min-width:0;}
+.alert-card-head .name{font-size:16px;font-weight:800;min-width:0;line-height:1.4;letter-spacing:-.01em;}
+.alert-card .badge{flex:0 0 auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em;line-height:1.2;}
+.alert-card-actions{grid-column:2;grid-row:1;display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:4px;margin:0;}
+.alert-card-sub{grid-column:1 / -1;grid-row:2;display:flex;align-items:baseline;gap:8px;min-width:0;margin-top:0;}
+.alert-info{flex:1 1 auto;min-width:0;font-size:13px;font-weight:600;line-height:1.4;color:var(--paper-dim);font-family:var(--font-mono);}
+.alert-remain{flex:0 0 auto;font-size:14px;font-weight:800;line-height:1.4;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;letter-spacing:-.02em;}
+.alert-remain.is-ok{color:var(--ok);}
+.alert-remain.is-soon,.alert-remain.is-caution{color:var(--amber);}
+.alert-remain.is-overdue,.alert-remain.is-action{color:var(--danger);}
+.alert-remain.is-info{color:var(--cold,#4a90c8);}
+.alert-remain.is-unknown{color:var(--paper-dim);}
+.alert-bar{grid-column:1 / -1;grid-row:3;height:4px;margin-top:4px;border-radius:2px;overflow:hidden;
+  background:color-mix(in srgb, var(--paper-dim) 28%, transparent);}
+.alert-bar>i{display:block;height:100%;width:0;max-width:100%;border-radius:2px;background:var(--paper-dim);}
+.alert-bar.is-ok>i{background:var(--ok);}
+.alert-bar.is-soon>i,.alert-bar.is-caution>i{background:var(--amber);}
+.alert-bar.is-overdue>i,.alert-bar.is-action>i{background:var(--danger);}
+.alert-bar.is-info>i{background:var(--cold,#4a90c8);}
+.alert-action{
+  flex:0 0 auto;width:auto;min-width:0;min-height:32px;height:32px;padding:0 12px;font-size:13px;font-weight:700;
+  border-radius:999px;box-sizing:border-box;touch-action:manipulation;cursor:pointer;font-family:inherit;
+  display:inline-flex;align-items:center;justify-content:center;line-height:1.2;white-space:nowrap;
+  border:1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  background:color-mix(in srgb, var(--amber) 18%, transparent);color:var(--amber);
+}
+.alert-edit,.alert-chevron{
+  flex:0 0 auto;width:32px;height:32px;min-width:32px;min-height:32px;padding:0;border:0;background:transparent;
+  color:var(--paper-dim);border-radius:8px;box-sizing:border-box;touch-action:manipulation;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;font-family:inherit;
+}
+.alert-edit svg,.alert-chevron svg{display:block;}
+.alert-chevron{cursor:default;opacity:.7;}
+.alert-card.is-editable{cursor:pointer;}
+html[data-theme] .badge.unknown{
+  background:color-mix(in srgb, var(--paper-dim) 18%, transparent);
+  color:var(--paper-dim);
+  border-color:color-mix(in srgb, var(--paper-dim) 40%, transparent);
+}
+html[data-theme="glass-light"] .alert-action,html[data-theme="neumo"] .alert-action{
+  background:color-mix(in srgb, var(--amber) 16%, #ffffff);
+}
+html[data-theme="neumo"] .alert-bar,html[data-theme="neumo-dark"] .alert-bar{
+  box-shadow:inset 1px 1px 2px rgba(0,0,0,.12);
+}
+#page-alert #btnAddInt,#alertCard #btnAddInt{min-height:44px;font-size:15px;font-weight:800;width:100%;touch-action:manipulation;}
 .int-row .chip-btn{font-size:10px;padding:4px 6px;}
 .bar-row{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:10px;}
 .bar-row .n{width:72px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--paper-dim);}
@@ -693,6 +743,7 @@ html[data-theme="neumo"] .nav button.active .tab-pill{
 }
 html[data-theme="neumo"] .nav button.active::before{display:none;}
 html[data-theme="neumo"] .kpi .val{font-weight:800;color:#141518;}
+html[data-theme="neumo"] .alert-card{box-shadow:var(--tile-shadow);border:1px solid #9ea2a8;background:#c9ccd1;}
 html[data-theme="neumo"] .stat-line,html[data-theme="neumo"] .hist-item,html[data-theme="neumo"] .alert-item,
 html[data-theme="neumo"] .rank-row,html[data-theme="neumo"] .int-row,html[data-theme="neumo"] .cat-item,
 html[data-theme="neumo"] .veh-item,html[data-theme="neumo"] .sc-edit,html[data-theme="neumo"] .hide-row{border-bottom:1px solid #a8abb1;}
@@ -788,6 +839,7 @@ html[data-theme="neumo-dark"] .nav button.active .tab-pill{
 }
 html[data-theme="neumo-dark"] .nav button.active::before{display:none;}
 html[data-theme="neumo-dark"] .kpi .val{font-weight:800;color:#eceef1;}
+html[data-theme="neumo-dark"] .alert-card{box-shadow:var(--tile-shadow);border:1px solid #4a4e55;background:#2c2e33;}
 html[data-theme="neumo-dark"] .stat-line,html[data-theme="neumo-dark"] .hist-item,html[data-theme="neumo-dark"] .alert-item,
 html[data-theme="neumo-dark"] .rank-row,html[data-theme="neumo-dark"] .int-row,html[data-theme="neumo-dark"] .cat-item,
 html[data-theme="neumo-dark"] .veh-item,html[data-theme="neumo-dark"] .sc-edit,html[data-theme="neumo-dark"] .hide-row{border-bottom:1px solid #4a4e55;}
@@ -1156,7 +1208,7 @@ html[data-theme] #page-input .grade-chips button{
 .help-topic-body ol{margin:0 0 10px;padding-left:1.3em;}
 .help-topic-body li{margin:0 0 6px;}
 #modal.help-modal, #modal.int-editor, #modal.repl-sheet{transition:none;animation:none;}
-.alert-item[data-edit-int]{cursor:pointer;}
+
 #page-alert .add-int-row{margin-top:12px;}
 #vehCard.has-banner{padding-top:0;overflow:hidden;}
 #vehCard.has-banner .home-banner{
@@ -1196,7 +1248,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.11</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.15</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -2592,7 +2644,7 @@ const HELP_TOPICS = [
   },
   { id:'maint', title:'点検（間隔・前回交換・交換した）', body:
     '<p>点検タブで、オイルなど交換時期の目安を管理します。</p>'+
-    '<ol><li>項目をタップすると、間隔（km / 月）と前回交換（日付・走行距離）を編集できます。</li>'+
+    '<ol><li>各項目の鉛筆アイコン（編集）から、間隔（km / 月）と前回交換（日付・走行距離）を変えられます。</li>'+
     '<li>アプリに記録がなくても、前回交換を手で入れて基準にできます。記録があるときは、新しいほうを使います。</li>'+
     '<li>まだ入れていなければ「前回交換を設定」と出ます。交換したら「交換した」を押します。</li>'+
     '<li>下の「＋項目を追加」で、タイミングベルトなど独自の項目を足せます。</li></ol>'
@@ -2638,7 +2690,7 @@ function openHelp(topicId){
       }).join('')+'</div>'+
       '<div class="btn-row"><button type="button" class="btn ghost" id="helpClose">閉じる</button></div>';
     bg.classList.add('show');
-    bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+    bindModalBackdrop(bg);
     document.getElementById('helpClose').onclick = closeModal;
     box.querySelectorAll('[data-help]').forEach(function(b){
       b.onclick = function(){ openHelp(b.getAttribute('data-help')); };
@@ -2651,7 +2703,7 @@ function openHelp(topicId){
     '<div class="btn-row"><button type="button" class="btn ghost" id="helpBack">戻る</button>'+
     '<button type="button" class="btn ghost" id="helpClose">閉じる</button></div>';
   bg.classList.add('show');
-  bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+  bindModalBackdrop(bg);
   document.getElementById('helpBack').onclick = function(){ openHelp(); };
   document.getElementById('helpClose').onclick = closeModal;
   const gas = document.getElementById('helpOpenGas');
@@ -2934,7 +2986,7 @@ function openReplacementSheet(itemId){
     '<button type="button" class="btn ghost" id="rCancel">キャンセル</button></div>'+
     '</div>';
   bg.classList.add('show');
-  bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+  bindModalBackdrop(bg);
   document.getElementById('rCancel').onclick = closeModal;
   document.getElementById('rSave').onclick = function(){
     const date = document.getElementById('rDate').value || todayYmd();
@@ -3004,7 +3056,7 @@ function openMaintenanceEditor(id){
     '<button type="button" class="btn ghost" id="iCancel">キャンセル</button></div>'+
     '</div>';
   bg.classList.add('show');
-  bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+  bindModalBackdrop(bg);
   document.getElementById('iCancel').onclick = closeModal;
   document.getElementById('iSave').onclick = function(){
     const name = isCustom ? (document.getElementById('iName').value||'').trim() : (it && it.label) || '';
@@ -3173,7 +3225,7 @@ function renderHome(){
   const fuelSub = fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出';
 
   let alertHtml = hot.length ? hot.map(function(a){
-    return '<div class="alert-item"><span class="badge '+a.status+'">'+statusLabel(a.status)+'</span><span class="name">'+escapeHtml(a.item.label)+'</span><span class="meta">'+escapeHtml(alertMeta(a))+'</span></div>';
+    return alertCardHtml(a, { edit:false });
   }).join('') : '<div class="empty">期限が近い点検はありません</div>';
 
   const recent = sortedRecords(veh).slice(0, 6);
@@ -3236,8 +3288,132 @@ function renderHome(){
     });
   });
   bindVehicleChips();
+  bindAlertActions(document.getElementById('alertCard'));
 }
 
+
+function lastNextHtml(last, dueDate, dueKm){
+  const lastBits = [];
+  if(last && last.date) lastBits.push(fmtDate(last.date));
+  if(last && last.odometer!=null) lastBits.push(km(last.odometer));
+  const nextBits = [];
+  if(dueDate) nextBits.push(fmtDate(dueDate));
+  if(dueKm!=null) nextBits.push(km(dueKm));
+  const lastPart = lastBits.length ? '前回交換 '+escapeHtml(lastBits.join(' · ')) : '';
+  const nextPart = nextBits.length ? '次回目安 '+escapeHtml(nextBits.join(' · ')) : '';
+  if(lastPart && nextPart) return lastPart+'<br>'+nextPart;
+  return lastPart || nextPart;
+}
+function intervalSettingText(it){
+  if(!it) return '交換間隔 未設定';
+  const bits = [];
+  if(it.km!=null && it.km!=='' && Number(it.km)>0) bits.push(km(it.km));
+  if(it.months!=null && it.months!=='' && Number(it.months)>0) bits.push(Number(it.months)+'か月');
+  return bits.length ? '交換間隔 '+bits.join(' / ') : '交換間隔 未設定';
+}
+
+const ICO_PENCIL = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+const ICO_CHEVRON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>';
+function alertCardVariant(opts){
+  if(opts && (opts.variant==='A' || opts.variant==='B')) return opts.variant;
+  const v = (typeof window!=='undefined' && window.__ALERT_CARD_VARIANT) || 'A';
+  return v==='B' ? 'B' : 'A';
+}
+function alertKeyInfo(a){
+  const item = (a && a.item) || {};
+  if(item.id==='shaken'){
+    if(a.message) return a.message;
+    if(a.dueDate){
+      const d = C.toDate(a.dueDate);
+      if(!d) return '期限 '+a.dueDate;
+      return '期限 '+d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+    }
+    return '車検日を設定してください';
+  }
+  if(!C.hasBaselineValue(a && a.last)) return '前回交換を設定してください';
+  const parts = [];
+  if(a.dueDate) parts.push(fmtDate(a.dueDate));
+  if(a.dueKm!=null) parts.push(km(a.dueKm));
+  return parts.length ? '次回 '+parts.join('・') : '次回目安はありません';
+}
+function remainHighlight(a){
+  if(!a) return '';
+  const hasK = a.remainKm!=null, hasD = a.remainDays!=null;
+  if(!hasK && !hasD) return '';
+  function kmTxt(n){ return Math.abs(Math.round(n)).toLocaleString('ja-JP')+'km'; }
+  function dayTxt(n){ return Math.abs(Math.round(n))+'日'; }
+  let pick;
+  if(hasK && hasD){
+    const rk = a.remainKm, rd = a.remainDays;
+    if(rk<=0 && rd>0) pick = 'km';
+    else if(rd<=0 && rk>0) pick = 'months';
+    else if(rk<=0 && rd<=0) pick = (Math.abs(rd) >= Math.abs(rk/100)) ? 'months' : 'km';
+    else if(a.triggeredBy==='km' || a.triggeredBy==='months') pick = a.triggeredBy;
+    else pick = (rd<=rk) ? 'months' : 'km';
+  } else pick = hasK ? 'km' : 'months';
+  if(pick==='km') return a.remainKm<=0 ? kmTxt(a.remainKm)+'超過' : 'あと'+kmTxt(a.remainKm);
+  return a.remainDays<=0 ? dayTxt(a.remainDays)+'超過' : 'あと'+dayTxt(a.remainDays);
+}
+function alertUsedPct(a){
+  const item = (a && a.item) || {};
+  if(item.id==='shaken'){
+    if(a.remainDays==null) return 0;
+    if(a.remainDays<=0) return 100;
+    const cycle = 24*30.4375;
+    return Math.max(0, Math.min(100, (1 - a.remainDays/cycle)*100));
+  }
+  if(!C.hasBaselineValue(a && a.last)) return 0;
+  const pcts = [];
+  if(a.remainKm!=null && Number(item.km)>0){
+    pcts.push(((Number(item.km) - a.remainKm) / Number(item.km)) * 100);
+  }
+  if(a.remainDays!=null && a.last && a.last.date && a.dueDate){
+    const start = C.toDate(a.last.date), end = C.toDate(a.dueDate), now = new Date();
+    if(start && end && end>start) pcts.push(((now-start)/(end-start))*100);
+  } else if(a.remainDays!=null && Number(item.months)>0){
+    const total = Number(item.months)*30.4375;
+    if(total>0) pcts.push(((total - a.remainDays)/total)*100);
+  }
+  if(!pcts.length) return 0;
+  return Math.max.apply(null, pcts);
+}
+function alertCardHtml(a, opts){
+  opts = opts || {};
+  const item = (a && a.item) || {};
+  const isShaken = item.id==='shaken';
+  const canRec = !isShaken && isReplaceableInterval(item);
+  const canEdit = !!(opts.edit && !isShaken && (isReplaceableInterval(item) || isCustomInterval(item)));
+  const hasLast = !isShaken && C.hasBaselineValue(a.last);
+  const st = (!isShaken && !hasLast) ? 'unknown' : (a.status||'unknown');
+  const badgeLabel = (!isShaken && !hasLast) ? '未設定' : statusLabel(a.status);
+  const badge = '<span class="badge '+escapeHtml(st)+'">'+escapeHtml(badgeLabel)+'</span>';
+  const info = alertKeyInfo(a);
+  const remain = remainHighlight(a);
+  const pct = Math.max(0, Math.min(100, alertUsedPct(a)));
+  const variant = alertCardVariant(opts);
+  const actions = [];
+  if(canRec) actions.push('<button type="button" class="alert-action" data-rec-int="'+escapeHtml(item.id)+'">交換した</button>');
+  if(canEdit && variant==='A') actions.push('<button type="button" class="alert-edit" data-edit-int="'+escapeHtml(item.id)+'" aria-label="編集">'+ICO_PENCIL+'</button>');
+  if(canEdit && variant==='B') actions.push('<span class="alert-chevron" aria-hidden="true">'+ICO_CHEVRON+'</span>');
+  const editAttr = (canEdit && variant==='B') ? ' data-edit-int="'+escapeHtml(item.id)+'"' : '';
+  return '<div class="alert-card'+(isShaken?' alert-shaken':'')+(canEdit && variant==='B'?' is-editable':'')+'" data-iid="'+escapeHtml(item.id||'')+'"'+editAttr+'>'+
+    '<div class="alert-card-head"><span class="name">'+escapeHtml(item.label||'')+'</span>'+badge+'</div>'+
+    (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
+    '<div class="alert-card-sub"><div class="alert-info">'+escapeHtml(info)+'</div>'+
+      (remain?'<div class="alert-remain is-'+escapeHtml(st)+'">'+escapeHtml(remain)+'</div>':'')+
+    '</div>'+
+    '<div class="alert-bar is-'+escapeHtml(st)+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
+    '</div>';
+}
+function bindAlertActions(root){
+  root = root || document;
+  root.querySelectorAll('[data-rec-int]').forEach(function(b){
+    b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openReplacementInput(b.getAttribute('data-rec-int')); };
+  });
+  root.querySelectorAll('[data-edit-int]').forEach(function(b){
+    b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openMaintenanceEditor(b.getAttribute('data-edit-int')); };
+  });
+}
 function statusLabel(s){
   return s==='overdue'?'超過':s==='action'?'要対応':s==='caution'?'注意':s==='info'?'お知らせ':s==='soon'?'間近':s==='ok'?'余裕':'未記録';
 }
@@ -3707,67 +3883,19 @@ function renderAlert(){
   }
   const info = odoInfo(veh);
   const alerts = alertsFor(veh);
-  const items = intervalsFor(veh);
-  function lastNextHtml(last, dueDate, dueKm){
-    const lastBits = [];
-    if(last && last.date) lastBits.push(fmtDate(last.date));
-    if(last && last.odometer!=null) lastBits.push(km(last.odometer));
-    const nextBits = [];
-    if(dueDate) nextBits.push(fmtDate(dueDate));
-    if(dueKm!=null) nextBits.push(km(dueKm));
-    const lastPart = lastBits.length ? '前回交換 '+escapeHtml(lastBits.join(' · ')) : '';
-    const nextPart = nextBits.length ? '次回目安 '+escapeHtml(nextBits.join(' · ')) : '';
-    if(lastPart && nextPart) return lastPart+'<br>'+nextPart;
-    return lastPart || nextPart;
-  }
-  const rows = alerts.map(function(a){
-    const isShaken = a.item && a.item.id==='shaken';
-    const canRec = !isShaken && String(a.item.id||'').indexOf('ccalert:')!==0;
-    const hasLast = !isShaken && C.hasBaselineValue(a.last);
-    let detail;
-    if(isShaken){
-      detail = escapeHtml(a.message || ('期限 '+(a.dueDate||'')));
-    } else if(!hasLast){
-      detail = '<button type="button" class="alert-set-last" data-set-last="'+escapeHtml(a.item.id)+'">前回交換を設定</button>';
-    } else {
-      detail = lastNextHtml(a.last, a.dueDate, a.dueKm);
-    }
-    const badge = (!isShaken && !hasLast) ? '<span class="badge unknown">未設定</span>' : '<span class="badge '+a.status+'">'+statusLabel(a.status)+'</span>';
-    const meta = isShaken ? escapeHtml(a.dueDate||'') : (hasLast ? escapeHtml(alertMeta(a)) : '');
-    const canEdit = !isShaken;
-    return '<div class="alert-item'+(isShaken?' alert-shaken':'')+'"'+(canEdit?' data-edit-int="'+escapeHtml(a.item.id)+'"':'')+'>'+
-      badge+
-      '<span class="name">'+escapeHtml(a.item.label)+
-        (canRec?' <button type="button" class="link-btn" data-rec-int="'+escapeHtml(a.item.id)+'">交換した</button>':'')+
-        '<div class="adetail">'+detail+'</div></span>'+
-      '<span class="meta">'+meta+'</span></div>';
-  }).join('');
+  const rows = alerts.map(function(a){ return alertCardHtml(a, { edit:true }); }).join('');
   document.getElementById('page-alert').innerHTML =
     '<div class="card tint tint-alert"><h2>点検状況 <span class="hint">距離か期間の早い方</span></h2>'+
     '<div class="help" id="odoSourceAlert" style="margin:0 0 6px">'+escapeHtml(odoSourceLabel(info))+'</div>'+
     (rows||'<div class="empty">項目がありません</div>')+
     '</div>'+
     '<div class="card tint tint-interval" id="intervalSet">'+
-    '<div class="help" style="margin:0 0 8px">項目をタップすると、間隔と前回交換を編集できます。独自の項目も追加できます。</div>'+
+    '<div class="help" style="margin:0 0 8px">各項目の鉛筆アイコンから交換間隔（km / 月）と前回交換を変えられます。「交換した」で今回の交換を記録します。</div>'+
     '<div class="btn-row add-int-row"><button type="button" class="btn primary" id="btnAddInt">＋項目を追加</button></div>'+
     '</div>';
-  document.querySelectorAll('[data-rec-int]').forEach(function(b){
-    b.onclick = function(e){ e.stopPropagation(); openReplacementInput(b.getAttribute('data-rec-int')); };
-  });
-  document.querySelectorAll('[data-set-last]').forEach(function(b){
-    b.onclick = function(e){
-      e.stopPropagation();
-      openMaintenanceEditor(b.getAttribute('data-set-last'));
-    };
-  });
-  document.querySelectorAll('.alert-item[data-edit-int]').forEach(function(el){
-    el.addEventListener('click', function(e){
-      if(e.target.closest('[data-rec-int],[data-set-last]')) return;
-      openMaintenanceEditor(el.getAttribute('data-edit-int'));
-    });
-  });
+  bindAlertActions(document.getElementById('page-alert'));
   const add = document.getElementById('btnAddInt');
-  if(add) add.onclick = function(){ openMaintenanceEditor(null); };
+  if(add) add.onclick = function(e){ if(e){ e.preventDefault(); e.stopPropagation(); } openMaintenanceEditor(null); };
 }
 
 function renderSet(){
@@ -4057,7 +4185,7 @@ function openCategoryEditor(id, opts){
     '<button type="button" class="btn ghost" id="cCancel">閉じる</button></div></div>';
   bg.classList.add('show');
   document.getElementById('cCancel').onclick = closeModal;
-  bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+  bindModalBackdrop(bg);
   const icons = document.getElementById('cIcons');
   if(icons) icons.onclick = function(e){
     const b = e.target.closest('[data-icon]'); if(!b) return;
@@ -4277,7 +4405,7 @@ function openVehicleEditor(id){
   if(v.isNewCar && !v.firstShakenDate && v.registeredYm) applyNewCarFirstShaken();
   else updateFirstShakenHint();
   document.getElementById('vCancel').onclick = closeModal;
-  bg.onclick = function(e){ if(e.target===bg) closeModal(); };
+  bindModalBackdrop(bg);
   document.getElementById('vSave').onclick = function(){
     v.name = document.getElementById('vName').value.trim() || 'マイカー';
     v.displacementCc = Number(document.getElementById('vCc').value)||null;
@@ -4318,12 +4446,21 @@ function openVehicleEditor(id){
     closeModal(); fillVehicleSelect(); renderAll();
   };
 }
-function closeModal(){ const _m=document.getElementById('modal'); if(_m) _m.className='modal';
+function bindModalBackdrop(bg){
+  if(!bg) return;
+  bg.onclick = null;
+  const until = Date.now() + 450;
+  bg.onclick = function(e){
+    if(e.target!==bg) return;
+    if(Date.now() < until) return;
+    closeModal();
+  };
+}
+function closeModal(){
   const bg = document.getElementById('modalBg');
-  bg.classList.remove('show');
-  bg.onclick=null;
+  if(bg){ bg.classList.remove('show'); bg.onclick=null; }
   const box = document.getElementById('modal');
-  if(box) box.classList.remove('repl-sheet');
+  if(box){ box.className='modal'; box.innerHTML=''; }
 }
 
 /* ---------- CSV ---------- */
@@ -5180,7 +5317,7 @@ function isSwipeIgnoredTarget(el){
   if(!node || !node.closest) return true;
   if(node.closest('input, textarea, select, [contenteditable="true"]')) return true;
   if(node.closest('.nav, .topbar, .modal-bg, .modal')) return true;
-  if(node.closest('.veh-chips, .filter-bar, .cats, .icon-pick, .color-pick, .csv-chips, .home-banner, .banner-edit-frame')) return true;
+  if(node.closest('.veh-chips, .filter-bar, .cats, .icon-pick, .color-pick, .csv-chips, .home-banner, .banner-edit-frame, .alert-card, .alert-card-actions, #page-alert, #alertCard')) return true;
   let n = node;
   while(n && n!==document.body){
     if(isHorizontallyScrollable(n)) return true;
