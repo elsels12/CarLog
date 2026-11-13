@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.15 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.18 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -747,27 +747,10 @@
   ];
 
 
-  function categoryLabel(id) {
-    if (id == null || id === "") return "";
-    var i, c;
-    for (i = 0; i < CATEGORIES.length; i++) {
-      c = CATEGORIES[i];
-      if (c.id === id) return c.label || c.id;
-    }
-    return String(id);
-  }
-  function canonicalizeCategory(name) {
-    var s = String(name == null ? "" : name).trim();
-    if (!s) return s;
-    var i, c;
-    for (i = 0; i < CATEGORIES.length; i++) {
-      if (CATEGORIES[i].id === s) return CATEGORIES[i].id;
-    }
-    for (i = 0; i < CATEGORIES.length; i++) {
-      if (CATEGORIES[i].label === s) return CATEGORIES[i].id;
-    }
-    return s;
-  }
+  var CATEGORY_MERGES = {
+    "高速代": { id: "交通費", defaultSub: "高速代" },
+    "装備品": { id: "カスタム費用", defaultSub: "装備品" }
+  };
 
   var CATEGORIES = [
     { id: "燃費", label: "給油", subs: ["給油"] },
@@ -779,24 +762,74 @@
     { id: "メンテナンス", label: "メンテナンス", subs: ["プラグ", "エアフィルター", "オイルフィルター", "ブレーキフルード", "クーラント", "その他"] },
     { id: "修理", label: "修理", subs: ["修理"] },
     { id: "タイヤ", label: "タイヤ", subs: ["タイヤ"] },
-    { id: "カスタム費用", label: "カスタム費用", subs: ["カスタム"] },
+    { id: "カスタム費用", label: "カスタム・装備品", subs: ["ドラレコ", "ETC車載器", "ナビ・オーディオ", "ホイール", "エアロ", "マフラー", "足回り", "内装", "電装品", "ヘルメット", "グローブ", "シューズ", "その他"] },
     { id: "サーキット", label: "サーキット", subs: ["走行料", "ライセンス", "年会費", "パッド・フルード等消耗品"] },
-    { id: "装備品", label: "装備品", subs: ["ヘルメット", "グローブ", "シューズ", "その他"] },
     { id: "洗車・コーティング・ケミカル", label: "洗車・コーティング・ケミカル", subs: ["洗車", "コーティング", "ケミカル"] },
     { id: "駐車場・車庫代", label: "駐車場・車庫代", subs: ["駐車場", "車庫代"] },
-    { id: "高速代", label: "高速代", subs: ["高速代"] },
-    { id: "交通費", label: "交通費", subs: ["交通費"] },
+    { id: "交通費", label: "交通費", subs: ["高速代", "有料道路", "フェリー", "カーシェア・レンタカー", "代行運転", "レッカー・ロードサービス", "その他"] },
     { id: "ローン・車両代", label: "ローン・車両代", subs: ["ローン", "車両代"] },
     { id: "罰金・反則金", label: "罰金・反則金", subs: ["反則金", "罰金"] }
   ];
+
+  function categoryLabel(id) {
+    if (id == null || id === "") return "";
+    var i, c, key = canonicalizeCategory(id);
+    for (i = 0; i < CATEGORIES.length; i++) {
+      c = CATEGORIES[i];
+      if (c.id === key || c.id === id) return c.label || c.id;
+    }
+    return String(id);
+  }
+  function canonicalizeCategory(name) {
+    var s = String(name == null ? "" : name).trim();
+    if (!s) return s;
+    if (CATEGORY_MERGES[s]) return CATEGORY_MERGES[s].id;
+    var i, c;
+    for (i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].id === s) return CATEGORIES[i].id;
+    }
+    for (i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].label === s) return CATEGORIES[i].id;
+    }
+    return s;
+  }
+  function migrateRecordCategory(rec) {
+    if (!rec) return rec;
+    var raw = String(rec.category == null ? "" : rec.category).trim();
+    if (!raw) return rec;
+    var merge = CATEGORY_MERGES[raw];
+    if (merge) {
+      rec.category = merge.id;
+      var sub = rec.subcategory == null ? "" : String(rec.subcategory).trim();
+      if (!sub) rec.subcategory = merge.defaultSub;
+      return rec;
+    }
+    var id = canonicalizeCategory(raw);
+    if (id && id !== raw) rec.category = id;
+    return rec;
+  }
+  function migrateHiddenCategories(arr) {
+    if (!Array.isArray(arr)) return [];
+    var out = [], seen = {}, i, id;
+    for (i = 0; i < arr.length; i++) {
+      id = canonicalizeCategory(arr[i]) || arr[i];
+      if (!id || seen[id]) continue;
+      seen[id] = true;
+      out.push(id);
+    }
+    return out;
+  }
 
   return {
     JIDOSHA_BRACKETS: JIDOSHA_BRACKETS,
     JIBAISEKI: JIBAISEKI,
     DEFAULT_INTERVALS: DEFAULT_INTERVALS,
     CATEGORIES: CATEGORIES,
+    CATEGORY_MERGES: CATEGORY_MERGES,
     categoryLabel: categoryLabel,
     canonicalizeCategory: canonicalizeCategory,
+    migrateRecordCategory: migrateRecordCategory,
+    migrateHiddenCategories: migrateHiddenCategories,
     fyStart: fyStart,
     fyLabel: fyLabel,
     isJidoshaZeiHeavy: isJidoshaZeiHeavy,

@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.15</title>
+<title>CarLog beta 0.9.18</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -95,15 +95,23 @@ body[data-tab="alert"]{--screen:var(--tab-alert);}
 body[data-tab="set"]{--screen:var(--tab-set);}
 .topbar h1{font-size:22px;letter-spacing:.02em;line-height:1.1;text-transform:none;}
 .topbar .tagline{font-family:var(--font-ui);font-size:10px;font-weight:600;color:var(--paper-dim);margin-top:2px;letter-spacing:.02em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 0 8px;}
-.sc-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-tile);padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--paper);min-height:64px;box-shadow:var(--tile-shadow);}
+.sc-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:dense;gap:6px;margin:0 0 8px;align-items:stretch;}
+.sc-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-tile);padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--paper);min-height:64px;box-shadow:var(--tile-shadow);grid-column:span 1;grid-row:span 1;min-width:0;}
 .sc-tile:active{border-color:var(--amber);background:rgba(223,172,88,.08);}
 .sc-tile .icn{width:28px;height:28px;color:var(--amber);display:flex;align-items:center;justify-content:center;}
 .sc-tile .icn svg{width:26px;height:26px;display:block;}
-.sc-tile .lbl{font-size:10px;font-weight:700;letter-spacing:.02em;line-height:1.2;}
+.sc-tile .lbl{font-size:10px;font-weight:700;letter-spacing:.02em;line-height:1.2;text-align:center;}
 .sc-tile.sc-fill{border-width:1.5px;border-style:solid;}
 .sc-tile.sc-fill .lbl{font-weight:800;text-shadow:0 1px 1px rgba(0,0,0,.4);}
 .sc-tile.sc-fill .icn{filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
+#scGrid .sc-tile.sc-s{min-height:52px;padding:6px 2px 4px;gap:3px;}
+#scGrid .sc-tile.sc-s .icn{width:22px;height:22px;}
+#scGrid .sc-tile.sc-s .icn svg{width:20px;height:20px;}
+#scGrid .sc-tile.sc-s .lbl{font-size:9px;line-height:1.2;}
+#scGrid .sc-tile.sc-l{grid-column:span 2;grid-row:span 2;min-height:0;height:100%;padding:12px 8px;gap:8px;}
+#scGrid .sc-tile.sc-l .icn{width:48px;height:48px;}
+#scGrid .sc-tile.sc-l .icn svg{width:44px;height:44px;}
+#scGrid .sc-tile.sc-l .lbl{font-size:13px;font-weight:800;line-height:1.25;}
 .sc-edit{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--hairline);font-size:13px;}
 .sc-edit .nm{flex:1;font-weight:600;}
 .sc-edit .move{display:flex;gap:4px;}
@@ -258,9 +266,6 @@ a.more-link{color:var(--amber);font-size:10px;font-weight:700;text-decoration:no
 .btn-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
 .btn{flex:1;border:0;border-radius:8px;padding:10px 8px;font-weight:700;font-size:13px;}
 .tint-sync .btn{flex:1 1 30%;min-width:96px;}
-.sync-cluster{display:flex;align-items:center;gap:0;flex-shrink:0;}
-.sync-info{background:none;border:0;color:var(--paper-dim);font-size:13px;font-weight:800;line-height:1;padding:4px 5px 4px 2px;cursor:pointer;font-family:inherit;}
-.sync-info:hover,.sync-info:focus{color:var(--amber);}
 .gas-help{margin:8px 0 0;font-size:10px;color:var(--paper-dim);line-height:1.5;font-weight:600;}
 .gas-help summary{cursor:pointer;font-size:11px;font-weight:700;color:var(--paper);list-style:none;display:flex;align-items:center;gap:4px;}
 .gas-help summary::-webkit-details-marker{display:none;}
@@ -317,6 +322,33 @@ body:has(.modal-bg.show) .nav{visibility:hidden;pointer-events:none;}
 #firstRunHome .help,#needVehicle .help{text-align:center;margin:0 0 4px;}
 #firstRunHome .btn-row,#needVehicle .btn-row{justify-content:center;margin-top:16px;}
 #vehicleSelect[hidden]{display:none;}
+#vehicleSelect{
+  -webkit-appearance:none;appearance:none;
+  box-sizing:border-box;flex:0 1 200px;width:200px;min-width:120px;
+  max-width:min(200px, calc(100vw - 160px));
+  height:42px;margin:0;padding:0 26px 0 10px;
+  font-family:var(--font-ui);font-size:20px;font-weight:800;line-height:40px;letter-spacing:-.03em;
+  color:var(--chip-fg);background-color:var(--chip-bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23cbd5e1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M2.4 4.2L6 8L9.6 4.2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;background-size:12px 12px;
+  border:1px solid var(--chip-line);border-radius:var(--radius-chip);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;text-align:left;text-align-last:left;-webkit-text-size-adjust:100%;
+  align-self:center;
+}
+#vehicleSelect:focus{outline:none;border-color:var(--amber);}
+#vehicleSelect option{font-size:20px;font-weight:700;}
+html[data-theme="neumo"] #vehicleSelect,
+html[data-theme="glass-light"] #vehicleSelect{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23141518' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' d='M2.4 4.2L6 8L9.6 4.2'/%3E%3C/svg%3E");
+}
+.sync-dot.err{background:var(--danger);}
+.nav-sync-dot{
+  position:absolute;top:3px;right:10%;z-index:1;
+  width:7px;height:7px;border-radius:50%;background:var(--danger);
+  box-sizing:border-box;pointer-events:none;
+}
+.nav-sync-dot.is-pending{background:var(--amber);}
 
 .veh-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--hairline);font-size:13px;}
 hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
@@ -343,8 +375,6 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 .veh-chips::-webkit-scrollbar{display:none;}
 .veh-chip{flex-shrink:0;background:var(--chip-bg);border:2px solid var(--chip-line);color:var(--chip-fg);border-radius:16px;font-size:16px;font-weight:700;padding:12px 16px;min-height:48px;box-sizing:border-box;white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;line-height:1.2;}
 .veh-chip.on{border-color:var(--amber);color:var(--amber);background:rgba(223,172,88,.14);}
-.input-veh{margin:0 0 6px;}
-.input-veh .f{margin-top:0;}
 
 .sc-tile.sc-fill{border-color:transparent;}
 .sc-tile.sc-fill:active{filter:brightness(1.12);background:inherit;border-color:transparent;}
@@ -354,6 +384,8 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 .seg button.on{border-color:var(--amber);color:var(--amber);background:rgba(223,172,88,.12);}
 #tilePreview{display:flex;justify-content:center;padding:8px 0 4px;}
 #tilePreview .sc-tile{width:76px;min-height:68px;}
+#tilePreview .sc-tile.sc-s{width:64px;min-height:52px;}
+#tilePreview .sc-tile.sc-l{width:156px;min-height:136px;}
 .sc-edit .look-btn{flex-shrink:0;}
 
 /* per-section accents: faint wash + left rail, dark theme, AA contrast */
@@ -427,7 +459,6 @@ html[data-theme] .seg button.on,html[data-theme] .csv-chips button.on,html[data-
   border-color:var(--amber);color:var(--amber);background:color-mix(in srgb,var(--amber) 16%, var(--chip-bg));
 }
 html[data-theme] .csv-chips button.on,html[data-theme] .btn.primary{background:var(--amber);color:var(--ink-on-accent);}
-html[data-theme] .sync-info:hover,html[data-theme] .sync-info:focus,
 html[data-theme] a.more-link,html[data-theme] .link-btn,html[data-theme] .csv-mini button,
 html[data-theme] .hist-item .kml,html[data-theme] .gas-help-body a{color:var(--amber);}
 html[data-theme] .auto-tag{color:var(--amber);background:color-mix(in srgb,var(--amber) 14%, transparent);border-color:color-mix(in srgb,var(--amber) 40%, transparent);}
@@ -1183,9 +1214,15 @@ html[data-theme] #page-input select#fSub{
   font-variant-numeric:tabular-nums;width:100%;
 }
 html[data-theme] #page-input .cats{gap:8px;}
-html[data-theme] #page-input .cats button{
-  min-height:48px;padding:12px 14px;font-size:13px;
-  border-radius:12px;border-width:2px;box-sizing:border-box;
+html[data-theme] #page-input #catBtns{
+  display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:dense;gap:5px;
+}
+html[data-theme] #page-input #catBtns button{
+  min-height:44px;height:44px;padding:4px 5px;font-size:13px;font-weight:700;line-height:1.2;
+  border-radius:10px;border-width:2px;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  white-space:normal;overflow:hidden;max-width:100%;min-width:0;
+  -webkit-line-clamp:2;line-clamp:2;
 }
 
 
@@ -1248,15 +1285,11 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.15</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.18</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
-  <select id="vehicleSelect" class="chip-btn" style="max-width:120px;padding:5px 6px;" aria-label="車両"></select>
-  <div class="sync-cluster">
-    <button type="button" class="icon-btn" id="syncBtn" title="同期">同期</button>
-    <button type="button" class="sync-info" id="syncHelpBtn" title="接続方法" aria-label="接続方法（詳しく）" hidden>ⓘ</button>
-  </div>
+  <select id="vehicleSelect" aria-label="車両"></select>
 </header>
 <div id="app">
   <section class="page active" id="page-home"></section>
@@ -1388,7 +1421,7 @@ let state = {
   records: [],
   vehicles: [],
   intervals: [],
-  settings: { gasUrl: '', currentVehicleId: '', shortcuts: null, hiddenCategories: [], iconStyle: 'line' },
+  settings: { gasUrl: '', currentVehicleId: '', shortcuts: null, hiddenCategories: [], iconStyle: 'line', shortcutIconSize: 'm', shortcutSizes: {} },
   customCats: [],
   builtinLooks: {},
   pending: {},
@@ -1417,6 +1450,9 @@ function loadState(){
   applyTheme(state.settings.theme, false);
   if(!Array.isArray(state.settings.hiddenCategories)) state.settings.hiddenCategories = [];
   if(state.settings.iconStyle !== 'fill' && state.settings.iconStyle !== 'line') state.settings.iconStyle = 'line';
+  state.settings.shortcutIconSize = normalizeShortcutIconSize(state.settings.shortcutIconSize) || 'm';
+  if(!state.settings.shortcutSizes || typeof state.settings.shortcutSizes!=='object' || Array.isArray(state.settings.shortcutSizes)) state.settings.shortcutSizes = {};
+  document.documentElement.removeAttribute('data-sc-size');
   state.customCats = loadJson(KEYS.categories, []);
   if(!Array.isArray(state.customCats)) state.customCats = [];
   state.builtinLooks = loadJson(KEYS.looks, {});
@@ -1430,6 +1466,7 @@ function loadState(){
   state.pending = loadJson(KEYS.pending, {});
   state.pendingDel = loadJson(KEYS.pendingDel, {});
   ensureCurrentVehicle();
+  migrateMergedCategories();
 }
 function ensureCurrentVehicle(){
   if(!state.vehicles.length){
@@ -1440,10 +1477,96 @@ function ensureCurrentVehicle(){
     state.settings.currentVehicleId = state.vehicles[0].id;
   }
 }
+function migrateMergedCategories(){
+  let recChanged = false;
+  (state.records||[]).forEach(function(r){
+    const beforeCat = r.category, beforeSub = r.subcategory;
+    C.migrateRecordCategory(r);
+    if(r.category!==beforeCat || r.subcategory!==beforeSub){
+      recChanged = true;
+      r.updatedAt = new Date().toISOString();
+      if(typeof markPending==='function') markPending(r.id, r.updatedAt);
+    }
+  });
+  if(recChanged) persistRecords();
+  const hid = C.migrateHiddenCategories(state.settings.hiddenCategories||[]);
+  const hidChanged = hid.length!==(state.settings.hiddenCategories||[]).length || hid.some(function(id,i){ return id!==state.settings.hiddenCategories[i]; });
+  if(hidChanged){
+    state.settings.hiddenCategories = hid;
+    persistSettings();
+  }
+  let lookChanged = false;
+  function adoptLook(from, to){
+    if(!from || !to || from===to) return;
+    const src = state.builtinLooks && state.builtinLooks[from];
+    if(!src) return;
+    if(!state.builtinLooks[to]){
+      state.builtinLooks[to] = Object.assign({}, src);
+      lookChanged = true;
+    }
+  }
+  adoptLook('高速代', '交通費');
+  adoptLook('装備品', 'カスタム費用');
+  if(lookChanged) persistLooks();
+  const fil = state.histFilter;
+  if(fil && fil!=='all'){
+    const mapped = C.categoryLabel(C.canonicalizeCategory(fil)) || fil;
+    if(mapped!==fil) state.histFilter = mapped;
+  }
+}
 function persistRecords(){ saveJson(KEYS.records, state.records); }
 function persistVehicles(){ saveJson(KEYS.vehicles, state.vehicles); }
 function persistIntervals(){ saveJson(KEYS.intervals, state.intervals); }
 
+function normalizeShortcutIconSize(v){
+  v = String(v==null?'':v).toLowerCase();
+  if(v==='s' || v==='small' || v==='小') return 's';
+  if(v==='l' || v==='large' || v==='大') return 'l';
+  if(v==='m' || v==='medium' || v==='中' || v==='') return 'm';
+  return 'm';
+}
+function defaultShortcutIconSize(){
+  return normalizeShortcutIconSize(state.settings && state.settings.shortcutIconSize) || 'm';
+}
+function shortcutSizeMap(){
+  const m = state.settings && state.settings.shortcutSizes;
+  return (m && typeof m==='object' && !Array.isArray(m)) ? m : {};
+}
+function shortcutSizeOf(sc){
+  sc = sc || {};
+  if(sc.size) return normalizeShortcutIconSize(sc.size);
+  const id = sc.id || '';
+  const map = shortcutSizeMap();
+  if(id && map[id]) return normalizeShortcutIconSize(map[id]);
+  if(sc.customId){
+    const cat = customCatById(sc.customId);
+    if(cat && cat.size) return normalizeShortcutIconSize(cat.size);
+  } else {
+    const look = builtinLook(sc.id) || (sc.category ? builtinLook(sc.category) : null);
+    if(look && look.size) return normalizeShortcutIconSize(look.size);
+  }
+  return defaultShortcutIconSize();
+}
+function setShortcutSize(id, size, persist){
+  size = normalizeShortcutIconSize(size) || 'm';
+  if(!state.settings.shortcutSizes || typeof state.settings.shortcutSizes!=='object' || Array.isArray(state.settings.shortcutSizes)){
+    state.settings.shortcutSizes = {};
+  }
+  if(id) state.settings.shortcutSizes[id] = size;
+  if(persist!==false) persistSettings();
+  return size;
+}
+/* Back-compat: used to set the global size; now sets the inherited default for items without a size. */
+function applyShortcutIconSize(size, persist){
+  size = normalizeShortcutIconSize(size) || 'm';
+  if(state && state.settings){
+    state.settings.shortcutIconSize = size;
+    if(persist) persistSettings();
+  }
+  document.documentElement.removeAttribute('data-sc-size');
+  return size;
+}
+function shortcutIconSize(){ return defaultShortcutIconSize(); }
 function persistSettings(){ saveJson(KEYS.settings, state.settings); }
 function persistCategories(){ saveJson(KEYS.categories, state.customCats); }
 function persistLooks(){ saveJson(KEYS.looks, state.builtinLooks); }
@@ -1915,7 +2038,7 @@ const SHORTCUT_CATALOG = [
   { id:'fuel', label:'給油', category:'燃費', subcategory:'給油' },
   { id:'oil', label:'オイル', category:'オイル', subcategory:'エンジン' },
   { id:'wash', label:'洗車', category:'洗車・コーティング・ケミカル', subcategory:'洗車' },
-  { id:'highway', label:'高速', category:'高速代', subcategory:'高速代' },
+  { id:'highway', label:'高速', category:'交通費', subcategory:'高速代' },
   { id:'parking', label:'駐車場', category:'駐車場・車庫代', subcategory:'駐車場' },
   { id:'maint', label:'メンテ', category:'メンテナンス', subcategory:'その他' },
   { id:'tire', label:'タイヤ', category:'タイヤ', subcategory:'タイヤ' },
@@ -2076,7 +2199,7 @@ function applyBuiltinLookFromRow(row){
   if(rt < lt) return;
   if(key==='_default'){
     const parsedDef = parseLookField(row.style);
-    state.builtinLooks['_default'] = { style: parsedDef.style||safeStyle(row.style)||'line', opacity: clampOpacity(row.opacity!=null?row.opacity:parsedDef.opacity, null), updatedAt: row.updatedAt||'' };
+    state.builtinLooks['_default'] = { style: parsedDef.style||safeStyle(row.style)||'line', opacity: clampOpacity(row.opacity!=null?row.opacity:parsedDef.opacity, null), size: normalizeShortcutIconSize(row.size||''), updatedAt: row.updatedAt||'' };
     if(state.builtinLooks['_default'].style) state.settings.iconStyle = state.builtinLooks['_default'].style;
     persistSettings();
     persistLooks();
@@ -2088,6 +2211,7 @@ function applyBuiltinLookFromRow(row){
     style: parsed.style || safeStyle(row.style),
     opacity: clampOpacity(row.opacity!=null?row.opacity:parsed.opacity, cur.opacity),
     icon: row.icon || cur.icon || '',
+    size: normalizeShortcutIconSize(row.size!=null&&row.size!==''?row.size:cur.size) || cur.size || '',
     deleted: !!row.deleted,
     updatedAt: row.updatedAt || new Date().toISOString()
   };
@@ -2101,6 +2225,7 @@ function upsertBuiltinLook(name, fields){
     style: fields && 'style' in fields ? safeStyle(fields.style) : (prev.style||''),
     opacity: fields && 'opacity' in fields ? clampOpacity(fields.opacity, null) : (prev.opacity!=null?prev.opacity:null),
     icon: (fields && fields.icon) || prev.icon || '',
+    size: fields && 'size' in fields ? (normalizeShortcutIconSize(fields.size)||'') : (prev.size||''),
     deleted: false,
     updatedAt: new Date().toISOString()
   };
@@ -2132,7 +2257,11 @@ function resolvedLook(sc, override){
   style = safeStyle(style) || globalIconStyle();
   if(style==='fill' && !color) color = '#dfac58';
   opacity = lookOpacity(style, opacity);
-  return { color: color, style: style, opacity: opacity };
+  let size = '';
+  if(Object.prototype.hasOwnProperty.call(override, 'size')) size = override.size;
+  else size = shortcutSizeOf(sc);
+  size = normalizeShortcutIconSize(size) || defaultShortcutIconSize();
+  return { color: color, style: style, opacity: opacity, size: size };
 }
 function shortcutTileHtml(sc, attrs){
   sc = sc || {};
@@ -2141,8 +2270,9 @@ function shortcutTileHtml(sc, attrs){
   const id = sc.id || '';
   const label = sc.label || sc.category || '';
   const icon = sc.icon || sc.id || 'star';
-  const extra = attrs.className ? ' '+attrs.className : '';
-  const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'"');
+  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : ' sc-m');
+  const extra = (attrs.className ? ' '+attrs.className : '') + sizeClass;
+  const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'" data-sc-size="'+look.size+'"');
   const op = look.opacity;
   if(look.style==='fill' && look.color){
     const ink = readableInk(look.color, 'fill', op);
@@ -2164,7 +2294,7 @@ function shortcutTileHtml(sc, attrs){
 }
 function categoriesForSync(){
   const list = (state.customCats||[]).map(function(c){
-    return Object.assign({}, c, { color: safeColor(c.color), style: safeStyle(c.style), opacity: clampOpacity(c.opacity, null) });
+    return Object.assign({}, c, { color: safeColor(c.color), style: safeStyle(c.style), opacity: clampOpacity(c.opacity, null), size: normalizeShortcutIconSize(c.size||'') || '' });
   });
   const looks = state.builtinLooks || {};
   Object.keys(looks).forEach(function(key){
@@ -2177,12 +2307,13 @@ function categoriesForSync(){
       color: safeColor(look.color),
       style: safeStyle(look.style) || (key==='_default' ? globalIconStyle() : ''),
       opacity: look.opacity!=null ? look.opacity : null,
+      size: normalizeShortcutIconSize(look.size||'') || '',
       deleted: !!look.deleted,
       updatedAt: look.updatedAt || new Date().toISOString()
     });
   });
   if(!looks._default){
-    list.push({ id:'bi:_default', name:'_default', icon:'', color:'', style: globalIconStyle(), deleted:false, updatedAt: new Date().toISOString() });
+    list.push({ id:'bi:_default', name:'_default', icon:'', color:'', style: globalIconStyle(), size:'', deleted:false, updatedAt: new Date().toISOString() });
   }
   return list;
 }
@@ -2240,7 +2371,12 @@ function recordCategoryName(r){
 function recordMatchesFilter(r, fil){
   if(!fil || fil==='all') return true;
   if(r.categoryId && (fil===r.categoryId || fil===('cc:'+r.categoryId))) return true;
-  return recordCategoryName(r)===fil || r.category===fil;
+  const name = recordCategoryName(r);
+  if(name===fil || r.category===fil) return true;
+  const filId = C.canonicalizeCategory(fil);
+  const recId = C.canonicalizeCategory(r.category);
+  if(filId && recId && filId===recId) return true;
+  return name===(C.categoryLabel(filId) || fil);
 }
 function customAlertItems(){
   return activeCustomCats().filter(function(c){ return (c.alertKm!=null && c.alertKm!=='' && Number(c.alertKm)>0) || (c.alertMonths!=null && c.alertMonths!=='' && Number(c.alertMonths)>0); }).map(function(c){
@@ -2494,15 +2630,38 @@ function toast(msg){
 function pendingCount(){
   return Object.keys(state.pending).length + Object.keys(state.pendingDel).length;
 }
-function updateSyncBtn(){
-  const btn = document.getElementById('syncBtn');
+let lastSyncError = false;
+function updateSyncBtn(){ updateSyncStatus(); }
+function syncStatusHtml(){
   const n = pendingCount();
   const url = (state.settings.gasUrl || '').trim();
-  const help = document.getElementById('syncHelpBtn');
-  if(!url){ btn.textContent = '未接続'; btn.classList.remove('warn'); }
-  else if(n){ btn.textContent = '同期 ' + n; btn.classList.add('warn'); }
-  else { btn.textContent = '同期'; btn.classList.remove('warn'); }
-  if(help) help.hidden = !!url;
+  if(!url) return '<span class="sync-dot off"></span>未接続';
+  if(lastSyncError) return '<span class="sync-dot err"></span>同期に失敗しました　未送信 '+n+'件';
+  if(n) return '<span class="sync-dot pending"></span>接続済み　未送信 '+n+'件';
+  return '<span class="sync-dot on"></span>接続済み　未送信 0件';
+}
+function updateSyncStatus(){
+  const st = document.getElementById('syncStatus');
+  if(st) st.innerHTML = syncStatusHtml();
+  updateSetTabSyncMark();
+}
+function updateSetTabSyncMark(){
+  const btn = document.querySelector('nav.nav button[data-page="set"]');
+  if(!btn) return;
+  const pill = btn.querySelector('.tab-pill') || btn;
+  let dot = pill.querySelector('.nav-sync-dot');
+  const url = (state.settings.gasUrl || '').trim();
+  const show = !!url && (lastSyncError || pendingCount()>0);
+  if(!show){ if(dot) dot.remove(); btn.removeAttribute('data-sync-mark'); return; }
+  if(!dot){
+    dot = document.createElement('span');
+    dot.className = 'nav-sync-dot';
+    pill.appendChild(dot);
+  }
+  const err = !!lastSyncError;
+  dot.classList.toggle('is-pending', !err);
+  dot.setAttribute('aria-label', err ? '同期エラー' : '未送信の記録があります');
+  btn.setAttribute('data-sync-mark', err ? 'error' : 'pending');
 }
 
 function isGasExecUrl(url){
@@ -2614,7 +2773,7 @@ function gasHelpHtml(){
     '<li>URLの末尾は /exec であること。/dev はテスト用で、編集権限がある人しか開けません。</li>'+
     '<li>コードや権限を変えたあとは、もう一度承認（「詳細」→「安全ではないページに移動」）が必要なことがあります。</li>'+
     '<li>シート（記録・車両・点検間隔・費目・ゴミ箱）は、初回の接続や同期で自動作成されます。</li>'+
-    '<li>オフラインの記録は、つながったときに「今すぐ同期」またはヘッダーの「同期」で送れます。</li>'+
+    '<li>オフラインの記録は、つながったときに設定の「今すぐ同期」で送れます。</li>'+
     '<li>家族や別の端末で同じデータを使うときは、同じウェブアプリ URL を設定に入れます（スプレッドシートの共有リンクではありません）。</li>'+
     '</ul>'+
     '</div></details>';
@@ -2626,7 +2785,7 @@ const HELP_TOPICS = [
     '<ol><li>設定の「車両を追加」、または最初の画面の「車を登録する」を開きます。</li>'+
     '<li>わかる範囲で入力して保存します。走行距離は、あとから給油などの記録に書けば自動で表示されます。</li>'+
     '<li>新車のときは「新車」をオンにすると、初回車検日が初度登録の3年後になります。</li>'+
-    '<li>2台目以降も同じ手順で追加できます。ホーム上部の車名をタップすると切り替えます。</li></ol>'
+    '<li>2台目以降も同じ手順で追加できます。画面右上の車名、またはホーム上部の車名チップをタップすると切り替えます。入力する記録は、いま選んでいる車に保存されます。</li></ol>'
   },
   { id:'input', title:'給油・経費の入力', body:
     '<p>入力タブ、またはホームのショートカットから記録します。</p>'+
@@ -2634,12 +2793,13 @@ const HELP_TOPICS = [
     '<li>給油では、合計金額（円）を入れて次へ（Enter）を押すと、リッター、走行距離の順に進みます。金額とリッター、単価のうち2つを入れると、残りは自動で出ます。空や0にも戻せます。</li>'+
     '<li>油種（レギュラー・ハイオク・軽油）は任意です。選ばなくても保存できます。同じ車では、前回選んだ油種を覚えています。</li>'+
     '<li>満タンにチェックすると、燃費（km/L）の計算に使います。</li>'+
-    '<li>金額だけの経費も、同じ画面で残せます。</li></ol>'
+    '<li>金額だけの経費も、同じ画面で残せます。</li>'+
+    '<li>交通費の内訳は、初期値が高速代です。有料道路、フェリー、カーシェア・レンタカー、代行運転、レッカー・ロードサービスなども選べます。装備やカスタムは「カスタム・装備品」にまとまっています。</li></ol>'
   },
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度を項目ごとに設定できます。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。初期は中）を項目ごとに設定できます。大は2マス分のタイルになり、空いたマスは詰めて並びます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・交換した）', body:
@@ -2743,15 +2903,21 @@ async function testGasConnection(){
     let data = null;
     try{ data = await res.json(); }catch(e){ data = null; }
     if(res.ok && data && data.status==='ok'){
+      lastSyncError = false;
       toast('接続できました');
       const st = document.getElementById('syncStatus');
       if(st) st.innerHTML = '<span class="sync-dot on"></span>接続できました　未送信 '+(pendingCount())+'件';
+      updateSetTabSyncMark();
       return true;
     }
+    lastSyncError = true;
     toast('接続に失敗しました（URLや承認を確認）');
+    updateSyncStatus();
     return false;
   }catch(err){
+    lastSyncError = true;
     toast('接続に失敗しました（URLや承認を確認）');
+    updateSyncStatus();
     return false;
   }
 }
@@ -3489,7 +3655,6 @@ function renderInput(){
   document.getElementById('page-input').innerHTML =
     '<div class="card tint tint-input">'+
     '<h2>'+(rec?'記録を編集':'新規入力')+(rec?' <span class="hint">ID '+escapeHtml(rec.id)+'</span>':'')+'</h2>'+
-    '<div class="input-veh"><label class="f">記録する車両</label>'+vehicleChipsHtml()+'</div>'+
     '<label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'">'+
     '<label class="f">カテゴリ</label><div class="cats" id="catBtns"></div>'+
     '<input type="hidden" id="fCat" value="'+escapeHtml(cat)+'">'+
@@ -3516,10 +3681,22 @@ function renderInput(){
   if(rd) rd.onclick = function(){ state.editId=null; state.inputPreset=null; renderInput(); };
   const dd = document.getElementById('btnDel');
   if(dd) dd.onclick = function(){ deleteRecord(rec.id); };
-  bindVehicleChips();
   bindInputEnterOrder();
 }
 
+const CHIP_SHORT_LABELS = {
+  '洗車・コーティング・ケミカル': '洗車',
+  '駐車場・車庫代': '駐車場',
+  'ローン・車両代': 'ローン',
+  '罰金・反則金': '罰金',
+  'カスタム費用': 'カスタム',
+  'カスタム・装備品': 'カスタム',
+  'メンテナンス': 'メンテ'
+};
+function chipDisplayLabel(c){
+  const full = (c && (c.label || c.id)) || '';
+  return CHIP_SHORT_LABELS[full] || CHIP_SHORT_LABELS[c && c.id] || full;
+}
 function buildCatBtns(active, rec){
   const box = document.getElementById('catBtns');
   const keepId = (rec && rec.categoryId) || '';
@@ -3527,7 +3704,10 @@ function buildCatBtns(active, rec){
   const activeId = (rec && rec.categoryId) || (document.getElementById('fCatId') && document.getElementById('fCatId').value) || '';
   box.innerHTML = vis.map(function(c){
     const on = c.customId ? (c.customId===activeId || (!activeId && c.id===active)) : (!activeId && c.id===active);
-    return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+escapeHtml(c.id)+'" data-cid="'+escapeHtml(c.customId||'')+'">'+escapeHtml(c.label)+'</button>';
+    const full = c.label || c.id || '';
+    const short = chipDisplayLabel(c);
+    const title = short!==full ? ' title="'+escapeHtml(full)+'"' : '';
+    return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+escapeHtml(c.id)+'" data-cid="'+escapeHtml(c.customId||'')+'" aria-label="'+escapeHtml(full)+'"'+title+'>'+escapeHtml(short)+'</button>';
   }).join('');
   box.onclick = function(e){
     const b = e.target.closest('button');
@@ -3829,7 +4009,7 @@ function renderHist(){
     if(r.category) seen[r.category]=true;
   });
   if(fil!=='all'){
-    const mapped = C.categoryLabel(fil) || fil;
+    const mapped = C.categoryLabel(C.canonicalizeCategory(fil)) || fil;
     if(seen[mapped]) fil = mapped;
     else if(!seen[fil]){
       fil = 'all';
@@ -3917,7 +4097,7 @@ function renderSet(){
     '<div class="btn-row"><button type="button" class="btn primary" id="btnSaveUrl">URLを保存</button>'+
     '<button type="button" class="btn ghost" id="btnTestConn">接続テスト</button>'+
     '<button type="button" class="btn ghost" id="btnSyncNow">今すぐ同期</button></div>'+
-    '<div class="help" id="syncStatus"><span class="sync-dot '+(url?'on':'off')+'"></span>'+(url?'URL登録済み':'未設定')+'　未送信 '+(pendingCount())+'件</div>'+
+    '<div class="help" id="syncStatus">'+syncStatusHtml()+'</div>'+
     gasHelpHtml()+
     '</div>'+
     '<div class="card tint tint-vehicle"><h2>車両</h2>'+vehList+
@@ -3929,7 +4109,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度を設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。大は2マス分）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -4030,6 +4210,7 @@ function upsertCustomCategory(fields, opts){
     subs: Array.isArray(fields.subs) ? fields.subs.filter(Boolean) : parseSubs(fields.subs),
     alertKm: (fields.alertKm==null || fields.alertKm==='') ? null : Number(fields.alertKm),
     alertMonths: (fields.alertMonths==null || fields.alertMonths==='') ? null : Number(fields.alertMonths),
+    size: 'size' in fields ? (normalizeShortcutIconSize(fields.size)||'') : undefined,
     deleted: false,
     updatedAt: new Date().toISOString()
   };
@@ -4037,6 +4218,7 @@ function upsertCustomCategory(fields, opts){
   if(cat.alertMonths!=null && !isFinite(cat.alertMonths)) cat.alertMonths = null;
   const i = (state.customCats||[]).findIndex(function(c){ return c.id===id; });
   if(!('opacity' in fields)) delete cat.opacity;
+  if(!('size' in fields)) delete cat.size;
   if(i>=0) state.customCats[i] = Object.assign({}, state.customCats[i], cat, { deleted:false });
   else {
     if(!state.customCats) state.customCats = [];
@@ -4070,6 +4252,21 @@ function deleteCustomCategory(id, opts){
     persistShortcuts(state.settings.shortcuts.filter(function(x){ return x!==('cc:'+id); }));
   }
   return true;
+}
+function sizeSegHtml(current){
+  const cur = normalizeShortcutIconSize(current) || defaultShortcutIconSize();
+  const opts = [['s','小'],['m','中'],['l','大']];
+  return '<label class="f">アイコンサイズ</label>'+
+    '<div class="seg" id="cSize" role="radiogroup" aria-label="アイコンサイズ">'+
+    opts.map(function(p){
+      return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
+    }).join('')+
+    '</div>'+
+    '<div class="help">ホームのタイルの大きさです。小と中は1マス、大は2マス×2マスです。空いたマスは自動で詰まります。</div>';
+}
+function readEditorSize(){
+  const on = document.querySelector('#cSize button.on');
+  return normalizeShortcutIconSize(on && on.getAttribute('data-sc-size')) || defaultShortcutIconSize();
 }
 function styleSegHtml(current, includeInherit){
   const opts = includeInherit ? [['','標準'],['line','線'],['fill','塗り']] : [['line','線'],['fill','塗り']];
@@ -4124,9 +4321,10 @@ function updateEditorPreview(){
   const color = document.getElementById('cColor') ? document.getElementById('cColor').value : '';
   const style = readEditorStyle();
   const opacity = readEditorOpacity();
+  const size = readEditorSize();
   const customId = box.getAttribute('data-cid') || '';
   const category = box.getAttribute('data-category') || name;
-  box.innerHTML = shortcutTileHtml({ id:'preview', label:name, icon:icon, category:category, customId:customId }, { override:{ color:color, style:style, opacity:opacity }, dataAttr:'data-preview="1"', className:'' });
+  box.innerHTML = shortcutTileHtml({ id:'preview', label:name, icon:icon, category:category, customId:customId, size:size }, { override:{ color:color, style:style, opacity:opacity, size:size }, dataAttr:'data-preview="1"', className:'' });
   syncOpacityUi();
 }
 function openCategoryEditor(id, opts){
@@ -4144,6 +4342,7 @@ function openCategoryEditor(id, opts){
       color: look.color || '',
       style: look.style || '',
       opacity: look.opacity,
+      size: look.size || (shortcut && shortcutSizeOf(shortcut)) || defaultShortcutIconSize(),
       builtin: true
     };
   } else {
@@ -4172,6 +4371,7 @@ function openCategoryEditor(id, opts){
     '<label class="f">スタイル</label>'+styleSegHtml(cat.style||'', true)+
     '<div class="help">線はアイコンと枠の色です。塗りはタイル全体をその色で塗ります。標準は、このショートカットにまだ指定がないときの初期値です。</div>'+
     opacityControlHtml(cat.style||'', cat.opacity)+
+    sizeSegHtml(cat.size || (isBuiltin ? (shortcut && shortcutSizeOf(shortcut)) : (cat.size || defaultShortcutIconSize())) || defaultShortcutIconSize())+
     '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?((shortcut&&shortcut.label)||C.categoryLabel(cat.name)||cat.name): (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
     (isBuiltin ? '' :
       '<label class="f">内訳（任意・カンマ区切り）</label><input type="text" id="cSubs" value="'+escapeHtml((cat.subs||[]).join('、'))+'" placeholder="フロント、リア">'+
@@ -4204,6 +4404,16 @@ function openCategoryEditor(id, opts){
     Array.prototype.forEach.call(this.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
     updateEditorPreview();
   };
+  const sizeBox = document.getElementById('cSize');
+  if(sizeBox) sizeBox.onclick = function(e){
+    const b = e.target.closest('[data-sc-size]'); if(!b) return;
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function(x){
+      const on = x===b;
+      x.classList.toggle('on', on);
+      x.setAttribute('aria-checked', on?'true':'false');
+    });
+    updateEditorPreview();
+  };
   const opEl = document.getElementById('cOpacity');
   if(opEl) opEl.addEventListener('input', updateEditorPreview);
   const presets = document.getElementById('cOpPresets');
@@ -4221,7 +4431,10 @@ function openCategoryEditor(id, opts){
     const color = safeColor(document.getElementById('cColor').value);
     const opacity = readEditorOpacity();
     if(isBuiltin){
-      upsertBuiltinLook(builtinKey, { color:color, style:style, opacity:opacity, icon:cat.icon });
+      const size = readEditorSize();
+      upsertBuiltinLook(builtinKey, { color:color, style:style, opacity:opacity, icon:cat.icon, size:size });
+      if(shortcut && shortcut.id) setShortcutSize(shortcut.id, size, true);
+      else setShortcutSize(builtinKey, size, true);
       closeModal();
       renderAll();
       toast('見た目を保存しました');
@@ -4229,6 +4442,7 @@ function openCategoryEditor(id, opts){
     }
     const name = document.getElementById('cName').value.trim();
     if(!name){ toast('名前を入れてください'); return; }
+    const size = readEditorSize();
     upsertCustomCategory({
       id: cat.id,
       name: name,
@@ -4236,10 +4450,12 @@ function openCategoryEditor(id, opts){
       color: color,
       style: style,
       opacity: opacity,
+      size: size,
       subs: document.getElementById('cSubs').value,
       alertKm: document.getElementById('cKm').value,
       alertMonths: document.getElementById('cMo').value
     }, { addShortcut: document.getElementById('cShortcut').checked });
+    setShortcutSize('cc:'+cat.id, size, true);
     if(!document.getElementById('cShortcut').checked && state.settings.shortcuts){
       persistShortcuts(state.settings.shortcuts.filter(function(x){ return x!==('cc:'+cat.id); }));
     }
@@ -4899,6 +5115,7 @@ function applyBackupMerge(data){
   persistSettings();
   fillVehicleSelect();
   queueImportedRecords(imported);
+  migrateMergedCategories();
   applyTheme(state.settings.theme, false);
   if(data.banners) applyBannersFromBackupSync(data.banners, { replace:false });
   return { imported: imported.length, records: state.records.length };
@@ -4931,6 +5148,7 @@ function applyBackupReplace(data){
   persistPending();
   queueImportedRecords(state.records);
   fillVehicleSelect();
+  migrateMergedCategories();
   applyTheme(state.settings.theme, false);
   if(data.banners) applyBannersFromBackupSync(data.banners, { replace:true });
   return { records: state.records.length };
@@ -5068,11 +5286,11 @@ function rowToRecord(h, cols){
   const hn = (h||[]).map(normalizeCsvHeader);
   function g(k){ const i=hn.indexOf(k); return i>=0?cols[i]:''; }
   const id = String(g('id')||'').trim().replace(/^'/,'') || newId('k');
-  return {
+  const rec = {
     id: id,
     vehicle: String(g('vehicle')||'').replace(/^'/,''),
     date: String(g('date')||'').replace(/^'/,''),
-    category: C.canonicalizeCategory(String(g('category')||'').replace(/^'/,'')),
+    category: String(g('category')||'').replace(/^'/,''),
     subcategory: String(g('subcategory')||'').replace(/^'/,''),
     amount: parseNum(g('amount')),
     odometer: parseNum(g('odometer')),
@@ -5090,6 +5308,7 @@ function rowToRecord(h, cols){
     categoryId: String(g('categoryId')||'').replace(/^'/,''),
     maintenanceItemId: String(g('maintenanceItemId')||'').replace(/^'/,'')
   };
+  return C.migrateRecordCategory(rec);
 }
 function importCsvText(text){
   const rows = C.parseCsv(String(text||''));
@@ -5178,7 +5397,8 @@ async function gasFetch(url, opts, timeoutMs){
 async function syncAll(manual){
   const url = (state.settings.gasUrl||'').trim();
   if(!url){ if(manual) toast('設定で GAS の URL を入れてください'); return; }
-  document.getElementById('syncBtn').textContent = '同期中…';
+  const st = document.getElementById('syncStatus');
+  if(st) st.innerHTML = '<span class="sync-dot pending"></span>同期中…';
   try{
     const delIds = Object.keys(state.pendingDel);
     if(delIds.length){
@@ -5237,11 +5457,13 @@ async function syncAll(manual){
       mergeRemote(data.entries, data.vehicles, data.intervals, data.categories);
     }
     stampBackup();
+    lastSyncError = false;
     toast('同期しました');
   }catch(err){
+    lastSyncError = true;
     toast('同期に失敗しました（オフラインのときは後で）');
   }
-  updateSyncBtn();
+  updateSyncStatus();
   renderAll();
 }
 
@@ -5250,14 +5472,16 @@ function mergeRemote(entries, vehicles, intervals, categories){
   state.records.forEach(function(r){ localById[r.id]=r; });
   entries.forEach(function(en){
     if(!en || !en.id) return;
+    C.migrateRecordCategory(en);
     if(state.pendingDel[en.id]) return;
     const loc = localById[en.id];
     if(!loc){ state.records.push(en); return; }
     const lt = Date.parse(loc.updatedAt||'')||0;
     const rt = Date.parse(en.updatedAt||'')||0;
-    if(rt>lt) Object.assign(loc, en);
+    if(rt>lt){ Object.assign(loc, en); C.migrateRecordCategory(loc); }
   });
   persistRecords();
+  migrateMergedCategories();
   if(Array.isArray(vehicles) && vehicles.length){
     vehicles.forEach(function(rv){
       if(!rv||!rv.id) return;
@@ -5316,8 +5540,7 @@ function isSwipeIgnoredTarget(el){
   const node = el.nodeType===3 ? el.parentElement : el;
   if(!node || !node.closest) return true;
   if(node.closest('input, textarea, select, [contenteditable="true"]')) return true;
-  if(node.closest('.nav, .topbar, .modal-bg, .modal')) return true;
-  if(node.closest('.veh-chips, .filter-bar, .cats, .icon-pick, .color-pick, .csv-chips, .home-banner, .banner-edit-frame, .alert-card, .alert-card-actions, #page-alert, #alertCard')) return true;
+  if(node.closest('.nav, .topbar, .modal-bg, .modal, .banner-edit-frame')) return true;
   let n = node;
   while(n && n!==document.body){
     if(isHorizontallyScrollable(n)) return true;
@@ -5392,12 +5615,6 @@ document.getElementById('nav').addEventListener('click', function(e){
 });
 document.getElementById('vehicleSelect').addEventListener('change', function(){
   selectVehicle(this.value);
-});
-document.getElementById('syncBtn').addEventListener('click', function(){ syncAll(true); });
-document.getElementById('syncHelpBtn').addEventListener('click', function(e){
-  e.preventDefault();
-  e.stopPropagation();
-  openGasHelp();
 });
 
 
@@ -5496,6 +5713,7 @@ window.KakeLog = {
   persistVehicles: persistVehicles,
   persistSettings: persistSettings,
   persistCategories: persistCategories,
+  persistLooks: persistLooks,
   selectVehicle: selectVehicle,
   upsertCustomCategory: upsertCustomCategory,
   deleteCustomCategory: deleteCustomCategory,
@@ -5520,6 +5738,7 @@ window.KakeLog = {
   shortcutTileHtml: shortcutTileHtml,
   updateEditorPreview: updateEditorPreview,
   recordCategoryName: recordCategoryName,
+  migrateMergedCategories: migrateMergedCategories,
   visibleCategories: visibleCategories,
   exportCsvText: exportCsvText,
   importCsvText: importCsvText,
@@ -5553,6 +5772,15 @@ window.KakeLog = {
   getCodeGsText: function(){ return codeGsText; },
   trySwitchTabBySwipe: trySwitchTabBySwipe,
   isSwipeIgnoredTarget: isSwipeIgnoredTarget,
+  isHorizontallyScrollable: isHorizontallyScrollable,
+  shortcutIconSize: shortcutIconSize,
+  applyShortcutIconSize: applyShortcutIconSize,
+  normalizeShortcutIconSize: normalizeShortcutIconSize,
+  defaultShortcutIconSize: defaultShortcutIconSize,
+  shortcutSizeOf: shortcutSizeOf,
+  setShortcutSize: setShortcutSize,
+  chipDisplayLabel: chipDisplayLabel,
+  updateSyncStatus: updateSyncStatus,
   ICON_SET: ICON_SET,
   setTheme: setTheme,
   applyTheme: applyTheme,

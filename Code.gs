@@ -1,5 +1,5 @@
 /**
- * CarLog beta 0.9.15 — Google Apps Script バックエンド
+ * CarLog beta 0.9.18 — Google Apps Script バックエンド
  *
  * スプレッドシート構成:
  *   1枚目「記録」…経費レコード
@@ -24,7 +24,7 @@ var VEHICLE_HEADERS = [
   '現在距離','次回車検','自賠責月数','更新日時'
 ];
 var INTERVAL_HEADERS = ['ID','車両ID','名称','カテゴリ','サブカテゴリ','間隔km','間隔月','更新日時','削除','前回日付','前回km'];
-var CATEGORY_HEADERS = ['ID','名前','アイコン','色','サブカテゴリ','点検km','点検月','削除','更新日時','スタイル'];
+var CATEGORY_HEADERS = ['ID','名前','アイコン','色','サブカテゴリ','点検km','点検月','削除','更新日時','スタイル','サイズ'];
 
 function getSs_() {
   return SpreadsheetApp.getActiveSpreadsheet();
@@ -292,7 +292,8 @@ function buildCategoryRow_(c) {
     txt_(c.alertMonths),
     txt_(c.deleted ? '1' : ''),
     String(c.updatedAt || new Date().toISOString()),
-    txt_(styleText_(c.style, c.opacity))
+    txt_(styleText_(c.style, c.opacity)),
+    txt_(c.size || '')
   ];
 }
 function rowToCategory_(row) {
@@ -310,7 +311,8 @@ function rowToCategory_(row) {
     deleted: flag(row[7]),
     updatedAt: clean_(row[8]) || '',
     style: styleFrom_(row[9]),
-    opacity: opacityFrom_(row[9])
+    opacity: opacityFrom_(row[9]),
+    size: clean_(row[10]) || ''
   };
 }
 
