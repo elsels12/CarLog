@@ -1,5 +1,5 @@
 /**
- * CarLog beta 0.9.10 — Google Apps Script バックエンド
+ * CarLog beta 0.9.11 — Google Apps Script バックエンド
  *
  * スプレッドシート構成:
  *   1枚目「記録」…経費レコード
@@ -17,13 +17,13 @@ var TRASH_RETENTION_DAYS = 90;
 
 var RECORD_HEADERS = [
   'ID','車両','日付','カテゴリ','サブカテゴリ','金額','走行距離','メモ',
-  '給油L','単価','満タン','重量税','自賠責','印紙代','整備費','端末ID','更新日時','カテゴリID'
+  '給油L','単価','満タン','重量税','自賠責','印紙代','整備費','端末ID','更新日時','カテゴリID','油種'
 ];
 var VEHICLE_HEADERS = [
   'ID','名前','排気量cc','燃料','初度登録','車両重量kg','軽自動車','エコカー',
   '現在距離','次回車検','自賠責月数','更新日時'
 ];
-var INTERVAL_HEADERS = ['ID','車両ID','名称','カテゴリ','サブカテゴリ','間隔km','間隔月','更新日時','削除'];
+var INTERVAL_HEADERS = ['ID','車両ID','名称','カテゴリ','サブカテゴリ','間隔km','間隔月','更新日時','削除','前回日付','前回km'];
 var CATEGORY_HEADERS = ['ID','名前','アイコン','色','サブカテゴリ','点検km','点検月','削除','更新日時','スタイル'];
 
 function getSs_() {
@@ -61,7 +61,7 @@ function getRecordSheet_() {
     sh.getRange(1, 1, 1, RECORD_HEADERS.length).setFontWeight('bold');
     sh.getRange(1, 1, sh.getMaxRows(), RECORD_HEADERS.length).setNumberFormat('@');
   }
-  return sh;
+  return ensureHeaders_(sh, RECORD_HEADERS);
 }
 
 function getVehicleSheet_() { return getOrCreateSheet_('車両', VEHICLE_HEADERS); }
@@ -81,7 +81,7 @@ function ensureHeaders_(sh, headers) {
 function getIntervalSheet_() {
   return ensureHeaders_(getOrCreateSheet_('点検間隔', INTERVAL_HEADERS), INTERVAL_HEADERS);
 }
-function getCategorySheet_() { return getOrCreateSheet_('費目', CATEGORY_HEADERS); }
+function getCategorySheet_() { return ensureHeaders_(getOrCreateSheet_('費目', CATEGORY_HEADERS), CATEGORY_HEADERS); }
 
 function getTrashSheet_() {
   var ss = getSs_();
@@ -92,7 +92,7 @@ function getTrashSheet_() {
     trash.appendRow(headers);
     trash.getRange(1, 1, trash.getMaxRows(), headers.length).setNumberFormat('@');
   }
-  return trash;
+  return ensureHeaders_(trash, RECORD_HEADERS.concat(['削除日時']));
 }
 
 function txt_(v) {
@@ -143,7 +143,8 @@ function buildRecordRow_(entry) {
     txt_(entry.serviceFee),
     String(entry.deviceId || ''),
     String(safeUpdated),
-    txt_(entry.categoryId || '')
+    txt_(entry.categoryId || ''),
+    txt_(entry.fuelGrade || '')
   ];
 }
 
@@ -172,7 +173,8 @@ function rowToEntry_(row) {
     serviceFee: n(row[14]),
     deviceId: clean_(row[15]) || null,
     updatedAt: clean_(row[16]) || '',
-    categoryId: clean_(row[17]) || ''
+    categoryId: clean_(row[17]) || '',
+    fuelGrade: clean_(row[18]) || ''
   };
 }
 
@@ -222,7 +224,9 @@ function buildIntervalRow_(it) {
     txt_(it.km),
     txt_(it.months),
     String(it.updatedAt || new Date().toISOString()),
-    txt_(it.deleted ? '1' : '')
+    txt_(it.deleted ? '1' : ''),
+    txt_(it.lastReplacedDate || ''),
+    txt_(it.lastReplacedOdo)
   ];
 }
 
@@ -237,23 +241,42 @@ function rowToInterval_(row) {
     km: n(row[5]),
     months: n(row[6]),
     updatedAt: clean_(row[7]) || '',
-    deleted: (function (v) { var s = clean_(v); return s === '1' || s === 'true' || s === 'TRUE'; })(row[8])
+    deleted: (function (v) { var s = clean_(v); return s === '1' || s === 'true' || s === 'TRUE'; })(row[8]),
+    lastReplacedDate: clean_(row[9]) || '',
+    lastReplacedOdo: n(row[10])
   };
 }
 
 
 
-function styleText_(s) {
+function splitStyle_(s) {
   s = String(s == null ? '' : s).trim();
-  if (s === 'fill' || s === '塗り') return '塗り';
-  if (s === 'line' || s === '線') return '線';
-  return '';
+  var base = s, op = null;
+  var m = s.match(/^(.*?)[:：](\d{1,3})$/);
+  if (m) { base = m[1].trim(); op = parseInt(m[2], 10); }
+  if (op != null && (isNaN(op) || op < 10 || op > 100)) op = null;
+  var style = '';
+  if (base === 'fill' || base === '塗り') style = 'fill';
+  else if (base === 'line' || base === '線') style = 'line';
+  return { style: style, opacity: op };
+}
+function styleText_(s, opacity) {
+  var st = splitStyle_(s);
+  var style = st.style;
+  var label = style === 'fill' ? '塗り' : (style === 'line' ? '線' : '');
+  var op = opacity != null && opacity !== '' ? parseInt(opacity, 10) : st.opacity;
+  if (label && op != null && !isNaN(op)) {
+    if (op < 10) op = 10;
+    if (op > 100) op = 100;
+    return label + ':' + op;
+  }
+  return label;
 }
 function styleFrom_(s) {
-  s = clean_(s);
-  if (s === '塗り' || s === 'fill') return 'fill';
-  if (s === '線' || s === 'line') return 'line';
-  return '';
+  return splitStyle_(s).style;
+}
+function opacityFrom_(s) {
+  return splitStyle_(s).opacity;
 }
 
 function buildCategoryRow_(c) {
@@ -269,7 +292,7 @@ function buildCategoryRow_(c) {
     txt_(c.alertMonths),
     txt_(c.deleted ? '1' : ''),
     String(c.updatedAt || new Date().toISOString()),
-    txt_(styleText_(c.style))
+    txt_(styleText_(c.style, c.opacity))
   ];
 }
 function rowToCategory_(row) {
@@ -286,7 +309,8 @@ function rowToCategory_(row) {
     alertMonths: n(row[6]),
     deleted: flag(row[7]),
     updatedAt: clean_(row[8]) || '',
-    style: styleFrom_(row[9])
+    style: styleFrom_(row[9]),
+    opacity: opacityFrom_(row[9])
   };
 }
 
@@ -371,7 +395,7 @@ function doPost(e) {
     var sheet = getRecordSheet_();
 
     if (data.action === 'save' && data.entry) {
-      var r = upsertById_(sheet, 18, [data.entry], buildRecordRow_, rowKey_, function (en) {
+      var r = upsertById_(sheet, RECORD_HEADERS.length, [data.entry], buildRecordRow_, rowKey_, function (en) {
         return String(en.id || '').trim().replace(/^'/, '');
       }, 16);
       return jsonOut_({ status: 'ok', updated: r.updated > 0, skipped: r.skipped > 0 });
@@ -389,7 +413,7 @@ function doPost(e) {
         if (!cur || enTime >= curTime) byId[k] = en;
       });
       var list = Object.keys(byId).map(function (k) { return byId[k]; }).concat(noId);
-      var r2 = upsertById_(sheet, 18, list, buildRecordRow_, rowKey_, function (en) {
+      var r2 = upsertById_(sheet, RECORD_HEADERS.length, list, buildRecordRow_, rowKey_, function (en) {
         return String(en.id || '').trim().replace(/^'/, '');
       }, 16);
       return jsonOut_({ status: 'ok', updated: r2.updated, appended: r2.appended, skipped: r2.skipped });
@@ -443,7 +467,7 @@ function deleteRecords_(ids) {
   if (lastRow <= 1) return;
   var idSet = {};
   ids.forEach(function (id) { idSet[String(id).trim().replace(/^'/, '')] = true; });
-  var colN = Math.max(17, Math.min(18, sheet.getLastColumn() || 17));
+  var colN = Math.max(17, Math.min(RECORD_HEADERS.length, sheet.getLastColumn() || 17));
   var display = sheet.getRange(2, 1, lastRow - 1, colN).getDisplayValues();
   var values = sheet.getRange(2, 1, lastRow - 1, colN).getValues();
   var rowsToTrash = [];
@@ -481,7 +505,7 @@ function doGet(e) {
   try {
     lock.waitLock(10000);
     var recSheet = getRecordSheet_();
-    var recCols = Math.max(17, Math.min(18, recSheet.getLastColumn() || 17));
+    var recCols = Math.max(17, Math.min(RECORD_HEADERS.length, recSheet.getLastColumn() || 17));
     var entries = readSheet_(recSheet, recCols, rowToEntry_);
     var vehicles = [];
     var intervals = [];
@@ -489,12 +513,12 @@ function doGet(e) {
     try { vehicles = readSheet_(getVehicleSheet_(), VEHICLE_HEADERS.length, rowToVehicle_); } catch (err) {}
     try {
       var ishGet = getIntervalSheet_();
-      var icols = Math.max(8, Math.min(9, ishGet.getLastColumn() || 8));
+      var icols = Math.max(8, Math.min(INTERVAL_HEADERS.length, ishGet.getLastColumn() || 8));
       intervals = readSheet_(ishGet, icols, rowToInterval_);
     } catch (err2) {}
     try {
       var csh = getCategorySheet_();
-      var ccols = Math.max(9, Math.min(10, csh.getLastColumn() || 9));
+      var ccols = Math.max(9, Math.min(CATEGORY_HEADERS.length, csh.getLastColumn() || 9));
       categories = readSheet_(csh, ccols, rowToCategory_);
     } catch (err3) {}
     return jsonOut_({ status: 'ok', entries: entries, vehicles: vehicles, intervals: intervals, categories: categories });

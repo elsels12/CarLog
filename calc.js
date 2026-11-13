@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.10 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.11 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -265,18 +265,117 @@
     return result;
   }
 
-  // 初回車検は登録+3年、以降2年ごと（自家用乗用の目安）
-  function estimateNextShaken(regYm, asOf) {
+  function addDays(date, days) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+  }
+
+  function mdLabel(d) {
+    d = toDate(d);
+    if (!d) return "";
+    return (d.getMonth() + 1) + "/" + d.getDate();
+  }
+
+  // 新車の初回車検: 初度登録年月の1日 + 3年
+  function firstShakenFromRegistration(regYm) {
     var reg = toDate(regYm);
-    var today = toDate(asOf) || new Date();
     if (!reg) return null;
-    var first = addMonths(new Date(reg.getFullYear(), reg.getMonth(), 1), 36);
-    // 有効期間の満了日は登録日に依存するが、月単位の目安として月初で扱う
-    var next = first;
-    while (next <= today) {
-      next = addMonths(next, 24);
-    }
+    return ymd(addMonths(new Date(reg.getFullYear(), reg.getMonth(), 1), 36));
+  }
+
+  // アンカー: 購入後の初回車検日。旧データは nextShakenDate をアンカーとして使う。
+  function shakenAnchorDate(veh) {
+    if (!veh) return null;
+    if (typeof veh === "string") return toDate(veh);
+    return toDate(veh.firstShakenDate) || toDate(veh.nextShakenDate) || toDate(firstShakenFromRegistration(veh.registeredYm));
+  }
+
+  // 満了日当日まではその回の車検日。翌日以降は2年サイクルで繰り上げ。
+  function nextShakenFromAnchor(anchor, asOf) {
+    var start = toDate(anchor);
+    if (!start) return null;
+    var today = toDate(asOf) || new Date();
+    var next = start;
+    while (next < today) next = addMonths(next, 24);
     return ymd(next);
+  }
+
+  function nextShakenDate(veh, asOf) {
+    var anchor = shakenAnchorDate(veh);
+    if (!anchor) return null;
+    return nextShakenFromAnchor(anchor, asOf);
+  }
+
+  // 初回車検は登録+3年、以降2年ごと（自家用乗用・軽ともに同じ）
+  function estimateNextShaken(regYm, asOf) {
+    var first = firstShakenFromRegistration(regYm);
+    if (!first) return null;
+    return nextShakenFromAnchor(first, asOf);
+  }
+
+  // 車検は満了日の1か月前の同日から受けられる（月末は前月の末日にクランプ）
+  function shakenWindowOpen(expiry) {
+    var d = toDate(expiry);
+    if (!d) return null;
+    return ymd(addMonths(d, -1));
+  }
+
+  function shakenInfoStart(expiry) {
+    var open = toDate(shakenWindowOpen(expiry));
+    if (!open) return null;
+    return ymd(addMonths(open, -1));
+  }
+
+  function shakenNoticeStart(expiry) {
+    var open = toDate(shakenWindowOpen(expiry));
+    if (!open) return null;
+    return ymd(addDays(open, -7));
+  }
+
+  // 段階: お知らせ(info) → 注意(caution) → 要対応(action) → 超過(overdue)。まだ早いときは ok。
+  function shakenAlertForExpiry(expiry, asOf) {
+    var end = toDate(expiry);
+    if (!end) return null;
+    var today = toDate(asOf) || new Date();
+    var windowOpen = addMonths(end, -1);
+    var noticeStart = addDays(windowOpen, -7);
+    var infoStart = addMonths(windowOpen, -1);
+    var expiryStr = ymd(end);
+    var windowStr = ymd(windowOpen);
+    var winMd = mdLabel(windowOpen);
+    var endMd = mdLabel(end);
+    var remainDays = Math.round((end - today) / 86400000);
+    var status, message;
+    if (today > end) {
+      status = "overdue";
+      message = "車検の期限が過ぎています（期限 " + endMd + "）";
+    } else if (today >= windowOpen) {
+      status = "action";
+      message = "今日から車検を受けられます（期限 " + endMd + "）";
+    } else if (today >= noticeStart) {
+      status = "caution";
+      message = "あと1週間で車検を受けられます（" + winMd + "〜）";
+    } else if (today >= infoStart) {
+      status = "info";
+      message = "あと1か月で車検を受けられます（" + winMd + "〜）";
+    } else {
+      status = "ok";
+      message = "";
+    }
+    return {
+      status: status,
+      message: message,
+      dueDate: expiryStr,
+      windowOpen: windowStr,
+      infoStart: ymd(infoStart),
+      noticeStart: ymd(noticeStart),
+      remainDays: remainDays
+    };
+  }
+
+  function shakenAlert(veh, asOf) {
+    var expiry = nextShakenDate(veh, asOf);
+    if (!expiry) return null;
+    return shakenAlertForExpiry(expiry, asOf);
   }
 
   function matchVehicle_(r, vehicleId) {
@@ -496,6 +595,53 @@
     return list[0] || null;
   }
 
+  function hasBaselineValue(b) {
+    if (!b) return false;
+    if (b.date) return true;
+    if (b.odometer != null && b.odometer !== "" && isFinite(Number(b.odometer))) return true;
+    return false;
+  }
+
+  function baselineFromManual(item) {
+    if (!item) return null;
+    var date = item.lastReplacedDate ? String(item.lastReplacedDate) : "";
+    var odoN = item.lastReplacedOdo != null && item.lastReplacedOdo !== "" && isFinite(Number(item.lastReplacedOdo))
+      ? Number(item.lastReplacedOdo) : null;
+    if (!date && odoN == null) return null;
+    return { date: date || null, odometer: odoN, source: "manual" };
+  }
+
+  function baselineFromRecord(rec) {
+    if (!rec) return null;
+    var odoN = rec.odometer != null && rec.odometer !== "" && isFinite(Number(rec.odometer))
+      ? Number(rec.odometer) : null;
+    if (!rec.date && odoN == null) return null;
+    return { date: rec.date || null, odometer: odoN, source: "record", record: rec };
+  }
+
+  // true if a is newer than b (later date, or same date with higher odo)
+  function isNewerBaseline(a, b) {
+    if (!hasBaselineValue(a)) return false;
+    if (!hasBaselineValue(b)) return true;
+    var ad = String(a.date || ""), bd = String(b.date || "");
+    if (ad && bd && ad !== bd) return ad > bd;
+    if (ad && !bd) return true;
+    if (!ad && bd) return false;
+    var aok = a.odometer != null && isFinite(Number(a.odometer));
+    var bok = b.odometer != null && isFinite(Number(b.odometer));
+    if (aok && bok) return Number(a.odometer) > Number(b.odometer);
+    if (aok && !bok) return true;
+    return false;
+  }
+
+  function lastReplacementBaseline(item, records, vehicleId) {
+    var recBase = baselineFromRecord(lastRecordForItem(records, vehicleId, item));
+    var manBase = baselineFromManual(item);
+    if (isNewerBaseline(recBase, manBase)) return recBase;
+    if (hasBaselineValue(manBase)) return manBase;
+    return recBase || null;
+  }
+
   function alertStatus(item, last, currentOdo, asOf) {
     var today = toDate(asOf) || new Date();
     var kmInt = Number(item.km) || 0;
@@ -541,7 +687,7 @@
 
   function computeAlerts(items, records, vehicleId, currentOdo, asOf) {
     return (items || []).map(function (item) {
-      var last = lastRecordForItem(records, vehicleId, item);
+      var last = lastReplacementBaseline(item, records, vehicleId);
       var st = alertStatus(item, last, currentOdo, asOf);
       return Object.assign({ item: item }, st);
     });
@@ -600,8 +746,31 @@
     { id: "coolant", label: "クーラント", category: "メンテナンス", subcategory: "クーラント", km: 40000, months: 36 }
   ];
 
+
+  function categoryLabel(id) {
+    if (id == null || id === "") return "";
+    var i, c;
+    for (i = 0; i < CATEGORIES.length; i++) {
+      c = CATEGORIES[i];
+      if (c.id === id) return c.label || c.id;
+    }
+    return String(id);
+  }
+  function canonicalizeCategory(name) {
+    var s = String(name == null ? "" : name).trim();
+    if (!s) return s;
+    var i, c;
+    for (i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].id === s) return CATEGORIES[i].id;
+    }
+    for (i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].label === s) return CATEGORIES[i].id;
+    }
+    return s;
+  }
+
   var CATEGORIES = [
-    { id: "燃費", label: "燃費（給油）", subs: ["給油"] },
+    { id: "燃費", label: "給油", subs: ["給油"] },
     { id: "オイル", label: "オイル", subs: ["エンジン", "ミッション", "デフ"] },
     { id: "車検", label: "車検", subs: ["車検"] },
     { id: "税金", label: "税金", subs: ["自動車税", "重量税", "その他"] },
@@ -626,6 +795,8 @@
     JIBAISEKI: JIBAISEKI,
     DEFAULT_INTERVALS: DEFAULT_INTERVALS,
     CATEGORIES: CATEGORIES,
+    categoryLabel: categoryLabel,
+    canonicalizeCategory: canonicalizeCategory,
     fyStart: fyStart,
     fyLabel: fyLabel,
     isJidoshaZeiHeavy: isJidoshaZeiHeavy,
@@ -634,6 +805,17 @@
     weightTax: weightTax,
     jibaiseki: jibaiseki,
     estimateNextShaken: estimateNextShaken,
+    firstShakenFromRegistration: firstShakenFromRegistration,
+    shakenAnchorDate: shakenAnchorDate,
+    nextShakenFromAnchor: nextShakenFromAnchor,
+    nextShakenDate: nextShakenDate,
+    shakenWindowOpen: shakenWindowOpen,
+    shakenInfoStart: shakenInfoStart,
+    shakenNoticeStart: shakenNoticeStart,
+    shakenAlertForExpiry: shakenAlertForExpiry,
+    shakenAlert: shakenAlert,
+    addDays: addDays,
+    mdLabel: mdLabel,
     fuelIntervals: fuelIntervals,
     averageFuelEconomy: averageFuelEconomy,
     fuelEconomyByRecordId: fuelEconomyByRecordId,
@@ -645,6 +827,9 @@
     deriveFuel: deriveFuel,
     fuelSourcePlan: fuelSourcePlan,
     lastRecordForItem: lastRecordForItem,
+    lastReplacementBaseline: lastReplacementBaseline,
+    isNewerBaseline: isNewerBaseline,
+    hasBaselineValue: hasBaselineValue,
     alertStatus: alertStatus,
     computeAlerts: computeAlerts,
     escapeCsvField: escapeCsvField,
