@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.25</title>
+<title>CarLog beta 0.9.26</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -165,8 +165,12 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .nav button .ic svg{width:20px;height:20px;display:block;}
 .nav button .tab-lbl{font-size:11px;font-weight:700;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .nav button.active{color:var(--ink-on-accent);}
-.nav button.active .tab-pill{background:var(--tab);box-shadow:0 0 0 1px color-mix(in srgb,var(--tab) 70%,#fff 10%);}
-.nav button.active::before{content:"";position:absolute;top:0;left:18%;right:18%;height:3px;border-radius:0 0 3px 3px;background:var(--tab);}
+.nav-ind{position:absolute;inset:0;pointer-events:none;opacity:0;}
+.nav-ind.ready{opacity:1;}
+.nav-ind-pill{position:absolute;left:0;top:0;width:0;height:0;border-radius:12px;background:var(--tab);box-shadow:0 0 0 1px color-mix(in srgb,var(--tab) 70%,#fff 10%);will-change:transform;}
+.nav-ind-bar{position:absolute;left:0;top:0;width:0;height:3px;border-radius:0 0 3px 3px;background:var(--tab);will-change:transform;}
+.nav.is-anim .nav-ind-pill,.nav.is-anim .nav-ind-bar{transition:transform 220ms cubic-bezier(0.2,0.8,0.2,1),width 220ms cubic-bezier(0.2,0.8,0.2,1),background-color 220ms cubic-bezier(0.2,0.8,0.2,1),box-shadow 220ms cubic-bezier(0.2,0.8,0.2,1);}
+.nav.is-anim button{transition:color 220ms cubic-bezier(0.2,0.8,0.2,1);}
 .card{background:var(--panel);border:var(--card-border-w) solid var(--line);border-radius:var(--radius-card);padding:8px 10px;margin-bottom:8px;box-shadow:var(--card-shadow);}
 .card h2{font-size:11px;letter-spacing:.1em;color:var(--amber);text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:baseline;font-weight:800;}
 .card h2 .hint{font-family:var(--font-ui);font-size:10px;letter-spacing:0;color:var(--paper-dim);text-transform:none;font-weight:600;}
@@ -473,7 +477,7 @@ details.tax-fold.tint > summary{
 .sc-toolbar > *{pointer-events:auto;}
 .sc-reorder-done,#btnScReorderDone{flex:0 0 auto;min-width:0;min-height:28px;height:28px;padding:0 10px;font-size:12px;font-weight:800;line-height:28px;border:0;border-radius:999px;background:var(--amber);color:var(--ink-on-accent);}
 html.tab-swipe-lock,body.tab-swipe-lock{overflow:hidden;overscroll-behavior:none;}
-.page.is-swipe-pane{background:var(--asphalt);-webkit-overflow-scrolling:touch;}
+.page.is-swipe-pane{-webkit-overflow-scrolling:touch;}
 .sc-wrap.is-reorder .sc-tile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 .sc-wrap.is-reorder,.sc-wrap.is-reorder #scGrid{touch-action:none;}
 html.sc-drag-lock,body.sc-drag-lock{overflow:hidden;overscroll-behavior:none;touch-action:none;}
@@ -649,8 +653,8 @@ html[data-theme="glass"] .tint-sum,
 html[data-theme="glass"] .tint-csv{--_t:#7ee0ff;}
 html[data-theme="glass"] .card.tint > h2,
 html[data-theme="glass"] details.tax-fold.tint > summary{color:color-mix(in srgb, var(--_t) 55%, #fff);font-weight:800;}
-html[data-theme="glass"] .nav button.active .tab-pill{box-shadow:0 4px 14px color-mix(in srgb,var(--tab) 45%, transparent);}
-html[data-theme="glass"] .nav button.active::before{display:none;}
+html[data-theme="glass"] .nav-ind-pill{box-shadow:0 4px 14px color-mix(in srgb,var(--tab) 45%, transparent);}
+html[data-theme="glass"] .nav-ind-bar{display:none;}
 html[data-theme="glass"] .toast{background:rgba(7,14,28,.92);border:1px solid var(--amber);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.4);}
 html[data-theme="glass"] .modal-bg{background:rgba(4,8,18,.72);z-index:80;}
 html[data-theme="glass"] .modal{
@@ -746,8 +750,8 @@ html[data-theme="glass-light"] .tint-sum,
 html[data-theme="glass-light"] .tint-csv{--_t:#0b7c96;}
 html[data-theme="glass-light"] .card.tint > h2,
 html[data-theme="glass-light"] details.tax-fold.tint > summary{color:color-mix(in srgb, var(--_t) 72%, #15202b);font-weight:800;}
-html[data-theme="glass-light"] .nav button.active .tab-pill{box-shadow:0 4px 12px color-mix(in srgb,var(--tab) 40%, transparent);}
-html[data-theme="glass-light"] .nav button.active::before{display:none;}
+html[data-theme="glass-light"] .nav-ind-pill{box-shadow:0 4px 12px color-mix(in srgb,var(--tab) 40%, transparent);}
+html[data-theme="glass-light"] .nav-ind-bar{display:none;}
 html[data-theme="glass-light"] .toast{background:rgba(255,255,255,.96);color:#15202b;border:1px solid rgba(90,130,160,.35);backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:0 8px 20px rgba(70,110,150,.18), inset 0 1px 0 #fff;}
 html[data-theme="glass-light"] .modal-bg{background:rgba(80,120,150,.32);z-index:80;}
 html[data-theme="glass-light"] .modal{
@@ -848,10 +852,10 @@ html[data-theme="neumo"] .gs-code{
 }
 html[data-theme="neumo"] .nav{box-shadow:0 -6px 12px rgba(80,82,86,.28);border-top:1px solid #9ea2a8;}
 html[data-theme="neumo"] .nav button.active{color:#f2f3f4;}
-html[data-theme="neumo"] .nav button.active .tab-pill{
+html[data-theme="neumo"] .nav-ind-pill{
   box-shadow:3px 4px 7px rgba(90,94,100,.35), -3px -3px 6px rgba(255,255,255,.75);
 }
-html[data-theme="neumo"] .nav button.active::before{display:none;}
+html[data-theme="neumo"] .nav-ind-bar{display:none;}
 html[data-theme="neumo"] .kpi .val{font-weight:800;color:#141518;}
 html[data-theme="neumo"] .alert-card{box-shadow:var(--tile-shadow);border:1px solid #9ea2a8;background:#c9ccd1;}
 html[data-theme="neumo"] .stat-line,html[data-theme="neumo"] .hist-item,html[data-theme="neumo"] .alert-item,
@@ -944,10 +948,10 @@ html[data-theme="neumo-dark"] .gs-code{
 }
 html[data-theme="neumo-dark"] .nav{box-shadow:0 -6px 12px rgba(0,0,0,.4);border-top:1px solid #4a4e55;}
 html[data-theme="neumo-dark"] .nav button.active{color:#1a1c1f;}
-html[data-theme="neumo-dark"] .nav button.active .tab-pill{
+html[data-theme="neumo-dark"] .nav-ind-pill{
   box-shadow:3px 4px 7px rgba(0,0,0,.45), -3px -3px 6px rgba(255,255,255,.06);
 }
-html[data-theme="neumo-dark"] .nav button.active::before{display:none;}
+html[data-theme="neumo-dark"] .nav-ind-bar{display:none;}
 html[data-theme="neumo-dark"] .kpi .val{font-weight:800;color:#eceef1;}
 html[data-theme="neumo-dark"] .alert-card{box-shadow:var(--tile-shadow);border:1px solid #4a4e55;background:#2c2e33;}
 html[data-theme="neumo-dark"] .stat-line,html[data-theme="neumo-dark"] .hist-item,html[data-theme="neumo-dark"] .alert-item,
@@ -1118,11 +1122,11 @@ html[data-theme="neon"] details.tax-fold > summary .hint{
 html[data-theme="neon"] .kpi .val{
   text-shadow:0 0 6px color-mix(in srgb, var(--tube, var(--amber)) 45%, transparent);
 }
-html[data-theme="neon"] .nav button.active .tab-pill{
+html[data-theme="neon"] .nav-ind-pill{
   box-shadow:0 0 6px var(--tab), 0 0 14px color-mix(in srgb,var(--tab) 55%, transparent), inset 0 0 0 1px rgba(255,255,255,.28);
   border-radius:12px;
 }
-html[data-theme="neon"] .nav button.active::before{display:none;}
+html[data-theme="neon"] .nav-ind-bar{display:none;}
 html[data-theme="neon"] .nav button[data-page="set"].active{color:#0a0908;}
 html[data-theme="neon"] .beta-badge{
   box-shadow:0 0 6px rgba(46,200,212,.35);
@@ -1427,7 +1431,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.25</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.26</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1444,6 +1448,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
   <section class="page" id="page-set"></section>
 </div>
 <nav class="nav" id="nav" aria-label="メイン">
+  <div class="nav-ind" id="navInd" aria-hidden="true"><span class="nav-ind-bar"></span><span class="nav-ind-pill"></span></div>
   <button type="button" class="active" data-page="home"><span class="tab-pill"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7"/><path d="M6 9.8V20h12V9.8"/><path d="M10 20v-6h4v6"/></svg></span><span class="tab-lbl">ホーム</span></span></button>
   <button type="button" data-page="input"><span class="tab-pill"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><span class="tab-lbl">入力</span></span></button>
   <button type="button" data-page="hist"><span class="tab-pill"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="7.5"/><path d="M12 9.5V13l2.6 1.6"/><path d="M9 3.6h6"/></svg></span><span class="tab-lbl">履歴</span></span></button>
@@ -6382,31 +6387,110 @@ function renderTabContent(id){
   else if(id==='alert') renderAlert();
   else if(id==='set') renderSet();
 }
+/* ---------- bottom tab highlight (follows the slide) ---------- */
+const navInd = { el:null, pill:null, bar:null };
+function navBtn(id){ return document.querySelector('#nav button[data-page="'+id+'"]'); }
+function navIndEls(){
+  if(!navInd.el){
+    navInd.el = document.getElementById('navInd');
+    if(navInd.el){
+      navInd.pill = navInd.el.querySelector('.nav-ind-pill');
+      navInd.bar = navInd.el.querySelector('.nav-ind-bar');
+    }
+  }
+  return !!(navInd.el && navInd.pill && navInd.bar);
+}
+function navGeom(id){
+  const nv = document.getElementById('nav');
+  const b = navBtn(id);
+  if(!nv || !b) return null;
+  const pill = b.querySelector('.tab-pill') || b;
+  const nr = nv.getBoundingClientRect(), br = b.getBoundingClientRect(), pr = pill.getBoundingClientRect();
+  const ox = nr.left + nv.clientLeft, oy = nr.top + nv.clientTop;
+  return {
+    pl: pr.left - ox, pt: pr.top - oy, pw: pr.width, ph: pr.height,
+    bl: br.left - ox + br.width*0.18, bw: br.width*0.64, bt: br.top - oy,
+    tab: getComputedStyle(b).getPropertyValue('--tab').trim()
+  };
+}
+function navIndPlace(a, b, t){
+  const L = function(x, y){ return x + (y - x) * t; };
+  const p = navInd.pill, r = navInd.bar;
+  p.style.top = a.pt + 'px';
+  p.style.height = a.ph + 'px';
+  p.style.width = L(a.pw, b.pw) + 'px';
+  p.style.transform = 'translate3d(' + L(a.pl, b.pl) + 'px,0,0)';
+  r.style.top = a.bt + 'px';
+  r.style.width = L(a.bw, b.bw) + 'px';
+  r.style.transform = 'translate3d(' + L(a.bl, b.bl) + 'px,0,0)';
+  navInd.el.style.setProperty('--tab', t <= 0 ? a.tab : (t >= 1 ? b.tab : 'color-mix(in oklab, ' + b.tab + ' ' + (t*100).toFixed(1) + '%, ' + a.tab + ')'));
+}
+function syncNavInd(){
+  if(!navIndEls()) return;
+  const g = navGeom(state.tab);
+  if(!g || !(g.pw > 0)) return;
+  const nv = document.getElementById('nav');
+  if(nv) nv.classList.remove('is-anim');
+  navIndPlace(g, g, 0);
+  navInd.el.classList.add('ready');
+}
+function navSwipeBegin(fromId, toId){
+  if(!navIndEls()) return null;
+  const fb = navBtn(fromId), tb = navBtn(toId);
+  const a = navGeom(fromId), b = navGeom(toId);
+  if(!fb || !tb || !a || !b || !(a.pw > 0)) return null;
+  fb.style.color = ''; tb.style.color = '';
+  const col = function(el){ return getComputedStyle(el).color; };
+  const hadF = fb.classList.contains('active'), hadT = tb.classList.contains('active');
+  fb.classList.add('active'); tb.classList.remove('active');
+  const fromOn = col(fb), toOff = col(tb);
+  fb.classList.remove('active'); tb.classList.add('active');
+  const fromOff = col(fb), toOn = col(tb);
+  fb.classList.toggle('active', hadF); tb.classList.toggle('active', hadT);
+  const ctx = { a:a, b:b, fb:fb, tb:tb, fromOn:fromOn, fromOff:fromOff, toOn:toOn, toOff:toOff, t:0 };
+  const nv = document.getElementById('nav');
+  if(nv) nv.classList.remove('is-anim');
+  navSwipeSet(ctx, 0);
+  return ctx;
+}
+function navSwipeSet(ctx, t){
+  if(!ctx) return;
+  t = Math.max(0, Math.min(1, t));
+  ctx.t = t;
+  navIndPlace(ctx.a, ctx.b, t);
+  // 文字色は中間で一気に切り替えて、動くハイライトの上でも読めるようにする
+  const e = t*t*(3 - 2*t);
+  const pct = (e*100).toFixed(1) + '%';
+  ctx.fb.style.color = 'color-mix(in oklab, ' + ctx.fromOff + ' ' + pct + ', ' + ctx.fromOn + ')';
+  ctx.tb.style.color = 'color-mix(in oklab, ' + ctx.toOn + ' ' + pct + ', ' + ctx.toOff + ')';
+}
+function navSwipeSettle(ctx, t){
+  if(!ctx) return;
+  const nv = document.getElementById('nav');
+  if(nv) nv.classList.add('is-anim');
+  navSwipeSet(ctx, t);
+}
+function navSwipeClear(){
+  const nv = document.getElementById('nav');
+  if(!nv) return;
+  nv.classList.remove('is-anim');
+  nv.querySelectorAll('button').forEach(function(b){ b.style.color = ''; });
+}
+
 function cleanupTabPanes(){
   if(tabSwipe && tabSwipe.raf) cancelAnimationFrame(tabSwipe.raf);
   document.querySelectorAll('.page').forEach(function(p){
     p.classList.remove('is-swipe-pane','is-swipe-animating');
-    p.style.transform = '';
-    p.style.transition = '';
-    p.style.willChange = '';
-    p.style.top = '';
-    p.style.left = '';
-    p.style.right = '';
-    p.style.bottom = '';
-    p.style.width = '';
-    p.style.height = '';
-    p.style.position = '';
-    p.style.zIndex = '';
-    p.style.display = '';
-    p.style.overflow = '';
-    p.style.pointerEvents = '';
-    p.style.background = '';
+    ['transform','transition','willChange','top','left','right','bottom','width','height','position','zIndex','display','overflow','pointerEvents','background','boxSizing','padding'].forEach(function(k){ p.style[k] = ''; });
   });
   const app = document.getElementById('app');
   if(app) app.classList.remove('is-tab-swiping');
   document.documentElement.classList.remove('tab-swipe-lock');
   document.body.classList.remove('tab-swipe-lock');
+  navSwipeClear();
+  syncNavInd();
 }
+// スライド用の一時ペインは、止まったあとの通常配置（#app の余白・幅・背景）と同じ見た目にそろえる。
 function layoutSwipePanes(fromId, toId, dir){
   const app = document.getElementById('app');
   const from = tabPageEl(fromId);
@@ -6414,13 +6498,22 @@ function layoutSwipePanes(fromId, toId, dir){
   if(!app || !from || !to) return null;
   const bar = document.querySelector('header.topbar');
   const nav = document.querySelector('.nav');
-  const top = bar ? Math.round(bar.getBoundingClientRect().bottom) : 0;
-  const bot = nav ? Math.round(nav.getBoundingClientRect().top) : window.innerHeight;
+  const scrollY = window.pageYOffset || 0;
+  const top = bar ? bar.getBoundingClientRect().bottom : 0;
+  const bot = nav ? nav.getBoundingClientRect().top : window.innerHeight;
   const ar = app.getBoundingClientRect();
   const cs = getComputedStyle(app);
-  const left = Math.round(ar.left + (parseFloat(cs.paddingLeft)||0));
-  const width = Math.round(app.clientWidth);
+  const padT = parseFloat(cs.paddingTop) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padB = parseFloat(cs.paddingBottom) || 0;
+  const bodyPadB = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+  const navH = nav ? nav.getBoundingClientRect().height : 0;
+  const gapB = padB + Math.max(0, bodyPadB - navH);
+  const left = ar.left;
+  const width = ar.width;
   const height = Math.max(1, bot - top);
+  const navCtx = navSwipeBegin(fromId, toId);
   app.classList.add('is-tab-swiping');
   document.documentElement.classList.add('tab-swipe-lock');
   document.body.classList.add('tab-swipe-lock');
@@ -6428,21 +6521,24 @@ function layoutSwipePanes(fromId, toId, dir){
     p.classList.add('is-swipe-pane');
     p.style.display = 'block';
     p.style.position = 'fixed';
+    p.style.boxSizing = 'border-box';
     p.style.left = left+'px';
     p.style.right = 'auto';
     p.style.top = top+'px';
     p.style.width = width+'px';
     p.style.height = height+'px';
-    p.style.overflow = 'auto';
+    p.style.padding = padT+'px '+padR+'px '+gapB+'px '+padL+'px';
+    p.style.overflow = 'hidden auto';
     p.style.willChange = 'transform';
     p.style.transition = 'none';
     p.style.pointerEvents = 'none';
-    p.style.background = 'var(--asphalt)';
     p.style.zIndex = i===0 ? '7' : '6';
   });
   from.style.transform = 'translate3d(0,0,0)';
   to.style.transform = 'translate3d('+(dir>0?width:-width)+'px,0,0)';
-  return { from:from, to:to, width:width, dir:dir, fromId:fromId, toId:toId };
+  from.scrollTop = scrollY;
+  to.scrollTop = 0;
+  return { from:from, to:to, width:width, dir:dir, fromId:fromId, toId:toId, scrollY:scrollY, nav:navCtx };
 }
 function applySwipeX(panes, dx){
   if(!panes) return;
@@ -6452,6 +6548,7 @@ function applySwipeX(panes, dx){
   if(panes.dir<0 && x<0) x = x*0.28;
   panes.from.style.transform = 'translate3d('+x+'px,0,0)';
   panes.to.style.transform = 'translate3d('+(x + (panes.dir>0?w:-w))+'px,0,0)';
+  if(panes.nav) navSwipeSet(panes.nav, ((panes.dir>0 ? -x : x)) / w);
 }
 function settleSwipePanes(panes, commit, onDone){
   if(!panes){ if(onDone) onDone(); return; }
@@ -6466,6 +6563,7 @@ function settleSwipePanes(panes, commit, onDone){
   panes.to.classList.add('is-swipe-animating');
   panes.from.style.transform = 'translate3d('+endX+'px,0,0)';
   panes.to.style.transform = 'translate3d('+(endX + (panes.dir>0?w:-w))+'px,0,0)';
+  if(panes.nav) navSwipeSettle(panes.nav, commit ? 1 : 0);
   let done=false;
   function finish(){
     if(done || gen!==tabSwipeGen) return;
@@ -6475,6 +6573,13 @@ function settleSwipePanes(panes, commit, onDone){
   panes.to.addEventListener('transitionend', finish, {once:true});
   panes.from.addEventListener('transitionend', finish, {once:true});
   setTimeout(finish, 280);
+}
+// 切替先を「確定後と同じ状態」で描画する（編集中IDなどは確定時にクリアされるため）
+function renderTabContentFor(id){
+  const se = state.editId, sp = state.inputPreset;
+  state.editId = null; state.inputPreset = null;
+  try{ renderTabContent(id); }
+  finally{ state.editId = se; state.inputPreset = sp; }
 }
 
 let tabSwipe = null;
@@ -6533,9 +6638,9 @@ function bindTabSwipe(){
       const dir = dx < 0 ? 1 : -1;
       const dest = neighborTab(dir);
       if(!dest){ tracking=false; return; }
-      renderTabContent(dest);
       const panes = layoutSwipePanes(state.tab, dest, dir);
       if(!panes){ tracking=false; return; }
+      renderTabContentFor(dest);
       bumpTabSwipeGen();
       tabSwipe = Object.assign({ dest:dest, dx:0, raf:0 }, panes);
       armed = true;
@@ -6566,9 +6671,10 @@ function bindTabSwipe(){
         tabAnim = false;
         cleanupTabPanes();
         if(commit){
-          if(dest!=='input'){ state.editId=null; state.inputPreset=null; }
-          else if(state.tab!=='input'){ state.editId=null; state.inputPreset=null; }
-          go(dest);
+          state.editId=null; state.inputPreset=null;
+          go(dest, { prerendered:true });
+        } else if(panes.scrollY > 0){
+          window.scrollTo(0, panes.scrollY);
         }
       });
       armed = false;
@@ -6634,10 +6740,10 @@ function go(page, opts){
   const from = state.tab;
   const animate = !!(opts.animate && from && page && page!==from && !reduceMotion() && !scDrag);
   if(animate){
-    renderTabContent(page);
     const dir = (TAB_ORDER.indexOf(page) > TAB_ORDER.indexOf(from)) ? 1 : -1;
     const panes = layoutSwipePanes(from, page, dir);
     if(panes){
+      renderTabContent(page);
       bumpTabSwipeGen();
       state.tab = page;
       document.body.setAttribute('data-tab', page);
@@ -6651,7 +6757,9 @@ function go(page, opts){
             tabAnim = false;
             cleanupTabPanes();
             document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.id==='page-'+page); });
-            renderAll();
+            updateSyncBtn();
+            updateAlertBadge();
+            syncNavInd();
             window.scrollTo(0,0);
           });
         });
@@ -6663,7 +6771,9 @@ function go(page, opts){
   document.body.setAttribute('data-tab', page);
   document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.id==='page-'+page); });
   document.querySelectorAll('.nav button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-page')===page); });
-  renderAll();
+  if(opts.prerendered){ updateSyncBtn(); updateAlertBadge(); }
+  else renderAll();
+  syncNavInd();
   window.scrollTo(0,0);
 }
 document.getElementById('nav').addEventListener('click', function(e){
@@ -6861,6 +6971,7 @@ window.KakeLog = {
   trySwitchTabBySwipe: trySwitchTabBySwipe,
   isSwipeIgnoredTarget: isSwipeIgnoredTarget,
   previewTabSwipe: previewTabSwipe,
+  syncNavInd: syncNavInd,
   endTabSwipePreview: endTabSwipePreview,
   isHorizontallyScrollable: isHorizontallyScrollable,
   shortcutIconSize: shortcutIconSize,
@@ -6899,7 +7010,16 @@ loadState();
 fillVehicleSelect();
 bindTabSwipe();
 loadCodeGs();
+window.addEventListener('resize', syncNavInd);
+window.addEventListener('orientationchange', syncNavInd);
+window.addEventListener('load', syncNavInd);
+if(typeof ResizeObserver === 'function'){
+  const _navRo = new ResizeObserver(function(){ if(!tabSwipe && !tabAnim) syncNavInd(); });
+  const _navEl = document.getElementById('nav');
+  if(_navEl) _navRo.observe(_navEl);
+}
 go('home');
+requestAnimationFrame(syncNavInd);
 initBanners().then(function(){ if(state.tab==='home') renderHome(); }).catch(function(){});
 
 if('serviceWorker' in navigator && location.protocol!=='file:'){
