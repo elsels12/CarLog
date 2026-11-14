@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.21</title>
+<title>CarLog beta 0.9.22</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -119,6 +119,10 @@ body[data-tab="set"]{--screen:var(--tab-set);}
 #scGrid .sc-tile.sc-l .icn{width:48px;height:48px;}
 #scGrid .sc-tile.sc-l .icn svg{width:44px;height:44px;}
 #scGrid .sc-tile.sc-l .lbl{font-size:13px;font-weight:800;line-height:1.25;}
+#scGrid .sc-tile.sc-w{grid-column:span 2;grid-row:span 1;flex-direction:row;justify-content:flex-start;align-items:center;padding:3px 8px 3px 6px;gap:6px;}
+#scGrid .sc-tile.sc-w .icn{width:18px;height:18px;flex-shrink:0;}
+#scGrid .sc-tile.sc-w .icn svg{width:16px;height:16px;}
+#scGrid .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:10px;font-weight:700;line-height:1.2;letter-spacing:0;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;word-break:normal;}
 .sc-edit{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--hairline);font-size:13px;}
 .sc-edit .nm{flex:1;font-weight:600;}
 .sc-edit .move{display:flex;gap:4px;}
@@ -422,6 +426,10 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 #tilePreview .sc-tile{width:76px;min-height:76px;}
 #tilePreview .sc-tile.sc-s{width:36px;min-height:36px;height:36px;padding:3px 2px;}
 #tilePreview .sc-tile.sc-l{width:156px;min-height:156px;}
+#tilePreview .sc-tile.sc-w{width:76px;min-height:36px;height:36px;flex-direction:row;justify-content:flex-start;align-items:center;padding:3px 8px;gap:6px;}
+#tilePreview .sc-tile.sc-w .icn{width:18px;height:18px;flex-shrink:0;}
+#tilePreview .sc-tile.sc-w .icn svg{width:16px;height:16px;}
+#tilePreview .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:10px;font-weight:700;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .sc-edit .look-btn{flex-shrink:0;}
 
 /* per-section accents: faint wash + left rail, dark theme, AA contrast */
@@ -1246,29 +1254,88 @@ html[data-theme] #page-input input[type=date]#fDate{
   min-height:44px;font-size:16px;padding:8px 12px;
   border-width:2px;border-radius:10px;box-sizing:border-box;
 }
-html[data-theme] #page-input input[type=number],
-html[data-theme] #page-input select#fSub{
+html[data-theme] #page-input input[type=number]{
   min-height:52px;font-size:18px;padding:12px 14px;
   border-width:2px;border-radius:10px;box-sizing:border-box;
   font-variant-numeric:tabular-nums;width:100%;
 }
+html[data-theme] #page-input .sub-select-wrap{
+  position:relative;margin:0 0 8px;
+}
+html[data-theme] #page-input .sub-select-wrap .chev{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  color:var(--paper-dim);opacity:.55;pointer-events:none;
+}
+html[data-theme] #page-input .sub-select-wrap .chev svg{width:18px;height:18px;display:block;}
+html[data-theme] #page-input .sub-select-wrap:has(select[size]:not([size="1"])) .chev{display:none;}
+html[data-theme] #page-input select#fSub{
+  -webkit-appearance:none;appearance:none;
+  display:block;width:100%;min-height:52px;height:52px;
+  font-size:16px;font-weight:700;line-height:1.2;
+  padding:10px 40px 10px 14px;
+  border:2px solid var(--input-line);border-radius:10px;box-sizing:border-box;
+  background:var(--input-bg);color:var(--input-fg);background-image:none;
+  font-variant-numeric:tabular-nums;
+}
+html[data-theme] #page-input select#fSub:focus,
+html[data-theme] #page-input select#fSub:focus-visible{
+  outline:none;border-color:var(--amber);
+}
+html[data-theme] #page-input select#fSub[size]:not([size="1"]){
+  height:auto;min-height:52px;padding-right:14px;
+}
 html[data-theme] #page-input .cats{gap:8px;}
-html[data-theme] #page-input #catBtns{
+html[data-theme] #page-input #catBtns,
+html[data-theme] #modal.cat-sheet #catBtns{
   display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:dense;gap:5px;
 }
-html[data-theme] #page-input #catBtns button{
+html[data-theme] #page-input #catBtns button,
+html[data-theme] #modal.cat-sheet #catBtns button{
   min-height:44px;height:44px;padding:4px 5px;font-size:13px;font-weight:700;line-height:1.2;
   border-radius:10px;border-width:2px;box-sizing:border-box;
   display:flex;align-items:center;justify-content:center;text-align:center;
   white-space:normal;overflow:hidden;max-width:100%;min-width:0;
   -webkit-line-clamp:2;line-clamp:2;
 }
+html[data-theme] #page-input .cat-select{
+  display:flex;align-items:center;gap:10px;width:100%;
+  min-height:52px;padding:10px 14px;margin:0 0 8px;
+  border:2px solid var(--input-line);border-radius:10px;box-sizing:border-box;
+  background:var(--input-bg);color:var(--input-fg);
+  font-size:16px;font-weight:700;text-align:left;line-height:1.2;
+}
+html[data-theme] #page-input .cat-select:focus,
+html[data-theme] #page-input .cat-select:focus-visible{
+  outline:none;border-color:var(--amber);
+}
+html[data-theme] #page-input .cat-select .icn{
+  width:28px;height:28px;flex-shrink:0;color:var(--amber);
+  display:flex;align-items:center;justify-content:center;
+}
+html[data-theme] #page-input .cat-select .icn svg{width:24px;height:24px;display:block;}
+html[data-theme] #page-input .cat-select .lbl{
+  flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+html[data-theme] #page-input .cat-select .chev{
+  flex-shrink:0;width:18px;height:18px;display:flex;align-items:center;justify-content:center;
+  color:var(--paper-dim);opacity:.55;
+}
+html[data-theme] #page-input .cat-select .chev svg{width:18px;height:18px;display:block;}
+#modal.cat-sheet{transition:none;animation:none;}
+#modal.cat-sheet .cat-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;}
+#modal.cat-sheet .cat-sheet-head h3{margin:0;flex:1;min-width:0;}
+#modal.cat-sheet .cat-sheet-close{
+  flex-shrink:0;width:36px;height:36px;padding:0;border:0;border-radius:8px;
+  background:transparent;color:var(--paper);font-size:22px;font-weight:500;line-height:1;
+}
 
 
 .grade-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px;}
 html[data-theme] #page-input .grade-chips button{
-  flex:1 1 0;min-height:48px;padding:12px 14px;font-size:15px;font-weight:700;
+  flex:1 1 0;min-width:0;min-height:48px;padding:10px 6px;font-size:13px;font-weight:700;
   border-radius:12px;border-width:2px;box-sizing:border-box;
+  white-space:nowrap;overflow:hidden;text-overflow:clip;line-height:1.2;
 }
 .op-row{margin:6px 0 8px;}
 .op-row input[type=range]{width:100%;accent-color:var(--amber);}
@@ -1283,7 +1350,7 @@ html[data-theme] #page-input .grade-chips button{
 .help-topic-body p{margin:0 0 10px;}
 .help-topic-body ol{margin:0 0 10px;padding-left:1.3em;}
 .help-topic-body li{margin:0 0 6px;}
-#modal.help-modal, #modal.int-editor, #modal.repl-sheet{transition:none;animation:none;}
+#modal.help-modal, #modal.int-editor, #modal.repl-sheet, #modal.cat-sheet{transition:none;animation:none;}
 
 #page-alert .add-int-row{margin-top:12px;}
 #vehCard.has-banner{padding-top:0;overflow:hidden;}
@@ -1324,7 +1391,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.21</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.22</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1568,6 +1635,7 @@ function normalizeShortcutIconSize(v){
   v = String(v==null?'':v).toLowerCase();
   if(v==='s' || v==='small' || v==='小') return 's';
   if(v==='l' || v==='large' || v==='大') return 'l';
+  if(v==='w' || v==='wide' || v==='sw' || v==='横長' || v==='小横長') return 'w';
   if(v==='m' || v==='medium' || v==='中' || v==='') return 'm';
   return 'm';
 }
@@ -2100,7 +2168,7 @@ function shortcutSvg(id){
     parking: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 16.5V7.5h3.4a2.7 2.7 0 1 1 0 5.4H9"/>',
     maint: '<path d="M14.7 6.2a3.5 3.5 0 0 0-4.5 4.5L5.4 15.5a2 2 0 1 0 2.8 2.8l4.8-4.8a3.5 3.5 0 0 0 4.5-4.5l-2.3 2.3-1.7-1.7z"/>',
     tire: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6"/><path d="M12 4v2.2M12 17.8V20M4 12h2.2M17.8 12H20"/>',
-    circuit: '<rect x="4.5" y="7" width="15" height="10" rx="4.2"/>',
+    circuit: '<rect x="3.5" y="6" width="17" height="12" rx="6"/><rect x="6.2" y="8.6" width="11.6" height="6.8" rx="3.3"/><path d="M12 6v2.6"/>',
     brake: '<circle cx="12" cy="12" r="6.2"/><circle cx="12" cy="12" r="2"/><path d="M4.2 8.2v7.6M19.8 8.2v7.6"/>',
     camera: '<path d="M4 9h2.8l1.4-2h7.6l1.4 2H20a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-8A1.5 1.5 0 0 1 4 9z"/><circle cx="12" cy="14.2" r="3"/>',
     battery: '<rect x="3.5" y="7.5" width="15.5" height="9" rx="2"/><path d="M19 10.5v3"/>',
@@ -2316,7 +2384,7 @@ function shortcutTileHtml(sc, attrs){
   const id = sc.id || '';
   const label = sc.label || sc.category || '';
   const icon = sc.icon || sc.id || 'star';
-  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : ' sc-m');
+  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : (look.size==='w' ? ' sc-w' : ' sc-m'));
   const extra = (attrs.className ? ' '+attrs.className : '') + sizeClass;
   const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'" data-sc-size="'+look.size+'"');
   const op = look.opacity;
@@ -2835,7 +2903,7 @@ const HELP_TOPICS = [
   },
   { id:'input', title:'給油・経費の入力', body:
     '<p>入力タブ、またはホームのショートカットから記録します。</p>'+
-    '<ol><li>日付と費目（給油、オイル、車検など）を選びます。</li>'+
+    '<ol><li>日付と費目（給油、オイル、車検など）を選びます。費目は大きなボタンをタップすると一覧が開き、選ぶとすぐに閉じます。</li>'+
     '<li>給油では、合計金額（円）を入れて次へ（Enter）を押すと、リッター、走行距離の順に進みます。金額とリッター、単価のうち2つを入れると、残りは自動で出ます。空や0にも戻せます。</li>'+
     '<li>油種（レギュラー・ハイオク・軽油）は任意です。選ばなくても保存できます。同じ車では、前回選んだ油種を覚えています。</li>'+
     '<li>満タンにチェックすると、燃費（km/L）の計算に使います。</li>'+
@@ -2851,7 +2919,7 @@ const HELP_TOPICS = [
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大・横長。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。横長は中と同じ幅・小と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・完了）', body:
@@ -2868,7 +2936,7 @@ const HELP_TOPICS = [
     '<ol><li>期限の1か月前から「車検を受けられる期間」が始まります。</li>'+
     '<li>その期間が始まる1か月前に「お知らせ」、7日前に「注意」、期間中は「要対応」、期限を過ぎると「超過」と出ます。</li>'+
     '<li>受けられる期間に入ると（期限後も）、点検カードに「予約完了」と「完了」が出ます。期間前はバーだけです。</li>'+
-    '<li>「予約完了」で予約日を選び、警告の代わりに「予約済」と予約日が出ます。もう一度開いて日付を直すか「予約取消」できます。車両の編集からも取り消せます。</li>'+
+    '<li>「予約完了」で予約日を選び、警告の代わりに「予約済」と予約日が出ます。予約は完了ではないので、完了するまでホームのアラートと点検タブの印に残ります。もう一度開いて日付を直すか「予約取消」できます。車両の編集からも取り消せます。</li>'+
     '<li>「完了」で新しい車検期限を入れます（2年後の同じ月を目安に出します。店によって違うので、車検証の日付を優先してください）。予約は消えます。</li>'+
     '<li>該当するときは、点検タブに印が付きます。通知の送信やサーバーは使いません。</li></ol>'
   },
@@ -3392,6 +3460,9 @@ function alertsFor(veh){
       message: sh.message,
       dueDate: sh.dueDate,
       remainDays: sh.remainDays,
+      windowOpen: sh.windowOpen,
+      reserved: !!sh.reserved,
+      reservedDate: sh.reservedDate || '',
       last: null,
       kind: 'shaken'
     });
@@ -3399,7 +3470,7 @@ function alertsFor(veh){
   return list;
 }
 function isActiveAlert(a){
-  return !!a && (a.status==='overdue' || a.status==='action' || a.status==='caution' || a.status==='soon' || a.status==='info');
+  return !!a && (a.status==='overdue' || a.status==='action' || a.status==='reserved' || a.status==='caution' || a.status==='soon' || a.status==='info');
 }
 function updateAlertBadge(){
   const btn = document.querySelector('nav.nav button[data-page="alert"]');
@@ -3480,7 +3551,13 @@ function fitShortcutLabels(root){
     t.classList.remove('sc-icon-only');
     const lbl = t.querySelector('.lbl');
     if(!lbl) return;
-    if(lbl.scrollWidth > lbl.clientWidth + 0.5) t.classList.add('sc-icon-only');
+    const text = (lbl.textContent || '').trim();
+    if(text && !t.getAttribute('aria-label')) t.setAttribute('aria-label', text);
+    if(!text){ t.classList.add('sc-icon-only'); return; }
+    const fs = parseFloat(getComputedStyle(lbl).fontSize) || 8;
+    const tight = lbl.scrollWidth + 6 > lbl.clientWidth;
+    const cramped = fs < 9 && text.length >= 3;
+    if(tight || cramped) t.classList.add('sc-icon-only');
   });
 }
 function scheduleFitShortcutLabels(){
@@ -3520,7 +3597,7 @@ function renderHome(){
   const ecoMap = C.fuelEconomyByRecordId(recs, vname);
   const tax = taxBundle(veh);
   const alerts = alertsFor(veh);
-  const hotRank = { overdue:0, action:1, caution:2, soon:3, info:4 };
+  const hotRank = { overdue:0, action:1, reserved:2, caution:3, soon:4, info:5 };
   const hot = alerts.filter(isActiveAlert).slice().sort(function(a,b){ return (hotRank[a.status]||9) - (hotRank[b.status]||9); });
   const odo = currentOdo(veh);
 
@@ -3608,6 +3685,7 @@ function intervalSettingText(it){
 
 const ICO_PENCIL = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
 const ICO_CHEVRON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>';
+const ICO_CHEVRON_DOWN = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg>';
 function alertCardVariant(opts){
   if(opts && (opts.variant==='A' || opts.variant==='B')) return opts.variant;
   const v = (typeof window!=='undefined' && window.__ALERT_CARD_VARIANT) || 'A';
@@ -3886,11 +3964,12 @@ function renderInput(){
     '<div class="card tint tint-input">'+
     '<h2>'+(rec?'記録を編集':'新規入力')+(rec?' <span class="hint">ID '+escapeHtml(rec.id)+'</span>':'')+'</h2>'+
     '<label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'">'+
-    '<label class="f">カテゴリ</label><div class="cats" id="catBtns"></div>'+
+    '<label class="f">カテゴリ</label>'+
+    '<button type="button" class="cat-select" id="catSelect" aria-haspopup="dialog" aria-expanded="false"></button>'+
     '<input type="hidden" id="fCat" value="'+escapeHtml(cat)+'">'+
     '<input type="hidden" id="fCatId" value="'+escapeHtml(catId)+'">'+
     '<input type="hidden" id="fMaintId" value="'+escapeHtml((rec&&rec.maintenanceItemId)||(preset&&preset.maintenanceItemId)||'')+'">'+
-    '<label class="f">内訳</label><select id="fSub"></select>'+
+    '<label class="f">内訳</label><div class="sub-select-wrap"><select id="fSub"></select><span class="chev" aria-hidden="true">'+ICO_CHEVRON_DOWN+'</span></div>'+
     '<div class="grid2">'+
       '<div><label class="f">合計金額（円）<span class="auto-tag" id="tag-amount" hidden>自動</span></label><input type="number" id="fAmt" inputmode="numeric" enterkeyhint="next" value="'+escapeHtml(rec&&rec.amount!=null?rec.amount:'')+'"></div>'+
       '<div><label class="f">走行距離（km）</label><input type="number" id="fOdo" inputmode="decimal" enterkeyhint="done" value="'+escapeHtml(odo)+'"></div>'+
@@ -3902,7 +3981,8 @@ function renderInput(){
     (rec?'<button type="button" class="btn danger" id="btnDel">削除</button>':'')+
     '<button type="button" class="btn ghost" id="btnReset">クリア</button></div>'+
     '</div>';
-  buildCatBtns(cat, rec);
+  updateCatSelect();
+  document.getElementById('catSelect').onclick = function(){ openCatSheet(); };
   fillSubs(cat, presetSub, catId);
   fillFuelExtra(cat, rec);
   fillShakenExtra(cat, rec, veh);
@@ -3927,8 +4007,62 @@ function chipDisplayLabel(c){
   const full = (c && (c.label || c.id)) || '';
   return CHIP_SHORT_LABELS[full] || CHIP_SHORT_LABELS[c && c.id] || full;
 }
+function categoryIconId(c){
+  if(c && c.icon) return c.icon;
+  const map = {
+    '燃費':'fuel','オイル':'oil','車検':'doc','税金':'bag','保険':'leaf',
+    '定期点検':'gauge','メンテナンス':'maint','修理':'bolt','タイヤ':'tire',
+    'カスタム費用':'star','サーキット':'circuit','洗車・コーティング・ケミカル':'wash',
+    '駐車場・車庫代':'parking','交通費':'highway','ローン・車両代':'key','罰金・反則金':'doc'
+  };
+  return map[c && c.id] || 'star';
+}
+function selectedCategoryDef(){
+  const cat = (document.getElementById('fCat')&&document.getElementById('fCat').value) || '燃費';
+  const cid = (document.getElementById('fCatId')&&document.getElementById('fCatId').value) || '';
+  return findCatDef(cat, cid) || { id:cat, label:C.categoryLabel(cat)||cat, customId:cid };
+}
+function updateCatSelect(){
+  const btn = document.getElementById('catSelect');
+  if(!btn) return;
+  const def = selectedCategoryDef();
+  const name = def.label || def.id || '';
+  btn.innerHTML = '<span class="icn">'+shortcutSvg(categoryIconId(def))+'</span><span class="lbl">'+escapeHtml(name)+'</span><span class="chev" aria-hidden="true">'+ICO_CHEVRON_DOWN+'</span>';
+  btn.setAttribute('aria-label', 'カテゴリ '+name);
+  btn.setAttribute('aria-expanded', 'false');
+}
+function openCatSheet(){
+  const rec = state.editId ? state.records.find(function(r){ return r.id===state.editId; }) : null;
+  const cat = (document.getElementById('fCat')&&document.getElementById('fCat').value) || '燃費';
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.className = 'modal repl-sheet cat-sheet';
+  box.innerHTML =
+    '<div class="cat-sheet-head">'+
+      '<h3 id="catSheetTitle">カテゴリ</h3>'+
+      '<button type="button" class="cat-sheet-close" id="catSheetClose" aria-label="閉じる">×</button>'+
+    '</div>'+
+    '<div class="cats" id="catBtns"></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('catSheetClose').onclick = closeModal;
+  const sel = document.getElementById('catSelect');
+  if(sel) sel.setAttribute('aria-expanded', 'true');
+  buildCatBtns(cat, rec);
+}
+function applyInputCategory(cat, cid){
+  document.getElementById('fCat').value = cat;
+  document.getElementById('fCatId').value = cid || '';
+  fillSubs(cat, null, cid);
+  const cur = state.editId ? state.records.find(function(r){ return r.id===state.editId; }) : null;
+  fillFuelExtra(cat, cur);
+  fillShakenExtra(cat, cur, currentVehicle());
+  bindInputEnterOrder();
+  updateCatSelect();
+}
 function buildCatBtns(active, rec){
   const box = document.getElementById('catBtns');
+  if(!box) return;
   const keepId = (rec && rec.categoryId) || '';
   const vis = visibleCategories({ includeHiddenName: active, includeHiddenId: keepId });
   const activeId = (rec && rec.categoryId) || (document.getElementById('fCatId') && document.getElementById('fCatId').value) || '';
@@ -3944,14 +4078,10 @@ function buildCatBtns(active, rec){
     if(!b) return;
     const cat = b.getAttribute('data-cat');
     const cid = b.getAttribute('data-cid') || '';
-    document.getElementById('fCat').value = cat;
-    document.getElementById('fCatId').value = cid;
     Array.prototype.forEach.call(box.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
-    fillSubs(cat, null, cid);
-    const cur = state.editId ? state.records.find(function(r){ return r.id===state.editId; }) : null;
-    fillFuelExtra(cat, cur);
-    fillShakenExtra(cat, cur, currentVehicle());
-    bindInputEnterOrder();
+    applyInputCategory(cat, cid);
+    const sheet = document.getElementById('modal');
+    if(sheet && sheet.classList.contains('cat-sheet')) closeModal();
   };
 }
 function fillSubs(cat, selected, customId){
@@ -4362,7 +4492,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。小は中の半分の幅・高さ（4つで中1つ分）、大は中2つ分の幅×2段）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大・横長。小は中の半分の幅・高さ（4つで中1つ分）、横長は中と同じ幅・小と同じ高さ、大は中2つ分の幅×2段）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -4508,14 +4638,14 @@ function deleteCustomCategory(id, opts){
 }
 function sizeSegHtml(current){
   const cur = normalizeShortcutIconSize(current) || defaultShortcutIconSize();
-  const opts = [['s','小'],['m','中'],['l','大']];
+  const opts = [['s','小'],['m','中'],['l','大'],['w','横長']];
   return '<label class="f">アイコンサイズ</label>'+
     '<div class="seg" id="cSize" role="radiogroup" aria-label="アイコンサイズ">'+
     opts.map(function(p){
       return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
     }).join('')+
     '</div>'+
-    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
+    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。横長は中と同じ幅・小と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
 }
 function readEditorSize(){
   const on = document.querySelector('#cSize button.on');
@@ -4951,6 +5081,8 @@ function closeModal(){
   if(bg){ bg.classList.remove('show'); bg.onclick=null; }
   const box = document.getElementById('modal');
   if(box){ box.className='modal'; box.innerHTML=''; }
+  const sel = document.getElementById('catSelect');
+  if(sel) sel.setAttribute('aria-expanded', 'false');
 }
 
 /* ---------- CSV ---------- */
