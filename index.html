@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.22</title>
+<title>CarLog beta 0.9.23</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -119,10 +119,14 @@ body[data-tab="set"]{--screen:var(--tab-set);}
 #scGrid .sc-tile.sc-l .icn{width:48px;height:48px;}
 #scGrid .sc-tile.sc-l .icn svg{width:44px;height:44px;}
 #scGrid .sc-tile.sc-l .lbl{font-size:13px;font-weight:800;line-height:1.25;}
-#scGrid .sc-tile.sc-w{grid-column:span 2;grid-row:span 1;flex-direction:row;justify-content:flex-start;align-items:center;padding:3px 8px 3px 6px;gap:6px;}
-#scGrid .sc-tile.sc-w .icn{width:18px;height:18px;flex-shrink:0;}
-#scGrid .sc-tile.sc-w .icn svg{width:16px;height:16px;}
-#scGrid .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:10px;font-weight:700;line-height:1.2;letter-spacing:0;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;word-break:normal;}
+#scGrid .sc-tile.sc-w{grid-column:span 2;grid-row:span 1;flex-direction:row;justify-content:flex-start;align-items:center;padding:2px 5px 2px 4px;gap:3px;}
+#scGrid .sc-tile.sc-w .icn{width:14px;height:14px;flex-shrink:0;}
+#scGrid .sc-tile.sc-w .icn svg{width:13px;height:13px;}
+#scGrid .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:9px;font-weight:700;line-height:1.15;letter-spacing:0;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:clip;word-break:normal;}
+#scGrid .sc-tile.sc-mw{grid-column:span 4;grid-row:span 2;flex-direction:row;justify-content:flex-start;align-items:center;padding:8px 12px;gap:10px;}
+#scGrid .sc-tile.sc-mw .icn{width:32px;height:32px;flex-shrink:0;}
+#scGrid .sc-tile.sc-mw .icn svg{width:30px;height:30px;}
+#scGrid .sc-tile.sc-mw .lbl{flex:1;min-width:0;font-size:14px;font-weight:800;line-height:1.25;letter-spacing:0;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:clip;word-break:normal;}
 .sc-edit{display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--hairline);font-size:13px;}
 .sc-edit .nm{flex:1;font-weight:600;}
 .sc-edit .move{display:flex;gap:4px;}
@@ -426,10 +430,14 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 #tilePreview .sc-tile{width:76px;min-height:76px;}
 #tilePreview .sc-tile.sc-s{width:36px;min-height:36px;height:36px;padding:3px 2px;}
 #tilePreview .sc-tile.sc-l{width:156px;min-height:156px;}
-#tilePreview .sc-tile.sc-w{width:76px;min-height:36px;height:36px;flex-direction:row;justify-content:flex-start;align-items:center;padding:3px 8px;gap:6px;}
-#tilePreview .sc-tile.sc-w .icn{width:18px;height:18px;flex-shrink:0;}
-#tilePreview .sc-tile.sc-w .icn svg{width:16px;height:16px;}
-#tilePreview .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:10px;font-weight:700;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+#tilePreview .sc-tile.sc-w{width:76px;min-height:36px;height:36px;flex-direction:row;justify-content:flex-start;align-items:center;padding:2px 5px 2px 4px;gap:3px;}
+#tilePreview .sc-tile.sc-w .icn{width:14px;height:14px;flex-shrink:0;}
+#tilePreview .sc-tile.sc-w .icn svg{width:13px;height:13px;}
+#tilePreview .sc-tile.sc-w .lbl{flex:1;min-width:0;font-size:9px;font-weight:700;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:clip;}
+#tilePreview .sc-tile.sc-mw{width:156px;min-height:76px;height:76px;flex-direction:row;justify-content:flex-start;align-items:center;padding:8px 12px;gap:10px;}
+#tilePreview .sc-tile.sc-mw .icn{width:32px;height:32px;flex-shrink:0;}
+#tilePreview .sc-tile.sc-mw .icn svg{width:30px;height:30px;}
+#tilePreview .sc-tile.sc-mw .lbl{flex:1;min-width:0;font-size:14px;font-weight:800;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:clip;}
 .sc-edit .look-btn{flex-shrink:0;}
 
 /* per-section accents: faint wash + left rail, dark theme, AA contrast */
@@ -452,6 +460,21 @@ details.tax-fold.tint > summary{
 }
 .sc-wrap .sc-grid{margin:0;}
 .sc-wrap{padding:8px 8px 6px;}
+.sc-tile{-webkit-touch-callout:none;}
+.sc-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:32px;margin:0 0 6px;}
+.sc-wrap.is-reorder .sc-toolbar{justify-content:space-between;}
+.sc-toolbar-title{font-size:12px;font-weight:700;color:var(--paper);}
+.sc-reorder-btn{background:none;border:0;color:var(--paper-dim);font-size:12px;font-weight:700;padding:6px 8px;min-height:32px;}
+#btnScReorderDone{flex:0 0 auto;min-width:88px;min-height:40px;padding:8px 16px;}
+.sc-wrap.is-reorder .sc-tile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.sc-placeholder{box-sizing:border-box;border:1.5px dashed var(--line);border-radius:var(--radius-tile);background:transparent;min-width:0;pointer-events:none;}
+.sc-placeholder.sc-s{grid-column:span 1;grid-row:span 1;}
+.sc-placeholder.sc-m{grid-column:span 2;grid-row:span 2;}
+.sc-placeholder.sc-w{grid-column:span 2;grid-row:span 1;}
+.sc-placeholder.sc-mw{grid-column:span 4;grid-row:span 2;}
+.sc-placeholder.sc-l{grid-column:span 4;grid-row:span 4;}
+.sc-tile.is-dragging{z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.35);margin:0;transition:none!important;animation:none!important;touch-action:none;}
+#cSize button{flex:1 1 0;min-width:0;padding:7px 2px;font-size:10px;letter-spacing:0;}
 .tint-vehicle{--_t:#5aa7e0;}
 .tint-shortcut{--_t:var(--amber);}
 .tint-month{--_t:#2dd4bf;}
@@ -1391,7 +1414,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.22</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.23</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1635,7 +1658,8 @@ function normalizeShortcutIconSize(v){
   v = String(v==null?'':v).toLowerCase();
   if(v==='s' || v==='small' || v==='小') return 's';
   if(v==='l' || v==='large' || v==='大') return 'l';
-  if(v==='w' || v==='wide' || v==='sw' || v==='横長' || v==='小横長') return 'w';
+  if(v==='mw' || v==='medium-wide' || v==='mediumwide' || v==='mwide' || v==='中横' || v==='中横長') return 'mw';
+  if(v==='w' || v==='wide' || v==='sw' || v==='横長' || v==='小横長' || v==='小横') return 'w';
   if(v==='m' || v==='medium' || v==='中' || v==='') return 'm';
   return 'm';
 }
@@ -2384,7 +2408,7 @@ function shortcutTileHtml(sc, attrs){
   const id = sc.id || '';
   const label = sc.label || sc.category || '';
   const icon = sc.icon || sc.id || 'star';
-  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : (look.size==='w' ? ' sc-w' : ' sc-m'));
+  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : (look.size==='w' ? ' sc-w' : (look.size==='mw' ? ' sc-mw' : ' sc-m')));
   const extra = (attrs.className ? ' '+attrs.className : '') + sizeClass;
   const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'" data-sc-size="'+look.size+'"');
   const op = look.opacity;
@@ -2593,6 +2617,207 @@ function enabledShortcuts(){
 function persistShortcuts(ids){
   state.settings.shortcuts = ids.slice();
   persistSettings();
+}
+
+let scReorder = false;
+let scSuppressClick = false;
+let scDrag = null;
+
+function isShortcutReorder(){ return !!scReorder; }
+function scToolbarHtml(){
+  if(scReorder){
+    return '<div class="sc-toolbar" id="scToolbar"><span class="sc-toolbar-title">並べ替え</span><button type="button" class="btn primary" id="btnScReorderDone">完了</button></div>';
+  }
+  return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-btn" id="btnScReorder">並べ替え</button></div>';
+}
+function setShortcutReorder(on){
+  scReorder = !!on;
+  if(!scReorder) endScDrag();
+  if(state.tab==='home') renderHome();
+}
+function scSpanClass(el){
+  if(!el) return 'sc-m';
+  if(el.classList.contains('sc-l')) return 'sc-l';
+  if(el.classList.contains('sc-mw')) return 'sc-mw';
+  if(el.classList.contains('sc-w')) return 'sc-w';
+  if(el.classList.contains('sc-s')) return 'sc-s';
+  return 'sc-m';
+}
+function endScDrag(){
+  if(!scDrag) return;
+  const d = scDrag;
+  scDrag = null;
+  if(d.move) document.removeEventListener('pointermove', d.move);
+  if(d.up) document.removeEventListener('pointerup', d.up);
+  if(d.up) document.removeEventListener('pointercancel', d.up);
+  try{ if(d.tile && d.ptr!=null) d.tile.releasePointerCapture(d.ptr); }catch(e){}
+  if(d.tile){
+    d.tile.classList.remove('is-dragging');
+    d.tile.style.cssText = d.prevCss || '';
+  }
+  if(d.placeholder && d.placeholder.parentNode) d.placeholder.parentNode.removeChild(d.placeholder);
+}
+function scDragRetarget(clientX, clientY, placeholder){
+  const grid = document.getElementById('scGrid');
+  if(!grid || !placeholder) return;
+  const items = Array.from(grid.querySelectorAll('.sc-tile:not(.is-dragging), .sc-placeholder'));
+  let best = null, bestD = Infinity;
+  items.forEach(function(el){
+    if(el===placeholder) return;
+    const r = el.getBoundingClientRect();
+    const d = Math.hypot(clientX - (r.left+r.width/2), clientY - (r.top+r.height/2));
+    if(d < bestD){ bestD = d; best = el; }
+  });
+  if(!best) return;
+  const r = best.getBoundingClientRect();
+  const after = (clientX > r.left + r.width/2) || (Math.abs(clientX - (r.left+r.width/2)) < 8 && clientY > r.top + r.height/2);
+  if(after){
+    if(best.nextSibling !== placeholder) best.parentNode.insertBefore(placeholder, best.nextSibling);
+  } else if(best.previousSibling !== placeholder){
+    best.parentNode.insertBefore(placeholder, best);
+  }
+}
+function scCommitReorder(dragId, placeholder){
+  const grid = document.getElementById('scGrid');
+  const ids = [];
+  if(grid){
+    Array.from(grid.children).forEach(function(el){
+      if(el.classList.contains('is-dragging')) return;
+      if(el.classList.contains('sc-placeholder')){ if(dragId) ids.push(dragId); }
+      else if(el.getAttribute('data-sc')) ids.push(el.getAttribute('data-sc'));
+    });
+  }
+  const uniq = [], seen = {};
+  ids.forEach(function(id){ if(id && !seen[id]){ uniq.push(id); seen[id]=true; } });
+  if(dragId && uniq.indexOf(dragId)<0) uniq.push(dragId);
+  const enabled = enabledShortcuts().map(function(s){ return s.id; });
+  enabled.forEach(function(id){ if(uniq.indexOf(id)<0) uniq.push(id); });
+  endScDrag();
+  persistShortcuts(uniq);
+  if(state.tab==='home') renderHome();
+}
+function beginScDrag(tile, id, e){
+  if(!tile || !id) return;
+  endScDrag();
+  const grid = document.getElementById('scGrid');
+  if(!grid) return;
+  const rect = tile.getBoundingClientRect();
+  const placeholder = document.createElement('div');
+  placeholder.className = 'sc-placeholder '+scSpanClass(tile);
+  placeholder.setAttribute('aria-hidden', 'true');
+  const prevCss = tile.getAttribute('style') || '';
+  grid.insertBefore(placeholder, tile);
+  tile.classList.add('is-dragging');
+  tile.style.position = 'fixed';
+  tile.style.left = rect.left+'px';
+  tile.style.top = rect.top+'px';
+  tile.style.width = rect.width+'px';
+  tile.style.height = rect.height+'px';
+  tile.style.zIndex = '90';
+  tile.style.margin = '0';
+  tile.style.pointerEvents = 'none';
+  tile.style.transition = 'none';
+  tile.style.animation = 'none';
+  tile.style.gridColumn = 'auto';
+  tile.style.gridRow = 'auto';
+  const offsetX = e.clientX - rect.left;
+  const offsetY = e.clientY - rect.top;
+  const ptr = e.pointerId;
+  try{ tile.setPointerCapture(ptr); }catch(err){}
+  function onMove(ev){
+    if(ptr!=null && ev.pointerId!==ptr) return;
+    tile.style.left = (ev.clientX-offsetX)+'px';
+    tile.style.top = (ev.clientY-offsetY)+'px';
+    if(ev.cancelable) ev.preventDefault();
+    scDragRetarget(ev.clientX, ev.clientY, placeholder);
+  }
+  function onUp(ev){
+    if(ptr!=null && ev.pointerId!==ptr) return;
+    scSuppressClick = true;
+    scCommitReorder(id, placeholder);
+  }
+  scDrag = { tile:tile, id:id, placeholder:placeholder, prevCss:prevCss, ptr:ptr, move:onMove, up:onUp };
+  document.addEventListener('pointermove', onMove, {passive:false});
+  document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
+}
+function enterReorderInPlace(){
+  scReorder = true;
+  const wrap = document.getElementById('scWrap');
+  if(wrap) wrap.classList.add('is-reorder');
+  const bar = document.getElementById('scToolbar');
+  if(bar){
+    bar.outerHTML = scToolbarHtml();
+    const done = document.getElementById('btnScReorderDone');
+    if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
+  }
+}
+function onScPointerDown(e){
+  if(e.button!=null && e.button!==0) return;
+  const tile = e.currentTarget;
+  const id = tile && tile.getAttribute('data-sc');
+  if(!id) return;
+  if(scReorder){
+    if(e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    beginScDrag(tile, id, e);
+    return;
+  }
+  const startX = e.clientX, startY = e.clientY, ptr = e.pointerId;
+  let cleared = false;
+  const timer = setTimeout(function(){
+    if(cleared) return;
+    cleanup();
+    scSuppressClick = true;
+    enterReorderInPlace();
+    const live = document.querySelector('#scGrid .sc-tile[data-sc="'+id+'"]') || tile;
+    beginScDrag(live, id, { clientX:startX, clientY:startY, pointerId:ptr });
+  }, 400);
+  function cleanup(){
+    if(cleared) return;
+    cleared = true;
+    clearTimeout(timer);
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+  }
+  function onMove(ev){
+    if(ptr!=null && ev.pointerId!==ptr) return;
+    if(Math.hypot(ev.clientX-startX, ev.clientY-startY) > 10) cleanup();
+  }
+  function onUp(ev){
+    if(ptr!=null && ev.pointerId!==ptr) return;
+    cleanup();
+  }
+  document.addEventListener('pointermove', onMove, {passive:true});
+  document.addEventListener('pointerup', onUp, {passive:true});
+  document.addEventListener('pointercancel', onUp, {passive:true});
+}
+function bindShortcutGrid(){
+  const grid = document.getElementById('scGrid');
+  const wrap = document.getElementById('scWrap');
+  if(wrap) wrap.classList.toggle('is-reorder', scReorder);
+  const startBtn = document.getElementById('btnScReorder');
+  if(startBtn) startBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); setShortcutReorder(true); };
+  const done = document.getElementById('btnScReorderDone');
+  if(done) done.onclick = function(e){ e.preventDefault(); e.stopPropagation(); setShortcutReorder(false); };
+  if(!grid) return;
+  grid.onclick = function(e){
+    if(scReorder || scSuppressClick){
+      e.preventDefault();
+      e.stopPropagation();
+      scSuppressClick = false;
+      return;
+    }
+    const b = e.target.closest('[data-sc]');
+    if(b) openShortcut(b.getAttribute('data-sc'));
+  };
+  grid.querySelectorAll('.sc-tile[data-sc]').forEach(function(tile){
+    tile.addEventListener('pointerdown', onScPointerDown);
+    tile.addEventListener('contextmenu', function(ev){ ev.preventDefault(); });
+    tile.setAttribute('draggable', 'false');
+  });
+  observeShortcutGrid();
 }
 function openShortcut(id){
   const s = shortcutById(id);
@@ -2919,7 +3144,7 @@ const HELP_TOPICS = [
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大・横長。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。横長は中と同じ幅・小と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ホームでは長押し、または「並べ替え」で順番を変え、「完了」で終了します。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・完了）', body:
@@ -3560,11 +3785,26 @@ function fitShortcutLabels(root){
     if(tight || cramped) t.classList.add('sc-icon-only');
   });
 }
+function fitWideShortcutLabels(root){
+  root = root || document.getElementById('scGrid');
+  if(!root) return;
+  root.querySelectorAll('.sc-tile.sc-w .lbl, .sc-tile.sc-mw .lbl').forEach(function(lbl){
+    lbl.style.fontSize = '';
+    lbl.style.textOverflow = 'clip';
+    const base = parseFloat(getComputedStyle(lbl).fontSize) || 9;
+    let fs = base;
+    while(lbl.scrollWidth > lbl.clientWidth + 0.5 && fs > 8){
+      fs -= 0.5;
+      lbl.style.fontSize = fs+'px';
+    }
+    if(lbl.scrollWidth > lbl.clientWidth + 0.5) lbl.style.textOverflow = 'ellipsis';
+  });
+}
 function scheduleFitShortcutLabels(){
   if(scheduleFitShortcutLabels._raf) cancelAnimationFrame(scheduleFitShortcutLabels._raf);
   scheduleFitShortcutLabels._raf = requestAnimationFrame(function(){
     scheduleFitShortcutLabels._raf = 0;
-    requestAnimationFrame(function(){ fitShortcutLabels(); });
+    requestAnimationFrame(function(){ fitShortcutLabels(); fitWideShortcutLabels(); });
   });
 }
 function observeShortcutGrid(){
@@ -3578,6 +3818,7 @@ function observeShortcutGrid(){
     observeShortcutGrid._ro.observe(grid);
   }
   fitShortcutLabels(grid);
+  fitWideShortcutLabels(grid);
   scheduleFitShortcutLabels();
 }
 function renderHome(){
@@ -3632,7 +3873,7 @@ function renderHome(){
     '<div class="card tint tint-vehicle'+(bannerHtml?' has-banner':'')+'" id="vehCard">'+
       bannerHtml+vehHead+vehDetails+
     '</div>'+
-    '<div class="card tint tint-shortcut sc-wrap" id="scWrap"><div class="sc-grid" id="scGrid">'+scHtml+'</div></div>'+
+    '<div class="card tint tint-shortcut sc-wrap'+(scReorder?' is-reorder':'')+'" id="scWrap">'+scToolbarHtml()+'<div class="sc-grid" id="scGrid">'+scHtml+'</div></div>'+
     '<div class="card tint tint-alert" id="alertCard"><h2>点検アラート <span class="hint">'+hot.length+'件</span></h2>'+alertHtml+'</div>'+
     '<div class="card tint tint-hist" id="recentCard"><h2>最近の記録 <span class="hint"><button type="button" class="more-link" id="btnAllHist">履歴を見る</button></span></h2>'+
       '<div class="hist">'+recentHtml+'</div></div>'+
@@ -3645,11 +3886,7 @@ function renderHome(){
       '<div class="help" style="margin:0 0 4px">'+escapeHtml(tax.jb.table||tax.jb.note)+'</div>'+
       '<div id="measuNote">税額・保険料は公開されている税率表からの目安です。グリーン化特例・減免・月割・離島/沖縄の自賠責は含みません。納税通知と国土交通省の重量税照会を優先してください。</div>'+
     '</details>';
-  document.getElementById('scGrid').onclick = function(e){
-    const b = e.target.closest('[data-sc]');
-    if(b) openShortcut(b.getAttribute('data-sc'));
-  };
-  observeShortcutGrid();
+  bindShortcutGrid();
   const allBtn = document.getElementById('btnAllHist');
   if(allBtn) allBtn.onclick = function(){ go('hist'); };
   document.querySelectorAll('#recentCard .hist-item').forEach(function(el){
@@ -4492,7 +4729,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大・横長。小は中の半分の幅・高さ（4つで中1つ分）、横長は中と同じ幅・小と同じ高さ、大は中2つ分の幅×2段）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さ、大は中2つ分の幅×2段）を項目ごとに設定できます。ホームでも長押しや「並べ替え」で順番を変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -4638,14 +4875,14 @@ function deleteCustomCategory(id, opts){
 }
 function sizeSegHtml(current){
   const cur = normalizeShortcutIconSize(current) || defaultShortcutIconSize();
-  const opts = [['s','小'],['m','中'],['l','大'],['w','横長']];
+  const opts = [['l','大'],['mw','中横'],['m','中'],['w','小横'],['s','小']];
   return '<label class="f">アイコンサイズ</label>'+
     '<div class="seg" id="cSize" role="radiogroup" aria-label="アイコンサイズ">'+
     opts.map(function(p){
       return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
     }).join('')+
     '</div>'+
-    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。横長は中と同じ幅・小と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
+    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さで、どちらもアイコンの右にラベルを1行で出します。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
 }
 function readEditorSize(){
   const on = document.querySelector('#cSize button.on');
@@ -5950,6 +6187,7 @@ function isSwipeIgnoredTarget(el){
   if(!node || !node.closest) return true;
   if(node.closest('input, textarea, select, [contenteditable="true"]')) return true;
   if(node.closest('.nav, .topbar, .modal-bg, .modal, .banner-edit-frame')) return true;
+  if(scReorder && node.closest('#scWrap, #scToolbar, .sc-tile, .sc-placeholder')) return true;
   let n = node;
   while(n && n!==document.body){
     if(isHorizontallyScrollable(n)) return true;
@@ -6139,6 +6377,10 @@ window.KakeLog = {
   fillVehicleSelect: fillVehicleSelect,
   syncVehicleSelectOverflow: syncVehicleSelectOverflow,
   fitShortcutLabels: fitShortcutLabels,
+  fitWideShortcutLabels: fitWideShortcutLabels,
+  persistShortcuts: persistShortcuts,
+  setShortcutReorder: setShortcutReorder,
+  isShortcutReorder: isShortcutReorder,
   persistSettings: persistSettings,
   persistCategories: persistCategories,
   persistLooks: persistLooks,
