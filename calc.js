@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.20 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.21 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -347,16 +347,16 @@
     var status, message;
     if (today > end) {
       status = "overdue";
-      message = "車検の期限が過ぎています（期限 " + endMd + "）";
+      message = "車検期限が過ぎています・期限 " + endMd;
     } else if (today >= windowOpen) {
       status = "action";
-      message = "今日から車検を受けられます（期限 " + endMd + "）";
+      message = "車検を受けられます・期限 " + endMd;
     } else if (today >= noticeStart) {
       status = "caution";
-      message = "あと1週間で車検を受けられます（" + winMd + "〜）";
+      message = "あと1週間で受けられます・" + winMd + "〜";
     } else if (today >= infoStart) {
       status = "info";
-      message = "あと1か月で車検を受けられます（" + winMd + "〜）";
+      message = "あと1か月で受けられます・" + winMd + "〜";
     } else {
       status = "ok";
       message = "";
@@ -372,10 +372,82 @@
     };
   }
 
+  function defaultShakenDoneExpiry(expiry) {
+    var d = toDate(expiry);
+    if (!d) return null;
+    return ymd(addMonths(d, 24));
+  }
+
+  function shakenWindowIsOpen(expiry, asOf) {
+    var end = toDate(expiry);
+    if (!end) return false;
+    var today = toDate(asOf) || new Date();
+    today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    var windowOpen = addMonths(end, -1);
+    return today.getTime() >= windowOpen.getTime();
+  }
+
+  function effectiveShakenDue(veh, asOf) {
+    if (!veh) return null;
+    var due = toDate(veh.shakenDueDate);
+    if (due) return ymd(due);
+    return nextShakenDate(veh, asOf);
+  }
+
+  function shakenReservedDateOf(veh) {
+    var d = veh && toDate(veh.shakenReservedDate);
+    return d ? ymd(d) : "";
+  }
+
+  function isShakenReserved(veh) {
+    if (!veh) return false;
+    if (veh.shakenReserved === true || veh.shakenReserved === "1" || veh.shakenReserved === "true") return true;
+    return !!shakenReservedDateOf(veh);
+  }
+
+  // Idempotent: fill shakenDueDate once, normalize reserve flag/date. Does not overwrite an existing due or reserve date.
+  function migrateShakenDue(vehicles, asOf) {
+    if (!Array.isArray(vehicles)) return false;
+    var changed = false;
+    vehicles.forEach(function (v) {
+      if (!v || typeof v !== "object") return;
+      var date = shakenReservedDateOf(v);
+      if (date && v.shakenReservedDate !== date) {
+        v.shakenReservedDate = date;
+        changed = true;
+      }
+      var res = isShakenReserved(v);
+      if (v.shakenReserved !== res) {
+        v.shakenReserved = res;
+        changed = true;
+      }
+      if (v.shakenDueDate) return;
+      var computed = nextShakenDate(v, asOf);
+      var cached = toDate(v.nextShakenDate) ? ymd(toDate(v.nextShakenDate)) : "";
+      if (v.firstShakenDate && cached && computed && cached !== computed) v.shakenDueDate = cached;
+      else v.shakenDueDate = computed || cached || "";
+      if (v.shakenDueDate) changed = true;
+    });
+    return changed;
+  }
+
   function shakenAlert(veh, asOf) {
-    var expiry = nextShakenDate(veh, asOf);
+    var expiry = effectiveShakenDue(veh, asOf);
     if (!expiry) return null;
-    return shakenAlertForExpiry(expiry, asOf);
+    var alert = shakenAlertForExpiry(expiry, asOf);
+    if (!alert) return null;
+    var open = shakenWindowIsOpen(expiry, asOf);
+    alert.windowOpen = open;
+    if (open && isShakenReserved(veh)) {
+      alert.status = "reserved";
+      alert.reserved = true;
+      var resDate = shakenReservedDateOf(veh);
+      alert.reservedDate = resDate || "";
+      alert.message = resDate
+        ? ("予約日 " + mdLabel(resDate) + "（期限 " + mdLabel(expiry) + "）")
+        : ("予約済・期限 " + mdLabel(expiry));
+    }
+    return alert;
   }
 
   function matchVehicle_(r, vehicleId) {
@@ -874,6 +946,12 @@
     shakenAnchorDate: shakenAnchorDate,
     nextShakenFromAnchor: nextShakenFromAnchor,
     nextShakenDate: nextShakenDate,
+    effectiveShakenDue: effectiveShakenDue,
+    defaultShakenDoneExpiry: defaultShakenDoneExpiry,
+    shakenWindowIsOpen: shakenWindowIsOpen,
+    isShakenReserved: isShakenReserved,
+    shakenReservedDateOf: shakenReservedDateOf,
+    migrateShakenDue: migrateShakenDue,
     shakenWindowOpen: shakenWindowOpen,
     shakenInfoStart: shakenInfoStart,
     shakenNoticeStart: shakenNoticeStart,

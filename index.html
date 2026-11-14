@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.20</title>
+<title>CarLog beta 0.9.21</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -204,16 +204,28 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-card-head{grid-column:1;grid-row:1;display:flex;align-items:center;gap:5px;min-width:0;}
 .alert-card-head .name{font-size:16px;font-weight:800;min-width:0;line-height:1.3;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .alert-card .badge{flex:0 0 auto;font-size:10px;font-weight:700;padding:2px 5px;border-radius:999px;letter-spacing:.02em;line-height:1.2;}
+.alert-card-head .alert-edit{
+  position:relative;flex:0 0 auto;box-sizing:content-box;width:1.2em;height:1.2em;margin:0 0 0 3px;padding:2px;
+  font-size:10px;line-height:1;min-width:0;min-height:0;border-radius:999px;
+  border:1.5px solid color-mix(in srgb, var(--paper-dim) 40%, transparent);
+  background:color-mix(in srgb, var(--paper-dim) 14%, transparent);color:var(--paper-dim);
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.alert-card-head .alert-edit svg{width:10px;height:10px;display:block;}
+.alert-card-head .alert-edit::before{content:"";position:absolute;left:50%;top:50%;width:32px;height:32px;transform:translate(-50%,-50%);}
 .alert-card-remain{grid-column:2;grid-row:1 / 3;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:1px;min-width:0;max-width:38%;width:max-content;justify-self:end;align-self:center;}
 .alert-card-sub{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:8px;min-width:0;margin-top:0;}
 .alert-card-foot{grid-column:1 / -1;grid-row:3;display:flex;flex-direction:row;align-items:center;gap:10px;min-width:0;margin-top:4px;}
 .alert-card-actions{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:4px;margin:0;flex:0 0 auto;}
 .alert-info{flex:1 1 auto;min-width:0;font-size:13px;font-weight:600;line-height:1.4;color:var(--paper-dim);font-family:var(--font-mono);}
+.alert-info .alert-date{white-space:nowrap;}
 .alert-remain{flex:0 0 auto;font-size:13px;font-weight:800;line-height:1.35;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;letter-spacing:-.02em;}
 @media (max-width:360px){
   .alert-card{padding:12px 10px;column-gap:6px;}
   .alert-card-head{gap:4px;}
   .alert-card .badge{padding:1px 4px;font-size:9px;letter-spacing:0;}
+  .alert-card-head .alert-edit{font-size:9px;padding:1px;margin-left:2px;}
+  .alert-card-head .alert-edit svg{width:9px;height:9px;}
   .alert-remain{font-size:12px;}
 }
 
@@ -221,6 +233,7 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-remain.is-soon,.alert-remain.is-caution{color:var(--amber);}
 .alert-remain.is-overdue,.alert-remain.is-action{color:var(--danger);}
 .alert-remain.is-info{color:var(--cold,#4a90c8);}
+.alert-remain.is-reserved{color:var(--ok);}
 .alert-remain.is-unknown{color:var(--paper-dim);}
 .alert-bar{flex:1 1 auto;min-width:0;height:4px;margin:0;border-radius:2px;overflow:hidden;align-self:center;
   background:color-mix(in srgb, var(--paper-dim) 28%, transparent);}
@@ -229,6 +242,7 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-bar.is-soon>i,.alert-bar.is-caution>i{background:var(--amber);}
 .alert-bar.is-overdue>i,.alert-bar.is-action>i{background:var(--danger);}
 .alert-bar.is-info>i{background:var(--cold,#4a90c8);}
+.alert-bar.is-reserved>i{background:var(--ok);}
 .alert-action{
   flex:0 0 auto;width:auto;min-width:0;min-height:32px;height:32px;padding:0 12px;font-size:13px;font-weight:700;
   border-radius:999px;box-sizing:border-box;touch-action:manipulation;cursor:pointer;font-family:inherit;
@@ -251,6 +265,13 @@ html[data-theme] .badge.unknown{
 }
 html[data-theme="glass-light"] .alert-action,html[data-theme="neumo"] .alert-action{
   background:color-mix(in srgb, var(--amber) 16%, #ffffff);
+}
+.alert-action.is-reserved{
+  border-color:color-mix(in srgb, var(--ok) 45%, transparent);
+  background:color-mix(in srgb, var(--ok) 20%, transparent);color:var(--ok);
+}
+html[data-theme="glass-light"] .alert-action.is-reserved,html[data-theme="neumo"] .alert-action.is-reserved{
+  background:color-mix(in srgb, var(--ok) 16%, #ffffff);
 }
 html[data-theme="neumo"] .alert-bar,html[data-theme="neumo-dark"] .alert-bar{
   box-shadow:inset 1px 1px 2px rgba(0,0,0,.12);
@@ -1202,12 +1223,15 @@ html[data-theme="neon"] .home-banner .banner-name{letter-spacing:.06em;}
 .badge.info{background:rgba(90,160,220,.16);color:var(--cold,#4a90c8);border-color:rgba(90,160,220,.42);}
 .badge.caution{background:rgba(223,172,88,.18);color:var(--amber);border-color:rgba(223,172,88,.45);}
 .badge.action{background:rgba(230,130,50,.20);color:#e07030;border-color:rgba(230,130,50,.5);}
+.badge.reserved{background:rgba(74,222,128,.16);color:var(--ok);border-color:rgba(74,222,128,.45);}
 html[data-theme="neumo"] .badge.info{color:#1f4a72;background:#c5d5e4;border-color:#9bb3c9;}
 html[data-theme="neumo"] .badge.caution{color:#5a3c16;background:#e4d5b8;border-color:#c9b48a;}
 html[data-theme="neumo"] .badge.action{color:#7a3c10;background:#ebc9b0;border-color:#d0a080;}
+html[data-theme="neumo"] .badge.reserved{color:#145246;background:#c5ddd4;border-color:#9bbdb2;}
 html[data-theme="neumo-dark"] .badge.info{color:#b8d8f0;background:#243848;border-color:#3a6080;}
 html[data-theme="neumo-dark"] .badge.caution{color:#ead8a8;background:#4a3c20;border-color:#8a7040;}
 html[data-theme="neumo-dark"] .badge.action{color:#f0c8a0;background:#4a3020;border-color:#8a5a38;}
+html[data-theme="neumo-dark"] .badge.reserved{color:#9ee8d4;background:#1d4a40;border-color:#2a7a68;}
 html[data-theme="glass-light"] .badge.info{color:#1a5a86;background:rgba(90,160,220,.18);border-color:rgba(60,120,180,.4);}
 html[data-theme="glass-light"] .badge.action{color:#b45410;background:rgba(230,130,50,.18);border-color:rgba(200,100,30,.45);}
 .nav button .tab-pill{position:relative;}
@@ -1300,7 +1324,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.20</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.21</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1485,6 +1509,7 @@ function loadState(){
   state.pendingDel = loadJson(KEYS.pendingDel, {});
   ensureCurrentVehicle();
   migrateMergedCategories();
+  migrateShakenFields();
 }
 function ensureCurrentVehicle(){
   if(!state.vehicles.length){
@@ -1494,6 +1519,9 @@ function ensureCurrentVehicle(){
   if(!state.vehicles.some(function(v){ return v.id === state.settings.currentVehicleId; })){
     state.settings.currentVehicleId = state.vehicles[0].id;
   }
+}
+function migrateShakenFields(){
+  if(C.migrateShakenDue(state.vehicles, new Date())) persistVehicles();
 }
 function migrateMergedCategories(){
   let recChanged = false;
@@ -2826,11 +2854,11 @@ const HELP_TOPICS = [
     '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
-  { id:'maint', title:'点検（間隔・前回交換・交換した）', body:
+  { id:'maint', title:'点検（間隔・前回交換・完了）', body:
     '<p>点検タブで、オイルなど交換時期の目安を管理します。</p>'+
-    '<ol><li>各項目の鉛筆アイコン（編集）から、間隔（km / 月）と前回交換（日付・走行距離）を変えられます。</li>'+
+    '<ol><li>各項目の状態バッジの右にある鉛筆アイコン（編集）から、間隔（km / 月）と前回交換（日付・走行距離）を変えられます。</li>'+
     '<li>アプリに記録がなくても、前回交換を手で入れて基準にできます。記録があるときは、新しいほうを使います。</li>'+
-    '<li>まだ入れていなければ「前回交換を設定」と出ます。交換したら「交換した」を押します。</li>'+
+    '<li>まだ入れていなければ「前回交換を設定」と出ます。交換したら「完了」を押します。</li>'+
     '<li>カード右に残りの日数と残り距離を別々に出します（例：あと38日／あと420 km）。間隔が一方だけの項目は、その一方だけです。</li>'+
     '<li>残り距離が500km以下で「注意」、期限の距離を過ぎると「超過」です。日数の目安（30日以内で間近、期限切れで超過）はこれまでどおりです。カード全体は厳しいほうの状態になり、点検タブの印とホームのアラートにも距離の注意が入ります。</li>'+
     '<li>下の「＋項目を追加」で、タイミングベルトなど独自の項目を足せます。</li></ol>'
@@ -2839,6 +2867,9 @@ const HELP_TOPICS = [
     '<p>車検は、購入後の初回車検日を起点に、2年ごとに次の期限を自動で出します。新車は初度登録の3年後が初回です。</p>'+
     '<ol><li>期限の1か月前から「車検を受けられる期間」が始まります。</li>'+
     '<li>その期間が始まる1か月前に「お知らせ」、7日前に「注意」、期間中は「要対応」、期限を過ぎると「超過」と出ます。</li>'+
+    '<li>受けられる期間に入ると（期限後も）、点検カードに「予約完了」と「完了」が出ます。期間前はバーだけです。</li>'+
+    '<li>「予約完了」で予約日を選び、警告の代わりに「予約済」と予約日が出ます。もう一度開いて日付を直すか「予約取消」できます。車両の編集からも取り消せます。</li>'+
+    '<li>「完了」で新しい車検期限を入れます（2年後の同じ月を目安に出します。店によって違うので、車検証の日付を優先してください）。予約は消えます。</li>'+
     '<li>該当するときは、点検タブに印が付きます。通知の送信やサーバーは使いません。</li></ol>'
   },
   { id:'banner', title:'バナー画像', body:
@@ -3048,7 +3079,7 @@ function bindVehicleChips(){
 function taxBundle(veh, asOf){
   if(!veh) return { jz: { amount:null, label:'', heavy:false, table:'' }, wt: { amount:null, tierLabel:'' }, jb: { amount:null, months:24, table:'', note:'' }, nextShaken:'' };
   asOf = asOf || new Date();
-  const next = C.nextShakenDate(veh, asOf) || C.estimateNextShaken(veh.registeredYm, asOf);
+  const next = C.effectiveShakenDue(veh, asOf) || C.nextShakenDate(veh, asOf) || C.estimateNextShaken(veh.registeredYm, asOf);
   const jz = C.jidoshaZei({
     displacementCc: veh.displacementCc,
     registeredYm: veh.registeredYm,
@@ -3222,7 +3253,7 @@ function openReplacementSheet(itemId){
   const box = document.getElementById('modal');
   box.classList.add('repl-sheet');
   box.innerHTML =
-    '<h3 id="replTitle">'+escapeHtml((item.label||'点検')+'を交換した')+'</h3>'+
+    '<h3 id="replTitle">'+escapeHtml((item.label||'点検')+'を完了')+'</h3>'+
     '<div id="replSheet">'+
     '<label class="f">日付</label><input type="date" id="rDate" value="'+escapeHtml(todayYmd())+'">'+
     '<label class="f">走行距離（km）</label><input type="number" id="rOdo" inputmode="decimal" value="'+escapeHtml(odo!=null?odo:'')+'">'+
@@ -3267,7 +3298,7 @@ function openReplacementSheet(itemId){
     closeModal();
     updateSyncBtn();
     renderAll();
-    toast('交換を記録しました');
+    toast('完了を記録しました');
   };
 }
 function openMaintenanceEditor(id){
@@ -3599,6 +3630,14 @@ function alertKeyInfo(a){
   if(a.dueKm!=null) parts.push(km(a.dueKm));
   return parts.length ? '次回 '+parts.join('・') : '次回目安はありません';
 }
+function formatShakenInfoHtml(text){
+  return escapeHtml(text||'').replace(/(予約日\s*\d{1,2}\/\d{1,2}|（期限\s*\d{1,2}\/\d{1,2}）|期限\s*\d{1,2}\/\d{1,2}|\d{1,2}\/\d{1,2}〜)/g, '<span class="alert-date">$1</span>');
+}
+function alertKeyInfoHtml(a){
+  const item = (a && a.item) || {};
+  if(item.id==='shaken') return formatShakenInfoHtml(alertKeyInfo(a));
+  return escapeHtml(alertKeyInfo(a));
+}
 function remainLines(a){
   if(!a) return [];
   const lines = [];
@@ -3660,14 +3699,20 @@ function alertCardHtml(a, opts){
   const pct = Math.max(0, Math.min(100, alertUsedPct(a)));
   const variant = alertCardVariant(opts);
   const actions = [];
-  if(canRec) actions.push('<button type="button" class="alert-action" data-rec-int="'+escapeHtml(item.id)+'">交換した</button>');
-  if(canEdit && variant==='A') actions.push('<button type="button" class="alert-edit" data-edit-int="'+escapeHtml(item.id)+'" aria-label="編集">'+ICO_PENCIL+'</button>');
+  const shakenOpen = isShaken && !!(a.windowOpen || (a.dueDate && C.shakenWindowIsOpen(a.dueDate, new Date())));
+  const shakenReserved = isShaken && (a.status==='reserved' || a.reserved || C.isShakenReserved(currentVehicle()));
+  if(shakenOpen){
+    actions.push('<button type="button" class="alert-action'+(shakenReserved?' is-reserved':'')+'" data-shaken-reserve="1" aria-pressed="'+(shakenReserved?'true':'false')+'">'+(shakenReserved?'予約済':'予約完了')+'</button>');
+    actions.push('<button type="button" class="alert-action" data-shaken-done="1">完了</button>');
+  }
+  if(canRec) actions.push('<button type="button" class="alert-action" data-rec-int="'+escapeHtml(item.id)+'">完了</button>');
   if(canEdit && variant==='B') actions.push('<span class="alert-chevron" aria-hidden="true">'+ICO_CHEVRON+'</span>');
+  const editBtn = (canEdit && variant==='A') ? '<button type="button" class="alert-edit" data-edit-int="'+escapeHtml(item.id)+'" aria-label="編集">'+ICO_PENCIL+'</button>' : '';
   const editAttr = (canEdit && variant==='B') ? ' data-edit-int="'+escapeHtml(item.id)+'"' : '';
   return '<div class="alert-card'+(isShaken?' alert-shaken':'')+(canEdit && variant==='B'?' is-editable':'')+'" data-iid="'+escapeHtml(item.id||'')+'"'+editAttr+'>'+
-    '<div class="alert-card-head"><span class="name">'+escapeHtml(item.label||'')+'</span>'+badge+'</div>'+
+    '<div class="alert-card-head"><span class="name">'+escapeHtml(item.label||'')+'</span>'+badge+editBtn+'</div>'+
     remainHtml+
-    '<div class="alert-card-sub"><div class="alert-info">'+escapeHtml(info)+'</div></div>'+
+    '<div class="alert-card-sub"><div class="alert-info">'+alertKeyInfoHtml(a)+'</div></div>'+
     '<div class="alert-card-foot">'+
       '<div class="alert-bar is-'+escapeHtml(st)+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
       (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
@@ -3682,9 +3727,91 @@ function bindAlertActions(root){
   root.querySelectorAll('[data-edit-int]').forEach(function(b){
     b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openMaintenanceEditor(b.getAttribute('data-edit-int')); };
   });
+  root.querySelectorAll('[data-shaken-reserve]').forEach(function(b){
+    b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openShakenReserveSheet(); };
+  });
+  root.querySelectorAll('[data-shaken-done]').forEach(function(b){
+    b.onclick = function(e){ e.preventDefault(); e.stopPropagation(); openShakenDoneSheet(); };
+  });
+}
+function openShakenReserveSheet(){
+  const veh = currentVehicle();
+  if(!veh){ toast('まずは車を登録しましょう'); openVehicleEditor(null); return; }
+  const reserved = C.isShakenReserved(veh);
+  const due = C.effectiveShakenDue(veh, new Date());
+  const saved = C.shakenReservedDateOf(veh);
+  const def = saved || todayYmd();
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.classList.add('repl-sheet');
+  box.innerHTML =
+    '<h3 id="shakenReserveTitle">車検の予約</h3>'+
+    '<div id="shakenReserveSheet">'+
+    '<label class="f">予約日</label><input type="date" id="sReserveDate" value="'+escapeHtml(def)+'">'+
+    (due?'<div class="help" style="margin:8px 0 12px">期限は '+escapeHtml(fmtDate(due))+' です。予約日を入れて保存すると、「予約済」と表示します。</div>':'<div class="help" style="margin:8px 0 12px">予約日を入れて保存すると、「予約済」と表示します。</div>')+
+    '<div class="btn-row"><button type="button" class="btn primary" id="sReserveSave">保存</button>'+
+    (reserved?'<button type="button" class="btn danger" id="sReserveClear">予約取消</button>':'')+
+    '<button type="button" class="btn ghost" id="sReserveCancel">キャンセル</button></div></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('sReserveCancel').onclick = closeModal;
+  document.getElementById('sReserveSave').onclick = function(){
+    const picked = document.getElementById('sReserveDate').value;
+    if(!picked || !C.toDate(picked)){ toast('予約日を入れてください'); return; }
+    veh.shakenReservedDate = C.ymd(C.toDate(picked));
+    veh.shakenReserved = true;
+    veh.updatedAt = new Date().toISOString();
+    persistVehicles();
+    closeModal();
+    renderAll();
+    toast('予約を記録しました');
+  };
+  const clear = document.getElementById('sReserveClear');
+  if(clear) clear.onclick = function(){
+    veh.shakenReserved = false;
+    veh.shakenReservedDate = '';
+    veh.updatedAt = new Date().toISOString();
+    persistVehicles();
+    closeModal();
+    renderAll();
+    toast('予約を取り消しました');
+  };
+}
+function openShakenDoneSheet(){
+  const veh = currentVehicle();
+  if(!veh){ toast('まずは車を登録しましょう'); openVehicleEditor(null); return; }
+  const due = C.effectiveShakenDue(veh, new Date());
+  const def = C.defaultShakenDoneExpiry(due) || C.defaultShakenDoneExpiry(new Date()) || todayYmd();
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.classList.add('repl-sheet');
+  box.innerHTML =
+    '<h3 id="shakenDoneTitle">車検の完了</h3>'+
+    '<div id="shakenDoneSheet">'+
+    '<label class="f">新しい車検期限</label><input type="date" id="sNewExpiry" value="'+escapeHtml(def)+'">'+
+    '<div class="help" style="margin:8px 0 12px">店によって期限が違うので、車検証の日付を入れてください。2年後の同じ月を目安に入れてあります。</div>'+
+    '<div class="btn-row"><button type="button" class="btn primary" id="sDoneSave">保存</button>'+
+    '<button type="button" class="btn ghost" id="sDoneCancel">キャンセル</button></div></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('sDoneCancel').onclick = closeModal;
+  document.getElementById('sDoneSave').onclick = function(){
+    const picked = document.getElementById('sNewExpiry').value;
+    if(!picked || !C.toDate(picked)){ toast('新しい車検期限を入れてください'); return; }
+    const y = C.ymd(C.toDate(picked));
+    veh.shakenDueDate = y;
+    veh.nextShakenDate = y;
+    veh.shakenReserved = false;
+    veh.shakenReservedDate = '';
+    veh.updatedAt = new Date().toISOString();
+    persistVehicles();
+    closeModal();
+    renderAll();
+    toast('車検の期限を更新しました');
+  };
 }
 function statusLabel(s){
-  return s==='overdue'?'超過':s==='action'?'要対応':s==='caution'?'注意':s==='info'?'お知らせ':s==='soon'?'間近':s==='ok'?'余裕':'未記録';
+  return s==='overdue'?'超過':s==='action'?'要対応':s==='caution'?'注意':s==='info'?'お知らせ':s==='soon'?'間近':s==='reserved'?'予約済':s==='ok'?'余裕':'未記録';
 }
 function fuelLabel(ft){
   return {gasoline:'ガソリン',diesel:'ディーゼル',lpg:'LPG',hybrid:'ハイブリッド',phev:'PHEV',ev:'EV',fcv:'燃料電池'}[ft] || ft || '';
@@ -4196,7 +4323,7 @@ function renderAlert(){
     (rows||'<div class="empty">項目がありません</div>')+
     '</div>'+
     '<div class="card tint tint-interval" id="intervalSet">'+
-    '<div class="help" style="margin:0 0 8px">各項目の鉛筆アイコンから交換間隔（km / 月）と前回交換を変えられます。「交換した」で今回の交換を記録します。</div>'+
+    '<div class="help" style="margin:0 0 8px">各項目の状態バッジの右にある鉛筆アイコンから交換間隔（km / 月）と前回交換を変えられます。「完了」で今回の交換を記録します。</div>'+
     '<div class="btn-row add-int-row"><button type="button" class="btn primary" id="btnAddInt">＋項目を追加</button></div>'+
     '</div>';
   bindAlertActions(document.getElementById('page-alert'));
@@ -4673,7 +4800,7 @@ function bindShortcutSettings(){
 function openVehicleEditor(id){
   const v = id ? state.vehicles.find(function(x){ return x.id===id; }) : {
     id: newId('v'), name:'', displacementCc:'', fuelType:'gasoline', registeredYm:'',
-    weightKg:'', isKei:false, isEco:false, isNewCar:false, firstShakenDate:'', nextShakenDate:'', jibaisekiMonths:24
+    weightKg:'', isKei:false, isEco:false, isNewCar:false, firstShakenDate:'', nextShakenDate:'', shakenDueDate:'', shakenReserved:false, shakenReservedDate:'', jibaisekiMonths:24
   };
   if(id && !v){ toast('車両が見つかりません'); return; }
   const bg = document.getElementById('modalBg');
@@ -4693,6 +4820,12 @@ function openVehicleEditor(id){
     '<label class="check"><input type="checkbox" id="vNewCar"'+(v.isNewCar?' checked':'')+'>新車（初回車検は初度登録の3年後）</label>'+
     '<label class="f">購入後の初回車検日</label><input type="date" id="vFirstShaken" value="'+escapeHtml(v.firstShakenDate||v.nextShakenDate||'')+'">'+
     '<div class="help" id="vShakenNext" style="margin:4px 0 0">以降の車検日は2年ごとに自動で出します。走行距離の入力は不要です。</div>'+
+    (function(){
+      const due = C.effectiveShakenDue(v, new Date());
+      const open = due && C.shakenWindowIsOpen(due, new Date());
+      if(!(open || C.isShakenReserved(v))) return '';
+      return '<label class="check"><input type="checkbox" id="vShakenReserved"'+(C.isShakenReserved(v)?' checked':'')+'>車検を予約済み</label>';
+    })()+
     '<label class="f">自賠責の期間（車検時の保険料の目安）</label><select id="vJb">'+
       [24,25,36,37].map(function(m){ return '<option value="'+m+'"'+((v.jibaisekiMonths||24)===m?' selected':'')+'>'+m+'か月</option>'; }).join('')+
     '</select>'+
@@ -4755,12 +4888,27 @@ function openVehicleEditor(id){
     v.fuelType = document.getElementById('vFuel').value;
     v.registeredYm = document.getElementById('vReg').value;
     v.isNewCar = document.getElementById('vNewCar').checked;
+    const prevFirst = v.firstShakenDate || '';
     v.firstShakenDate = document.getElementById('vFirstShaken').value;
     v.jibaisekiMonths = Number(document.getElementById('vJb').value)||24;
     v.isKei = document.getElementById('vKei').checked;
     v.isEco = document.getElementById('vEco').checked;
+    const reservedBox = document.getElementById('vShakenReserved');
+    if(reservedBox){
+      v.shakenReserved = !!reservedBox.checked;
+      if(!v.shakenReserved) v.shakenReservedDate = '';
+      else if(!C.shakenReservedDateOf(v)) v.shakenReservedDate = todayYmd();
+    }
     var computedNext = C.nextShakenDate(v, new Date());
-    if(computedNext) v.nextShakenDate = computedNext;
+    if((v.firstShakenDate || '') !== prevFirst){
+      v.shakenDueDate = computedNext || '';
+      v.shakenReserved = false;
+      v.shakenReservedDate = '';
+    } else if(!v.shakenDueDate && computedNext){
+      v.shakenDueDate = computedNext;
+    }
+    if(v.shakenDueDate) v.nextShakenDate = v.shakenDueDate;
+    else if(computedNext) v.nextShakenDate = computedNext;
     v.updatedAt = new Date().toISOString();
     const i = state.vehicles.findIndex(function(x){ return x.id===v.id; });
     const isNew = i<0;
@@ -5168,6 +5316,7 @@ function mergeBackupVehicles(list){
     else if((Date.parse(rv.updatedAt||'')||0) >= (Date.parse(state.vehicles[i].updatedAt||'')||0)) state.vehicles[i]=Object.assign({}, state.vehicles[i], rv);
   });
   persistVehicles();
+  migrateShakenFields();
   fillVehicleSelect();
 }
 function mergeBackupIntervals(list){
@@ -5263,6 +5412,7 @@ function applyBackupReplace(data){
   }
   persistRecords();
   persistVehicles();
+  migrateShakenFields();
   persistIntervals();
   persistCategories();
   persistLooks();
@@ -5616,6 +5766,7 @@ function mergeRemote(entries, vehicles, intervals, categories){
       else if((Date.parse(rv.updatedAt||'')||0) >= (Date.parse(state.vehicles[i].updatedAt||'')||0)) state.vehicles[i]=Object.assign({}, state.vehicles[i], rv);
     });
     persistVehicles();
+    migrateShakenFields();
     ensureCurrentVehicle();
     persistSettings();
     fillVehicleSelect();
@@ -5884,6 +6035,9 @@ window.KakeLog = {
   updateEditorPreview: updateEditorPreview,
   recordCategoryName: recordCategoryName,
   migrateMergedCategories: migrateMergedCategories,
+  migrateShakenFields: migrateShakenFields,
+  openShakenReserveSheet: openShakenReserveSheet,
+  openShakenDoneSheet: openShakenDoneSheet,
   visibleCategories: visibleCategories,
   exportCsvText: exportCsvText,
   importCsvText: importCsvText,

@@ -1,5 +1,5 @@
 /**
- * CarLog beta 0.9.20 — Google Apps Script バックエンド
+ * CarLog beta 0.9.21 — Google Apps Script バックエンド
  *
  * スプレッドシート構成:
  *   1枚目「記録」…経費レコード
