@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.28</title>
+<title>CarLog beta 0.9.29</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -44,6 +44,7 @@
   --danger:#ff5a2e;
   --cold:#3fa9f5;
   --nav-h:56px;
+  --nav-pad:max(env(safe-area-inset-bottom,0px), 16px);
   --tab-home:#dfac58;
   --tab-input:#2dd4bf;
   --tab-hist:#6ea8ff;
@@ -77,7 +78,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--asphalt);color:var(--paper);
   font-family:var(--font-ui);width:100%;max-width:100%;overflow-x:hidden;}
-body{min-height:100vh;padding-bottom:calc(var(--nav-h) + 10px + env(safe-area-inset-bottom,0px));}
+body{min-height:100vh;padding-bottom:calc(var(--nav-h) + 10px + var(--nav-pad));}
 button,select,input,textarea{font:inherit;color:inherit;touch-action:manipulation;}
 button{cursor:pointer;}
 h1,h2,h3{margin:0;font-family:var(--font-display);font-weight:700;}
@@ -149,8 +150,8 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .page{display:none;}
 .page.active{display:block;}
 .nav{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:var(--nav-bg);
-  border-top:var(--nav-top-line);height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
-  padding:0 2px env(safe-area-inset-bottom,0px);}
+  border-top:var(--nav-top-line);height:calc(var(--nav-h) + var(--nav-pad));
+  padding:0 2px var(--nav-pad);}
 .nav button{flex:1;min-width:0;background:none;border:0;color:color-mix(in srgb,var(--tab,#8b95a5) 58%,#8a93a3);
   font-size:11px;font-weight:700;letter-spacing:.02em;padding:0;height:100%;position:relative;
   display:flex;align-items:center;justify-content:center;}
@@ -359,7 +360,7 @@ a.more-link{color:var(--amber);font-size:10px;font-weight:700;text-decoration:no
 .int-row .nm-in{padding:5px 6px;font-size:12px;}
 #odoSource{font-weight:600;}
 .int-row input{padding:5px 6px;font-size:12px;font-family:var(--font-mono);}
-.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 16px + var(--nav-pad));transform:translateX(-50%);
   background:#1f2430;border:1px solid var(--amber);color:var(--paper);padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;
   z-index:80;opacity:0;pointer-events:none;transition:opacity .2s;}
 .toast.show{opacity:1;}
@@ -1431,7 +1432,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.28</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.29</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1669,7 +1670,8 @@ function migrateMergedCategories(){
   }
 }
 function persistRecords(){ saveJson(KEYS.records, state.records); }
-function persistVehicles(){ saveJson(KEYS.vehicles, state.vehicles); }
+let calTimer = 0;
+function persistVehicles(){ saveJson(KEYS.vehicles, state.vehicles); scheduleCalendarSync(); }
 function persistIntervals(){ saveJson(KEYS.intervals, state.intervals); }
 
 function normalizeShortcutIconSize(v){
@@ -4894,6 +4896,7 @@ function renderSet(){
     '<div class="help" id="syncStatus">'+syncStatusHtml()+'</div>'+
     gasHelpHtml()+
     '</div>'+
+    calendarCardHtml()+
     '<div class="card tint tint-vehicle"><h2>車両</h2>'+vehList+
     '<div class="btn-row"><button type="button" class="btn ghost" id="btnAddVeh">車両を追加</button></div></div>'+
     '<div class="card tint tint-cat" id="customCatSet"><h2>カスタム費目</h2>'+
@@ -4931,6 +4934,7 @@ function renderSet(){
   document.getElementById('btnSyncNow').onclick = function(){ syncAll(true); };
   document.getElementById('btnTestConn').onclick = function(){ testGasConnection(); };
   bindCodeGsUi();
+  bindCalendarUi();
   document.getElementById('btnAddVeh').onclick = function(){ openVehicleEditor(null); };
   document.querySelectorAll('[data-ed]').forEach(function(b){
     b.onclick = function(){ openVehicleEditor(b.getAttribute('data-ed')); };
@@ -6278,12 +6282,122 @@ async function syncAll(manual){
     stampBackup();
     lastSyncError = false;
     toast('同期しました');
+    if(state.settings.calendarOn) syncCalendar({});
   }catch(err){
     lastSyncError = true;
     toast('同期に失敗しました（オフラインのときは後で）');
   }
   updateSyncStatus();
   renderAll();
+}
+
+/* ---------- calendar (車検の期限を Google カレンダーへ) ---------- */
+let calendarMsg = '';
+function calendarEvents(){
+  const base = location.href.split('#')[0].split('?')[0];
+  return state.vehicles.map(function(v){
+    const due = C.effectiveShakenDue(v, new Date()) || '';
+    return {
+      key: 'shaken:' + v.id,
+      title: '車検期限　' + (v.name || '車'),
+      date: due,
+      description: 'CarLog が自動で作った予定です。車検証の日付を優先してください。自賠責も同じ時期に切れるので、あわせて確認してください。\n' + base
+    };
+  });
+}
+function calStatusHtml(){
+  if(!state.settings.calendarOn) return '<span class="sync-dot off"></span>オフ';
+  if(calendarMsg) return '<span class="sync-dot err"></span>' + escapeHtml(calendarMsg);
+  if(state.settings.calendarAt){
+    let t = '';
+    try{ t = new Date(state.settings.calendarAt).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }); }catch(e){}
+    return '<span class="sync-dot on"></span>反映済み　' + escapeHtml(t);
+  }
+  return '<span class="sync-dot pending"></span>未反映';
+}
+function updateCalStatus(){
+  const el = document.getElementById('calStatus');
+  if(el) el.innerHTML = calStatusHtml();
+}
+async function syncCalendar(opts){
+  opts = opts || {};
+  const url = (state.settings.gasUrl || '').trim();
+  if(!url){ if(opts.manual) toast('先に GAS の URL を入れてください'); return false; }
+  const cur = calendarEvents();
+  const curKeys = cur.map(function(e){ return e.key; });
+  const prevKeys = Array.isArray(state.settings.calendarKeys) ? state.settings.calendarKeys : [];
+  let events;
+  if(opts.removeAll){
+    events = cur.concat(prevKeys.filter(function(k){ return curKeys.indexOf(k) < 0; }).map(function(k){ return { key:k }; }))
+      .map(function(e){ return { key:e.key, date:'' }; });
+  } else {
+    events = cur.concat(prevKeys.filter(function(k){ return curKeys.indexOf(k) < 0; }).map(function(k){ return { key:k, date:'' }; }));
+  }
+  const sig = JSON.stringify(events);
+  if(!opts.force && !opts.removeAll && state.settings.calendarSig === sig) return true;
+  try{
+    const res = await gasFetch(url, {
+      method:'POST',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action:'sync_calendar', events: events, force: !!opts.force })
+    }, 45000);
+    let json = null;
+    try{ json = await res.json(); }catch(e){ json = null; }
+    if(json && json.status === 'ok'){
+      state.settings.calendarSig = opts.removeAll ? '' : sig;
+      state.settings.calendarKeys = opts.removeAll ? [] : curKeys;
+      state.settings.calendarAt = new Date().toISOString();
+      persistSettings();
+      calendarMsg = '';
+      return true;
+    }
+    if(json && json.status === 'unknown_action') calendarMsg = 'Code.gs が古いようです。最新の Code.gs に入れ替えて、新しいバージョンをデプロイしてください。';
+    else calendarMsg = 'カレンダーに反映できませんでした：' + ((json && json.message) ? String(json.message).slice(0, 120) : 'カレンダーの承認を確認してください');
+    return false;
+  }catch(err){
+    calendarMsg = 'カレンダーに反映できませんでした（オフラインのときは後で）';
+    return false;
+  }finally{
+    updateCalStatus();
+  }
+}
+function scheduleCalendarSync(){
+  if(!state.settings || !state.settings.calendarOn) return;
+  clearTimeout(calTimer);
+  calTimer = setTimeout(function(){ syncCalendar({}); }, 2500);
+}
+function calendarCardHtml(){
+  const on = !!state.settings.calendarOn;
+  return '<div class="card tint tint-sync" id="calCard"><h2>カレンダー通知（車検）</h2>'+
+    '<label class="check"><input type="checkbox" id="calOn"'+(on?' checked':'')+'>車検の期限を Google カレンダーに入れる</label>'+
+    '<div class="help">「CarLog」という専用カレンダーに、車検期限の終日予定を作ります。約1か月前（4週間前）・1週間前・前日の朝9時に通知します。車検日を直したり「完了」にしたりすると予定も自動で置き換わり、車両を消すと予定も消えます。</div>'+
+    '<div class="help">距離（km）が基準の点検（オイルなど）は、日付では決まらないので通知しません。点検タブとホームで確認してください。</div>'+
+    '<div class="help">使うには、スプレッドシート連携の設定と、最新の Code.gs への入れ替え（カレンダーの承認あり）が必要です。通知を受けるには、スマホの Google カレンダーアプリ、または標準カレンダーに Google アカウントを追加してください。</div>'+
+    '<div class="btn-row"><button type="button" class="btn ghost" id="btnCalNow">今すぐカレンダーに反映</button></div>'+
+    '<div class="help" id="calStatus">'+calStatusHtml()+'</div></div>';
+}
+function bindCalendarUi(){
+  const cb = document.getElementById('calOn');
+  if(!cb) return;
+  cb.onchange = function(){
+    if(cb.checked){
+      if(!(state.settings.gasUrl || '').trim()){ cb.checked = false; toast('先に GAS の URL を入れてください'); return; }
+      state.settings.calendarOn = true; persistSettings();
+      calendarMsg = '';
+      updateCalStatus();
+      syncCalendar({ manual:true, force:true }).then(function(ok){ toast(ok ? 'カレンダーに入れました' : '反映できませんでした'); renderSet(); });
+    } else {
+      const rm = confirm('カレンダーから車検の予定も消しますか？\n（OK：消す　キャンセル：予定は残す）');
+      state.settings.calendarOn = false; persistSettings();
+      if(rm) syncCalendar({ removeAll:true }).then(function(ok){ toast(ok ? '予定を消しました' : '予定を消せませんでした'); renderSet(); });
+      else renderSet();
+    }
+  };
+  const nowBtn = document.getElementById('btnCalNow');
+  if(nowBtn) nowBtn.onclick = function(){
+    if(!state.settings.calendarOn){ toast('先にチェックを入れてください'); return; }
+    syncCalendar({ manual:true, force:true }).then(function(ok){ toast(ok ? 'カレンダーに入れました' : '反映できませんでした'); });
+  };
 }
 
 function mergeRemote(entries, vehicles, intervals, categories){
@@ -6898,6 +7012,8 @@ window.KakeLog = {
   renderAll: renderAll,
   yen: yen,
   persistVehicles: persistVehicles,
+  syncCalendar: syncCalendar,
+  calendarEvents: calendarEvents,
   fillVehicleSelect: fillVehicleSelect,
   syncVehicleSelectOverflow: syncVehicleSelectOverflow,
   fitShortcutLabels: fitShortcutLabels,
@@ -7020,6 +7136,7 @@ if(typeof ResizeObserver === 'function'){
 }
 go('home');
 requestAnimationFrame(syncNavInd);
+scheduleCalendarSync();
 initBanners().then(function(){ if(state.tab==='home') renderHome(); }).catch(function(){});
 
 if('serviceWorker' in navigator && location.protocol!=='file:'){

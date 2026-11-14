@@ -1,5 +1,5 @@
 /**
- * CarLog beta 0.9.28 — Google Apps Script バックエンド
+ * CarLog beta 0.9.29 — Google Apps Script バックエンド
  *
  * スプレッドシート構成:
  *   1枚目「記録」…経費レコード
@@ -11,6 +11,10 @@
  *  - 安定ID（空IDの手入力行にも内容ベースのID）
  *  - 削除はゴミ箱へ退避（90日保持）
  *  - doGet は getDisplayValues() を使用
+ *
+ * カレンダー通知（車検の期限）:
+ *  - 専用カレンダー「CarLog」に終日予定を作り、約1か月前・1週間前・前日の朝9時に通知します。
+ *  - 初回だけ、エディタで authorizeCalendar を実行してカレンダーの承認をしてください。
  */
 
 var TRASH_RETENTION_DAYS = 90;
@@ -385,6 +389,65 @@ function purgeOldTrash_(days) {
   } catch (err) {}
 }
 
+// ---------- カレンダー通知 ----------
+var CAL_NAME = 'CarLog';
+// 終日予定は 0:00 起点。朝9時に鳴らすため 9時間ぶん短くする（Google の上限は 4 週間 = 40320 分）。
+var CAL_REMINDERS = [28 * 1440 - 540, 7 * 1440 - 540, 1 * 1440 - 540];
+
+// エディタでこの関数を1回だけ実行し、カレンダーの承認をする（デプロイとは別）
+function authorizeCalendar() {
+  var cal = getCarlogCalendar_();
+  Logger.log('OK: ' + cal.getName());
+}
+
+function getCarlogCalendar_() {
+  var found = CalendarApp.getCalendarsByName(CAL_NAME);
+  for (var i = 0; i < found.length; i++) {
+    if (found[i].isOwnedByMe()) return found[i];
+  }
+  return CalendarApp.createCalendar(CAL_NAME);
+}
+
+function getCalEvent_(cal, id) {
+  if (!id) return null;
+  try { return cal.getEventById(id) || null; } catch (err) { return null; }
+}
+
+// events: [{key, title, date:'YYYY-MM-DD'|'' , description}]  date が空なら、その key の予定を消す
+function syncCalendar_(events, force) {
+  var cal = getCarlogCalendar_();
+  var props = PropertiesService.getScriptProperties();
+  var res = { created: 0, updated: 0, removed: 0, unchanged: 0 };
+  events.forEach(function (ev) {
+    if (!ev || !ev.key) return;
+    var pkey = 'cal:' + String(ev.key).slice(0, 80);
+    var raw = props.getProperty(pkey);
+    var rec = null;
+    try { rec = raw ? JSON.parse(raw) : null; } catch (err) { rec = null; }
+    var existing = rec ? getCalEvent_(cal, rec.id) : null;
+    var date = String(ev.date || '').trim();
+    var m = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) {
+      if (existing) { existing.deleteEvent(); res.removed++; }
+      if (raw) props.deleteProperty(pkey);
+      return;
+    }
+    var title = String(ev.title || '車検期限').slice(0, 120);
+    var desc = String(ev.description || '').slice(0, 1000);
+    if (!force && existing && rec.date === date && rec.title === title && rec.desc === desc) {
+      res.unchanged++;
+      return;
+    }
+    if (existing) { existing.deleteEvent(); res.updated++; } else { res.created++; }
+    var day = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    var created = cal.createAllDayEvent(title, day, { description: desc });
+    created.removeAllReminders();
+    CAL_REMINDERS.forEach(function (min) { created.addPopupReminder(min); });
+    props.setProperty(pkey, JSON.stringify({ id: created.getId(), date: date, title: title, desc: desc }));
+  });
+  return res;
+}
+
 function jsonOut_(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -453,6 +516,11 @@ function doPost(e) {
         return clean_(row[0]);
       }, function (v) { return String(v.id || '').trim().replace(/^'/, ''); }, 8);
       return jsonOut_({ status: 'ok', updated: r5.updated, appended: r5.appended, skipped: r5.skipped });
+    }
+
+    if (data.action === 'sync_calendar' && Array.isArray(data.events)) {
+      var r6 = syncCalendar_(data.events, data.force === true);
+      return jsonOut_({ status: 'ok', created: r6.created, updated: r6.updated, removed: r6.removed, unchanged: r6.unchanged });
     }
 
     return jsonOut_({ status: 'unknown_action' });
