@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.24</title>
+<title>CarLog beta 0.9.25</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -471,9 +471,9 @@ details.tax-fold.tint > summary{
 .sc-tile{-webkit-touch-callout:none;}
 .sc-toolbar{position:absolute;top:4px;right:4px;z-index:6;display:flex;align-items:center;justify-content:flex-end;gap:0;margin:0;min-height:0;pointer-events:none;}
 .sc-toolbar > *{pointer-events:auto;}
-.sc-reorder-btn{width:28px;height:28px;min-height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--panel) 88%, transparent);border:1px solid var(--line);border-radius:8px;color:var(--paper-dim);}
-.sc-reorder-btn svg{display:block;}
 .sc-reorder-done,#btnScReorderDone{flex:0 0 auto;min-width:0;min-height:28px;height:28px;padding:0 10px;font-size:12px;font-weight:800;line-height:28px;border:0;border-radius:999px;background:var(--amber);color:var(--ink-on-accent);}
+html.tab-swipe-lock,body.tab-swipe-lock{overflow:hidden;overscroll-behavior:none;}
+.page.is-swipe-pane{background:var(--asphalt);-webkit-overflow-scrolling:touch;}
 .sc-wrap.is-reorder .sc-tile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 .sc-wrap.is-reorder,.sc-wrap.is-reorder #scGrid{touch-action:none;}
 html.sc-drag-lock,body.sc-drag-lock{overflow:hidden;overscroll-behavior:none;touch-action:none;}
@@ -1256,6 +1256,7 @@ html[data-theme="neon"] .home-banner .banner-name{letter-spacing:.06em;}
 
 @media (prefers-reduced-motion: reduce){
   html[data-theme] *{transition:none !important;animation:none !important;}
+  html.tab-swipe-lock,body.tab-swipe-lock{overflow:visible;touch-action:auto;}
   html[data-theme="glass"] .topbar,
   html[data-theme="glass"] .nav,
   html[data-theme="glass-light"] .topbar,
@@ -1426,7 +1427,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.24</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.25</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -2637,12 +2638,11 @@ let scSuppressClick = false;
 let scDrag = null;
 
 function isShortcutReorder(){ return !!scReorder; }
-const ICO_GRIP = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="9" cy="6" r="1.65" fill="currentColor"/><circle cx="15" cy="6" r="1.65" fill="currentColor"/><circle cx="9" cy="12" r="1.65" fill="currentColor"/><circle cx="15" cy="12" r="1.65" fill="currentColor"/><circle cx="9" cy="18" r="1.65" fill="currentColor"/><circle cx="15" cy="18" r="1.65" fill="currentColor"/></svg>';
 function scToolbarHtml(){
   if(scReorder){
     return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button></div>';
   }
-  return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-btn" id="btnScReorder" aria-label="並べ替え">'+ICO_GRIP+'</button></div>';
+  return '';
 }
 function setShortcutReorder(on){
   scReorder = !!on;
@@ -2907,12 +2907,12 @@ function enterReorderInPlace(){
   scReorder = true;
   const wrap = document.getElementById('scWrap');
   if(wrap) wrap.classList.add('is-reorder');
-  const bar = document.getElementById('scToolbar');
-  if(bar){
-    bar.outerHTML = scToolbarHtml();
-    const done = document.getElementById('btnScReorderDone');
-    if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
-  }
+  let bar = document.getElementById('scToolbar');
+  const html = scToolbarHtml();
+  if(bar) bar.outerHTML = html;
+  else if(wrap && html) wrap.insertAdjacentHTML('afterbegin', html);
+  const done = document.getElementById('btnScReorderDone');
+  if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
 }
 function onScPointerDown(e){
   if(e.button!=null && e.button!==0) return;
@@ -2959,8 +2959,6 @@ function bindShortcutGrid(){
   const grid = document.getElementById('scGrid');
   const wrap = document.getElementById('scWrap');
   if(wrap) wrap.classList.toggle('is-reorder', scReorder);
-  const startBtn = document.getElementById('btnScReorder');
-  if(startBtn) startBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); setShortcutReorder(true); };
   const done = document.getElementById('btnScReorderDone');
   if(done) done.onclick = function(e){ e.preventDefault(); e.stopPropagation(); setShortcutReorder(false); };
   if(!grid) return;
@@ -3314,7 +3312,7 @@ const HELP_TOPICS = [
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅、マス3つ分の高さ）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ホームでは長押し、または右上の並べ替えボタンで順番を変え、「完了」で終了します。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅、マス3つ分の高さ）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ショートカットを長押しすると並べ替えできます。終わったら「完了」を押します。サイズや色は設定の「ホームのショートカット」→「見た目」から変えられます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・完了）', body:
@@ -4900,7 +4898,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さ、大は小横を横に2つ・縦に3つ分、特大は中2つ分の幅×2段）を項目ごとに設定できます。ホームでも長押しや右上の並べ替えボタンで順番を変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さ、大は小横を横に2つ・縦に3つ分、特大は中2つ分の幅×2段）を項目ごとに設定できます。ホームではショートカットを長押しすると並べ替えできます。終わったら「完了」を押します。サイズは設定の「見た目」から変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -6366,6 +6364,131 @@ function isSwipeIgnoredTarget(el){
   }
   return false;
 }
+function reduceMotion(){
+  try{ return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  catch(e){ return false; }
+}
+function tabPageEl(id){ return document.getElementById('page-'+id); }
+function neighborTab(dir){
+  const i = TAB_ORDER.indexOf(state.tab);
+  const n = i + dir;
+  if(n<0 || n>=TAB_ORDER.length) return null;
+  return TAB_ORDER[n];
+}
+function renderTabContent(id){
+  if(id==='home') renderHome();
+  else if(id==='input') renderInput();
+  else if(id==='hist') renderHist();
+  else if(id==='alert') renderAlert();
+  else if(id==='set') renderSet();
+}
+function cleanupTabPanes(){
+  if(tabSwipe && tabSwipe.raf) cancelAnimationFrame(tabSwipe.raf);
+  document.querySelectorAll('.page').forEach(function(p){
+    p.classList.remove('is-swipe-pane','is-swipe-animating');
+    p.style.transform = '';
+    p.style.transition = '';
+    p.style.willChange = '';
+    p.style.top = '';
+    p.style.left = '';
+    p.style.right = '';
+    p.style.bottom = '';
+    p.style.width = '';
+    p.style.height = '';
+    p.style.position = '';
+    p.style.zIndex = '';
+    p.style.display = '';
+    p.style.overflow = '';
+    p.style.pointerEvents = '';
+    p.style.background = '';
+  });
+  const app = document.getElementById('app');
+  if(app) app.classList.remove('is-tab-swiping');
+  document.documentElement.classList.remove('tab-swipe-lock');
+  document.body.classList.remove('tab-swipe-lock');
+}
+function layoutSwipePanes(fromId, toId, dir){
+  const app = document.getElementById('app');
+  const from = tabPageEl(fromId);
+  const to = tabPageEl(toId);
+  if(!app || !from || !to) return null;
+  const bar = document.querySelector('header.topbar');
+  const nav = document.querySelector('.nav');
+  const top = bar ? Math.round(bar.getBoundingClientRect().bottom) : 0;
+  const bot = nav ? Math.round(nav.getBoundingClientRect().top) : window.innerHeight;
+  const ar = app.getBoundingClientRect();
+  const cs = getComputedStyle(app);
+  const left = Math.round(ar.left + (parseFloat(cs.paddingLeft)||0));
+  const width = Math.round(app.clientWidth);
+  const height = Math.max(1, bot - top);
+  app.classList.add('is-tab-swiping');
+  document.documentElement.classList.add('tab-swipe-lock');
+  document.body.classList.add('tab-swipe-lock');
+  [from, to].forEach(function(p, i){
+    p.classList.add('is-swipe-pane');
+    p.style.display = 'block';
+    p.style.position = 'fixed';
+    p.style.left = left+'px';
+    p.style.right = 'auto';
+    p.style.top = top+'px';
+    p.style.width = width+'px';
+    p.style.height = height+'px';
+    p.style.overflow = 'auto';
+    p.style.willChange = 'transform';
+    p.style.transition = 'none';
+    p.style.pointerEvents = 'none';
+    p.style.background = 'var(--asphalt)';
+    p.style.zIndex = i===0 ? '7' : '6';
+  });
+  from.style.transform = 'translate3d(0,0,0)';
+  to.style.transform = 'translate3d('+(dir>0?width:-width)+'px,0,0)';
+  return { from:from, to:to, width:width, dir:dir, fromId:fromId, toId:toId };
+}
+function applySwipeX(panes, dx){
+  if(!panes) return;
+  const w = panes.width;
+  let x = dx;
+  if(panes.dir>0 && x>0) x = x*0.28;
+  if(panes.dir<0 && x<0) x = x*0.28;
+  panes.from.style.transform = 'translate3d('+x+'px,0,0)';
+  panes.to.style.transform = 'translate3d('+(x + (panes.dir>0?w:-w))+'px,0,0)';
+}
+function settleSwipePanes(panes, commit, onDone){
+  if(!panes){ if(onDone) onDone(); return; }
+  if(reduceMotion()){ if(onDone) onDone(); return; }
+  const gen = tabSwipeGen;
+  const w = panes.width;
+  const endX = commit ? (panes.dir>0 ? -w : w) : 0;
+  const ease = 'transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1)';
+  panes.from.style.transition = ease;
+  panes.to.style.transition = ease;
+  panes.from.classList.add('is-swipe-animating');
+  panes.to.classList.add('is-swipe-animating');
+  panes.from.style.transform = 'translate3d('+endX+'px,0,0)';
+  panes.to.style.transform = 'translate3d('+(endX + (panes.dir>0?w:-w))+'px,0,0)';
+  let done=false;
+  function finish(){
+    if(done || gen!==tabSwipeGen) return;
+    done=true;
+    if(onDone) onDone();
+  }
+  panes.to.addEventListener('transitionend', finish, {once:true});
+  panes.from.addEventListener('transitionend', finish, {once:true});
+  setTimeout(finish, 280);
+}
+
+let tabSwipe = null;
+let tabAnim = false;
+let tabSwipeGen = 0;
+function bumpTabSwipeGen(){ tabSwipeGen++; return tabSwipeGen; }
+function abortTabSwipe(){
+  bumpTabSwipeGen();
+  if(tabSwipe && tabSwipe.raf) cancelAnimationFrame(tabSwipe.raf);
+  tabSwipe = null;
+  tabAnim = false;
+  cleanupTabPanes();
+}
+
 function trySwitchTabBySwipe(dx, dy, target){
   if(isSwipeIgnoredTarget(target)) return false;
   dx = Number(dx)||0; dy = Number(dy)||0;
@@ -6378,32 +6501,118 @@ function trySwitchTabBySwipe(dx, dy, target){
   const page = TAB_ORDER[next];
   if(page!=='input'){ state.editId=null; state.inputPreset=null; }
   else if(state.tab!=='input'){ state.editId=null; state.inputPreset=null; }
-  go(page);
+  go(page, { animate:true });
   return true;
 }
 function bindTabSwipe(){
-  let startX=0, startY=0, tracking=false;
+  let startX=0, startY=0, tracking=false, armed=false;
   const root = document.getElementById('app');
   if(!root || root._tabSwipeBound) return;
   root._tabSwipeBound = true;
   root.addEventListener('touchstart', function(e){
+    if(tabAnim || scDrag) { tracking=false; return; }
     if(e.touches.length!==1){ tracking=false; return; }
     const t = e.touches[0];
     startX=t.clientX; startY=t.clientY;
     tracking = !isSwipeIgnoredTarget(e.target);
+    armed = false;
   }, {passive:true});
   root.addEventListener('touchmove', function(e){
     if(!tracking || e.touches.length!==1) return;
+    if(reduceMotion()){
+      const t = e.touches[0];
+      const dx = t.clientX-startX, dy = t.clientY-startY;
+      if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16) tracking=false;
+      return;
+    }
     const t = e.touches[0];
     const dx = t.clientX-startX, dy = t.clientY-startY;
-    if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 16) tracking=false;
-  }, {passive:true});
-  root.addEventListener('touchend', function(e){
+    if(!armed){
+      if(Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12){ tracking=false; return; }
+      if(Math.abs(dx) < 12 || Math.abs(dy) >= Math.abs(dx) * 0.75) return;
+      const dir = dx < 0 ? 1 : -1;
+      const dest = neighborTab(dir);
+      if(!dest){ tracking=false; return; }
+      renderTabContent(dest);
+      const panes = layoutSwipePanes(state.tab, dest, dir);
+      if(!panes){ tracking=false; return; }
+      bumpTabSwipeGen();
+      tabSwipe = Object.assign({ dest:dest, dx:0, raf:0 }, panes);
+      armed = true;
+    }
+    if(armed && tabSwipe){
+      if(e.cancelable) e.preventDefault();
+      tabSwipe.dx = dx;
+      if(!tabSwipe.raf) tabSwipe.raf = requestAnimationFrame(function(){
+        if(!tabSwipe) return;
+        tabSwipe.raf = 0;
+        applySwipeX(tabSwipe, tabSwipe.dx);
+      });
+    }
+  }, {passive:false});
+  function endSwipe(e){
     if(!tracking) return;
     tracking=false;
-    const t = e.changedTouches[0];
-    trySwitchTabBySwipe(t.clientX-startX, t.clientY-startY, e.target);
-  }, {passive:true});
+    const t = (e.changedTouches && e.changedTouches[0]) || {};
+    const dx = (t.clientX||startX)-startX, dy = (t.clientY||startY)-startY;
+    if(armed && tabSwipe){
+      const commit = Math.abs(tabSwipe.dx) >= Math.min(TAB_SWIPE_PX, tabSwipe.width*0.22);
+      const dest = tabSwipe.dest;
+      const panes = tabSwipe;
+      if(panes.raf) cancelAnimationFrame(panes.raf);
+      tabAnim = true;
+      settleSwipePanes(panes, commit, function(){
+        tabSwipe = null;
+        tabAnim = false;
+        cleanupTabPanes();
+        if(commit){
+          if(dest!=='input'){ state.editId=null; state.inputPreset=null; }
+          else if(state.tab!=='input'){ state.editId=null; state.inputPreset=null; }
+          go(dest);
+        }
+      });
+      armed = false;
+      return;
+    }
+    armed = false;
+    trySwitchTabBySwipe(dx, dy, e.target);
+  }
+  root.addEventListener('touchend', endSwipe, {passive:true});
+  root.addEventListener('touchcancel', endSwipe, {passive:true});
+}
+function previewTabSwipe(frac){
+  frac = (frac==null) ? 0.42 : frac;
+  if(tabSwipe && tabSwipe.preview){ cleanupTabPanes(); tabSwipe=null; }
+  const dir = 1;
+  const dest = neighborTab(dir);
+  if(!dest) return null;
+  const header = document.querySelector('header.topbar');
+  const before = header ? header.getBoundingClientRect() : null;
+  renderTabContent(dest);
+  const panes = layoutSwipePanes(state.tab, dest, dir);
+  if(!panes) return null;
+  const dx = -panes.width * frac;
+  applySwipeX(panes, dx);
+  tabSwipe = Object.assign({ dest:dest, dx:dx, raf:0, preview:true }, panes);
+  const after = header ? header.getBoundingClientRect() : null;
+  return {
+    from: state.tab,
+    to: dest,
+    dx: dx,
+    headerBefore: before ? {x:before.x,y:before.y,w:before.width,h:before.height} : null,
+    headerAfter: after ? {x:after.x,y:after.y,w:after.width,h:after.height} : null,
+    fromTransform: panes.from.style.transform,
+    toTransform: panes.to.style.transform,
+    fromId: panes.from.id,
+    toId: panes.to.id
+  };
+}
+function endTabSwipePreview(){
+  if(tabSwipe && tabSwipe.preview){
+    cleanupTabPanes();
+    tabSwipe=null;
+    tabAnim=false;
+  }
 }
 function renderAll(){
   fillVehicleSelect();
@@ -6415,7 +6624,41 @@ function renderAll(){
   else renderSet();
   updateAlertBadge();
 }
-function go(page){
+function go(page, opts){
+  opts = opts || {};
+  if(tabSwipe || tabAnim){
+    const mid = !!(tabSwipe || tabAnim);
+    abortTabSwipe();
+    if(mid) opts = Object.assign({}, opts, { animate:false });
+  }
+  const from = state.tab;
+  const animate = !!(opts.animate && from && page && page!==from && !reduceMotion() && !scDrag);
+  if(animate){
+    renderTabContent(page);
+    const dir = (TAB_ORDER.indexOf(page) > TAB_ORDER.indexOf(from)) ? 1 : -1;
+    const panes = layoutSwipePanes(from, page, dir);
+    if(panes){
+      bumpTabSwipeGen();
+      state.tab = page;
+      document.body.setAttribute('data-tab', page);
+      document.querySelectorAll('.nav button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-page')===page); });
+      updateSyncBtn();
+      updateAlertBadge();
+      tabAnim = true;
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){
+          settleSwipePanes(panes, true, function(){
+            tabAnim = false;
+            cleanupTabPanes();
+            document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.id==='page-'+page); });
+            renderAll();
+            window.scrollTo(0,0);
+          });
+        });
+      });
+      return;
+    }
+  }
   state.tab = page;
   document.body.setAttribute('data-tab', page);
   document.querySelectorAll('.page').forEach(function(p){ p.classList.toggle('active', p.id==='page-'+page); });
@@ -6423,13 +6666,13 @@ function go(page){
   renderAll();
   window.scrollTo(0,0);
 }
-
 document.getElementById('nav').addEventListener('click', function(e){
   const b = e.target.closest('button'); if(!b) return;
   const page = b.getAttribute('data-page');
+  if(!page || page===state.tab) return;
   if(page!=='input'){ state.editId=null; state.inputPreset=null; }
   else { state.editId=null; state.inputPreset=null; }
-  go(page);
+  go(page, { animate:true });
 });
 document.getElementById('vehicleSelect').addEventListener('change', function(){
   selectVehicle(this.value);
@@ -6617,6 +6860,8 @@ window.KakeLog = {
   getCodeGsText: function(){ return codeGsText; },
   trySwitchTabBySwipe: trySwitchTabBySwipe,
   isSwipeIgnoredTarget: isSwipeIgnoredTarget,
+  previewTabSwipe: previewTabSwipe,
+  endTabSwipePreview: endTabSwipePreview,
   isHorizontallyScrollable: isHorizontallyScrollable,
   shortcutIconSize: shortcutIconSize,
   applyShortcutIconSize: applyShortcutIconSize,
