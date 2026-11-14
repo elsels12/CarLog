@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.23</title>
+<title>CarLog beta 0.9.24</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -119,6 +119,10 @@ body[data-tab="set"]{--screen:var(--tab-set);}
 #scGrid .sc-tile.sc-l .icn{width:48px;height:48px;}
 #scGrid .sc-tile.sc-l .icn svg{width:44px;height:44px;}
 #scGrid .sc-tile.sc-l .lbl{font-size:13px;font-weight:800;line-height:1.25;}
+#scGrid .sc-tile.sc-l3{grid-column:span 4;grid-row:span 3;flex-direction:column;justify-content:center;align-items:center;padding:10px 8px;gap:6px;}
+#scGrid .sc-tile.sc-l3 .icn{width:40px;height:40px;}
+#scGrid .sc-tile.sc-l3 .icn svg{width:36px;height:36px;}
+#scGrid .sc-tile.sc-l3 .lbl{font-size:13px;font-weight:800;line-height:1.25;text-align:center;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:clip;}
 #scGrid .sc-tile.sc-w{grid-column:span 2;grid-row:span 1;flex-direction:row;justify-content:flex-start;align-items:center;padding:2px 5px 2px 4px;gap:3px;}
 #scGrid .sc-tile.sc-w .icn{width:14px;height:14px;flex-shrink:0;}
 #scGrid .sc-tile.sc-w .icn svg{width:13px;height:13px;}
@@ -430,6 +434,10 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 #tilePreview .sc-tile{width:76px;min-height:76px;}
 #tilePreview .sc-tile.sc-s{width:36px;min-height:36px;height:36px;padding:3px 2px;}
 #tilePreview .sc-tile.sc-l{width:156px;min-height:156px;}
+#tilePreview .sc-tile.sc-l3{width:156px;min-height:116px;height:116px;flex-direction:column;justify-content:center;align-items:center;padding:10px 8px;gap:6px;}
+#tilePreview .sc-tile.sc-l3 .icn{width:40px;height:40px;}
+#tilePreview .sc-tile.sc-l3 .icn svg{width:36px;height:36px;}
+#tilePreview .sc-tile.sc-l3 .lbl{font-size:13px;font-weight:800;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:clip;}
 #tilePreview .sc-tile.sc-w{width:76px;min-height:36px;height:36px;flex-direction:row;justify-content:flex-start;align-items:center;padding:2px 5px 2px 4px;gap:3px;}
 #tilePreview .sc-tile.sc-w .icn{width:14px;height:14px;flex-shrink:0;}
 #tilePreview .sc-tile.sc-w .icn svg{width:13px;height:13px;}
@@ -459,22 +467,26 @@ details.tax-fold.tint > summary{
   border-left: 4px solid color-mix(in srgb, var(--_t) 80%, #fff 10%);
 }
 .sc-wrap .sc-grid{margin:0;}
-.sc-wrap{padding:8px 8px 6px;}
+.sc-wrap{padding:8px 8px 6px;position:relative;}
 .sc-tile{-webkit-touch-callout:none;}
-.sc-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-height:32px;margin:0 0 6px;}
-.sc-wrap.is-reorder .sc-toolbar{justify-content:space-between;}
-.sc-toolbar-title{font-size:12px;font-weight:700;color:var(--paper);}
-.sc-reorder-btn{background:none;border:0;color:var(--paper-dim);font-size:12px;font-weight:700;padding:6px 8px;min-height:32px;}
-#btnScReorderDone{flex:0 0 auto;min-width:88px;min-height:40px;padding:8px 16px;}
+.sc-toolbar{position:absolute;top:4px;right:4px;z-index:6;display:flex;align-items:center;justify-content:flex-end;gap:0;margin:0;min-height:0;pointer-events:none;}
+.sc-toolbar > *{pointer-events:auto;}
+.sc-reorder-btn{width:28px;height:28px;min-height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:color-mix(in srgb, var(--panel) 88%, transparent);border:1px solid var(--line);border-radius:8px;color:var(--paper-dim);}
+.sc-reorder-btn svg{display:block;}
+.sc-reorder-done,#btnScReorderDone{flex:0 0 auto;min-width:0;min-height:28px;height:28px;padding:0 10px;font-size:12px;font-weight:800;line-height:28px;border:0;border-radius:999px;background:var(--amber);color:var(--ink-on-accent);}
 .sc-wrap.is-reorder .sc-tile{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+.sc-wrap.is-reorder,.sc-wrap.is-reorder #scGrid{touch-action:none;}
+html.sc-drag-lock,body.sc-drag-lock{overflow:hidden;overscroll-behavior:none;touch-action:none;}
 .sc-placeholder{box-sizing:border-box;border:1.5px dashed var(--line);border-radius:var(--radius-tile);background:transparent;min-width:0;pointer-events:none;}
 .sc-placeholder.sc-s{grid-column:span 1;grid-row:span 1;}
 .sc-placeholder.sc-m{grid-column:span 2;grid-row:span 2;}
 .sc-placeholder.sc-w{grid-column:span 2;grid-row:span 1;}
 .sc-placeholder.sc-mw{grid-column:span 4;grid-row:span 2;}
+.sc-placeholder.sc-l3{grid-column:span 4;grid-row:span 3;}
 .sc-placeholder.sc-l{grid-column:span 4;grid-row:span 4;}
-.sc-tile.is-dragging{z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.35);margin:0;transition:none!important;animation:none!important;touch-action:none;}
-#cSize button{flex:1 1 0;min-width:0;padding:7px 2px;font-size:10px;letter-spacing:0;}
+.sc-tile.is-dragging{z-index:90;box-shadow:0 4px 16px rgba(0,0,0,.35);margin:0;transition:none!important;animation:none!important;touch-action:none;will-change:transform;}
+#cSize.seg{flex-wrap:wrap;}
+#cSize button{flex:1 1 calc(33.33% - 3px);min-width:calc(33.33% - 3px);padding:8px 2px;font-size:11px;letter-spacing:0;}
 .tint-vehicle{--_t:#5aa7e0;}
 .tint-shortcut{--_t:var(--amber);}
 .tint-month{--_t:#2dd4bf;}
@@ -1414,7 +1426,7 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.23</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.24</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1657,7 +1669,8 @@ function persistIntervals(){ saveJson(KEYS.intervals, state.intervals); }
 function normalizeShortcutIconSize(v){
   v = String(v==null?'':v).toLowerCase();
   if(v==='s' || v==='small' || v==='小') return 's';
-  if(v==='l' || v==='large' || v==='大') return 'l';
+  if(v==='l3' || v==='large3' || v==='l-3' || v==='大') return 'l3';
+  if(v==='l' || v==='large' || v==='xl' || v==='xlarge' || v==='特大') return 'l';
   if(v==='mw' || v==='medium-wide' || v==='mediumwide' || v==='mwide' || v==='中横' || v==='中横長') return 'mw';
   if(v==='w' || v==='wide' || v==='sw' || v==='横長' || v==='小横長' || v==='小横') return 'w';
   if(v==='m' || v==='medium' || v==='中' || v==='') return 'm';
@@ -2408,7 +2421,7 @@ function shortcutTileHtml(sc, attrs){
   const id = sc.id || '';
   const label = sc.label || sc.category || '';
   const icon = sc.icon || sc.id || 'star';
-  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : (look.size==='w' ? ' sc-w' : (look.size==='mw' ? ' sc-mw' : ' sc-m')));
+  const sizeClass = look.size==='s' ? ' sc-s' : (look.size==='l' ? ' sc-l' : (look.size==='l3' ? ' sc-l3' : (look.size==='w' ? ' sc-w' : (look.size==='mw' ? ' sc-mw' : ' sc-m'))));
   const extra = (attrs.className ? ' '+attrs.className : '') + sizeClass;
   const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'" data-sc-size="'+look.size+'"');
   const op = look.opacity;
@@ -2624,11 +2637,12 @@ let scSuppressClick = false;
 let scDrag = null;
 
 function isShortcutReorder(){ return !!scReorder; }
+const ICO_GRIP = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="9" cy="6" r="1.65" fill="currentColor"/><circle cx="15" cy="6" r="1.65" fill="currentColor"/><circle cx="9" cy="12" r="1.65" fill="currentColor"/><circle cx="15" cy="12" r="1.65" fill="currentColor"/><circle cx="9" cy="18" r="1.65" fill="currentColor"/><circle cx="15" cy="18" r="1.65" fill="currentColor"/></svg>';
 function scToolbarHtml(){
   if(scReorder){
-    return '<div class="sc-toolbar" id="scToolbar"><span class="sc-toolbar-title">並べ替え</span><button type="button" class="btn primary" id="btnScReorderDone">完了</button></div>';
+    return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button></div>';
   }
-  return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-btn" id="btnScReorder">並べ替え</button></div>';
+  return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-btn" id="btnScReorder" aria-label="並べ替え">'+ICO_GRIP+'</button></div>';
 }
 function setShortcutReorder(on){
   scReorder = !!on;
@@ -2638,6 +2652,7 @@ function setShortcutReorder(on){
 function scSpanClass(el){
   if(!el) return 'sc-m';
   if(el.classList.contains('sc-l')) return 'sc-l';
+  if(el.classList.contains('sc-l3')) return 'sc-l3';
   if(el.classList.contains('sc-mw')) return 'sc-mw';
   if(el.classList.contains('sc-w')) return 'sc-w';
   if(el.classList.contains('sc-s')) return 'sc-s';
@@ -2647,34 +2662,144 @@ function endScDrag(){
   if(!scDrag) return;
   const d = scDrag;
   scDrag = null;
+  if(d.raf) cancelAnimationFrame(d.raf);
   if(d.move) document.removeEventListener('pointermove', d.move);
-  if(d.up) document.removeEventListener('pointerup', d.up);
-  if(d.up) document.removeEventListener('pointercancel', d.up);
-  try{ if(d.tile && d.ptr!=null) d.tile.releasePointerCapture(d.ptr); }catch(e){}
+  if(d.up) document.removeEventListener('pointerup', d.up, true);
+  if(d.up) document.removeEventListener('pointercancel', d.up, true);
+  if(d.touchMove) document.removeEventListener('touchmove', d.touchMove, true);
+  try{ if(d.capEl && d.ptr!=null) d.capEl.releasePointerCapture(d.ptr); }catch(e){}
+  document.documentElement.classList.remove('sc-drag-lock');
+  document.body.classList.remove('sc-drag-lock');
   if(d.tile){
     d.tile.classList.remove('is-dragging');
     d.tile.style.cssText = d.prevCss || '';
   }
   if(d.placeholder && d.placeholder.parentNode) d.placeholder.parentNode.removeChild(d.placeholder);
 }
-function scDragRetarget(clientX, clientY, placeholder){
-  const grid = document.getElementById('scGrid');
-  if(!grid || !placeholder) return;
-  const items = Array.from(grid.querySelectorAll('.sc-tile:not(.is-dragging), .sc-placeholder'));
-  let best = null, bestD = Infinity;
-  items.forEach(function(el){
-    if(el===placeholder) return;
+function scDragMetricsReset(){
+  scDragMetrics = { moves:0, rafs:0, rectReads:0, slotMoves:0, html:0 };
+}
+function getShortcutDragMetrics(){ return scDragMetrics || { moves:0, rafs:0, rectReads:0, slotMoves:0, html:0 }; }
+let scDragMetrics = { moves:0, rafs:0, rectReads:0, slotMoves:0, html:0 };
+function scCacheSlots(d){
+  const grid = d.grid || document.getElementById('scGrid');
+  const items = [];
+  if(!grid){ d.slots = items; return items; }
+  Array.from(grid.children).forEach(function(el){
+    if(el.classList.contains('is-dragging')) return;
     const r = el.getBoundingClientRect();
-    const d = Math.hypot(clientX - (r.left+r.width/2), clientY - (r.top+r.height/2));
-    if(d < bestD){ bestD = d; best = el; }
+    if(scDragMetrics) scDragMetrics.rectReads++;
+    items.push({
+      el: el,
+      isPh: el.classList.contains('sc-placeholder'),
+      left: r.left, top: r.top, right: r.right, bottom: r.bottom,
+      cx: r.left + r.width/2, cy: r.top + r.height/2
+    });
   });
-  if(!best) return;
-  const r = best.getBoundingClientRect();
-  const after = (clientX > r.left + r.width/2) || (Math.abs(clientX - (r.left+r.width/2)) < 8 && clientY > r.top + r.height/2);
+  d.slots = items;
+  return items;
+}
+function scMovePlaceholder(d, anchor, after){
+  const ph = d.placeholder;
+  if(!ph || !anchor || anchor===ph) return;
   if(after){
-    if(best.nextSibling !== placeholder) best.parentNode.insertBefore(placeholder, best.nextSibling);
-  } else if(best.previousSibling !== placeholder){
-    best.parentNode.insertBefore(placeholder, best);
+    if(anchor.nextSibling === ph) return;
+    anchor.parentNode.insertBefore(ph, anchor.nextSibling);
+  } else {
+    if(anchor.previousSibling === ph) return;
+    anchor.parentNode.insertBefore(ph, anchor);
+  }
+  if(scDragMetrics) scDragMetrics.slotMoves++;
+  d.hoverEl = anchor;
+  d.hoverAfter = after;
+  scCacheSlots(d);
+}
+function scPickSlot(d, x, y){
+  const items = d.slots || [];
+  const keepPad = 10;
+  const cur = d.hoverEl ? items.filter(function(s){ return s.el===d.hoverEl; })[0] : null;
+  if(cur && !cur.isPh && x >= cur.left-keepPad && x <= cur.right+keepPad && y >= cur.top-keepPad && y <= cur.bottom+keepPad){
+    const inset = 8;
+    let insideOther = null;
+    for(let i=0;i<items.length;i++){
+      const s = items[i];
+      if(s.isPh || s.el===d.hoverEl) continue;
+      if(x>=s.left+inset && x<=s.right-inset && y>=s.top+inset && y<=s.bottom-inset){ insideOther = s; break; }
+    }
+    if(!insideOther){
+      const after = (x > cur.cx) || (Math.abs(x-cur.cx)<8 && y>cur.cy);
+      if(after !== d.hoverAfter) scMovePlaceholder(d, cur.el, after);
+      return;
+    }
+    const dNew = Math.hypot(x-insideOther.cx, y-insideOther.cy);
+    const dCur = Math.hypot(x-cur.cx, y-cur.cy);
+    if(dCur <= dNew + 12){
+      const after = (x > cur.cx) || (Math.abs(x-cur.cx)<8 && y>cur.cy);
+      if(after !== d.hoverAfter) scMovePlaceholder(d, cur.el, after);
+      return;
+    }
+    const after = (x > insideOther.cx) || (Math.abs(x-insideOther.cx)<8 && y>insideOther.cy);
+    scMovePlaceholder(d, insideOther.el, after);
+    return;
+  }
+  let inside = null;
+  for(let i=0;i<items.length;i++){
+    const s = items[i];
+    if(s.isPh) continue;
+    if(x>=s.left && x<=s.right && y>=s.top && y<=s.bottom){ inside = s; break; }
+  }
+  if(inside){
+    const after = (x > inside.cx) || (Math.abs(x-inside.cx)<8 && y>inside.cy);
+    scMovePlaceholder(d, inside.el, after);
+    return;
+  }
+  let best = null, bestD = Infinity;
+  for(let i=0;i<items.length;i++){
+    const s = items[i];
+    if(s.isPh) continue;
+    const dist = Math.hypot(x-s.cx, y-s.cy);
+    if(dist < bestD){ bestD = dist; best = s; }
+  }
+  if(!best) return;
+  if(cur){
+    const dCur = Math.hypot(x-cur.cx, y-cur.cy);
+    if(dCur <= bestD + 16) return;
+  }
+  const after = (x > best.cx) || (Math.abs(x-best.cx)<8 && y>best.cy);
+  scMovePlaceholder(d, best.el, after);
+}
+function scAutoScroll(d){
+  const edge = 48;
+  const maxStep = 12;
+  const y = d.y;
+  const vh = window.innerHeight;
+  // Skip layout reads when the pointer is well inside the viewport.
+  if(y > edge + 64 && y < vh - edge - 64){ d.scrolling = false; return; }
+  const nav = document.querySelector('.nav');
+  const topbar = document.querySelector('header.topbar');
+  const topLim = (topbar ? topbar.getBoundingClientRect().bottom : 0) + 8;
+  const botLim = (nav ? nav.getBoundingClientRect().top : vh) - 8;
+  if(scDragMetrics) scDragMetrics.rectReads += 2;
+  let dy = 0;
+  if(y < topLim + edge){
+    const t = Math.min(1, (topLim + edge - y) / edge);
+    dy = -Math.ceil(4 + t * maxStep);
+  } else if(y > botLim - edge){
+    const t = Math.min(1, (y - (botLim - edge)) / edge);
+    dy = Math.ceil(4 + t * maxStep);
+  }
+  if(!dy){ d.scrolling = false; return; }
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+  const prev = window.scrollY || document.documentElement.scrollTop || 0;
+  const next = Math.max(0, Math.min(maxScroll, prev + dy));
+  const applied = next - prev;
+  if(!applied){ d.scrolling = false; return; }
+  window.scrollTo(0, next);
+  d.scrolling = true;
+  if(d.slots){
+    d.slots.forEach(function(s){
+      s.top -= applied; s.bottom -= applied; s.cy -= applied;
+    });
   }
 }
 function scCommitReorder(dragId, placeholder){
@@ -2701,7 +2826,9 @@ function beginScDrag(tile, id, e){
   endScDrag();
   const grid = document.getElementById('scGrid');
   if(!grid) return;
+  scDragMetricsReset();
   const rect = tile.getBoundingClientRect();
+  if(scDragMetrics) scDragMetrics.rectReads++;
   const placeholder = document.createElement('div');
   placeholder.className = 'sc-placeholder '+scSpanClass(tile);
   placeholder.setAttribute('aria-hidden', 'true');
@@ -2709,8 +2836,10 @@ function beginScDrag(tile, id, e){
   grid.insertBefore(placeholder, tile);
   tile.classList.add('is-dragging');
   tile.style.position = 'fixed';
-  tile.style.left = rect.left+'px';
-  tile.style.top = rect.top+'px';
+  tile.style.left = '0';
+  tile.style.top = '0';
+  tile.style.right = 'auto';
+  tile.style.bottom = 'auto';
   tile.style.width = rect.width+'px';
   tile.style.height = rect.height+'px';
   tile.style.zIndex = '90';
@@ -2718,28 +2847,61 @@ function beginScDrag(tile, id, e){
   tile.style.pointerEvents = 'none';
   tile.style.transition = 'none';
   tile.style.animation = 'none';
+  tile.style.willChange = 'transform';
   tile.style.gridColumn = 'auto';
   tile.style.gridRow = 'auto';
   const offsetX = e.clientX - rect.left;
   const offsetY = e.clientY - rect.top;
+  function applyTransform(x, y){
+    tile.style.transform = 'translate3d('+(x-offsetX)+'px,'+(y-offsetY)+'px,0)';
+  }
+  applyTransform(e.clientX, e.clientY);
+  document.documentElement.classList.add('sc-drag-lock');
+  document.body.classList.add('sc-drag-lock');
+  const wrap = document.getElementById('scWrap') || grid;
   const ptr = e.pointerId;
-  try{ tile.setPointerCapture(ptr); }catch(err){}
+  const capEl = wrap;
+  try{ capEl.setPointerCapture(ptr); }catch(err){}
+  const d = {
+    tile:tile, id:id, placeholder:placeholder, prevCss:prevCss, ptr:ptr,
+    grid:grid, capEl:capEl, x:e.clientX, y:e.clientY, pending:false, raf:0,
+    scrolling:false, hoverEl:null, hoverAfter:false, move:null, up:null, touchMove:null
+  };
+  scCacheSlots(d);
+  d.hoverEl = placeholder;
+  function tick(){
+    d.raf = 0;
+    if(scDrag !== d) return;
+    if(scDragMetrics) scDragMetrics.rafs++;
+    applyTransform(d.x, d.y);
+    scAutoScroll(d);
+    scPickSlot(d, d.x, d.y);
+    d.pending = false;
+    if(d.scrolling && scDrag === d) d.raf = requestAnimationFrame(tick);
+  }
   function onMove(ev){
     if(ptr!=null && ev.pointerId!==ptr) return;
-    tile.style.left = (ev.clientX-offsetX)+'px';
-    tile.style.top = (ev.clientY-offsetY)+'px';
+    d.x = ev.clientX; d.y = ev.clientY;
+    d.pending = true;
+    if(scDragMetrics) scDragMetrics.moves++;
     if(ev.cancelable) ev.preventDefault();
-    scDragRetarget(ev.clientX, ev.clientY, placeholder);
+    if(!d.raf) d.raf = requestAnimationFrame(tick);
+  }
+  function onTouchMove(ev){
+    if(ev.cancelable) ev.preventDefault();
   }
   function onUp(ev){
-    if(ptr!=null && ev.pointerId!==ptr) return;
+    if(scDrag !== d) return;
+    if(ptr!=null && ev.pointerId!=null && ev.pointerId!==ptr) return;
     scSuppressClick = true;
     scCommitReorder(id, placeholder);
   }
-  scDrag = { tile:tile, id:id, placeholder:placeholder, prevCss:prevCss, ptr:ptr, move:onMove, up:onUp };
+  d.move = onMove; d.up = onUp; d.touchMove = onTouchMove;
+  scDrag = d;
   document.addEventListener('pointermove', onMove, {passive:false});
-  document.addEventListener('pointerup', onUp);
-  document.addEventListener('pointercancel', onUp);
+  document.addEventListener('pointerup', onUp, true);
+  document.addEventListener('pointercancel', onUp, true);
+  document.addEventListener('touchmove', onTouchMove, {passive:false, capture:true});
 }
 function enterReorderInPlace(){
   scReorder = true;
@@ -3119,6 +3281,14 @@ function gasHelpHtml(){
 }
 
 const HELP_TOPICS = [
+  { id:'homescreen', title:'ホーム画面に追加', body:
+    '<p>よければホーム画面に追加すると、アプリのように使えて便利です。全画面で開けて、アイコンからすぐ起動でき、通信が不安定なときも使いやすくなります。必須ではありません。使いたいときだけ、次の手順で追加できます。</p>'+
+    '<ol>'+
+    '<li>iPhoneのSafariでは、共有ボタン（四角から矢印が上に出ているボタン）をタップし、「ホーム画面に追加」を選びます。</li>'+
+    '<li>AndroidのChromeでは、右上のメニュー（点が縦に3つ並んだボタン）を開き、「ホーム画面に追加」または「アプリをインストール」を選びます。</li>'+
+    '</ol>'+
+    '<p>一度追加すれば、ほかのアプリと同じようにアイコンから開けます。</p>'
+  },
   { id:'vehicle', title:'車の登録', body:
     '<p>はじめに、乗る車を1台登録します。名前、排気量、燃料の種類、初度登録（初めて登録した年月）、車重、軽自動車やエコカーかどうか、購入後の初回車検日を入れます。</p>'+
     '<ol><li>設定の「車両を追加」、または最初の画面の「車を登録する」を開きます。</li>'+
@@ -3144,7 +3314,7 @@ const HELP_TOPICS = [
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ホームでは長押し、または「並べ替え」で順番を変え、「完了」で終了します。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅、マス3つ分の高さ）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ホームでは長押し、または右上の並べ替えボタンで順番を変え、「完了」で終了します。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・完了）', body:
@@ -3788,7 +3958,7 @@ function fitShortcutLabels(root){
 function fitWideShortcutLabels(root){
   root = root || document.getElementById('scGrid');
   if(!root) return;
-  root.querySelectorAll('.sc-tile.sc-w .lbl, .sc-tile.sc-mw .lbl').forEach(function(lbl){
+  root.querySelectorAll('.sc-tile.sc-w .lbl, .sc-tile.sc-mw .lbl, .sc-tile.sc-l3 .lbl').forEach(function(lbl){
     lbl.style.fontSize = '';
     lbl.style.textOverflow = 'clip';
     const base = parseFloat(getComputedStyle(lbl).fontSize) || 9;
@@ -3822,6 +3992,7 @@ function observeShortcutGrid(){
   scheduleFitShortcutLabels();
 }
 function renderHome(){
+  if(scDrag && scDragMetrics) scDragMetrics.html++;
   const veh = currentVehicle();
   if(!veh){
     document.getElementById('page-home').innerHTML = needVehicleHtml({
@@ -4729,7 +4900,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さ、大は中2つ分の幅×2段）を項目ごとに設定できます。ホームでも長押しや「並べ替え」で順番を変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さ、大は小横を横に2つ・縦に3つ分、特大は中2つ分の幅×2段）を項目ごとに設定できます。ホームでも長押しや右上の並べ替えボタンで順番を変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -4875,14 +5046,14 @@ function deleteCustomCategory(id, opts){
 }
 function sizeSegHtml(current){
   const cur = normalizeShortcutIconSize(current) || defaultShortcutIconSize();
-  const opts = [['l','大'],['mw','中横'],['m','中'],['w','小横'],['s','小']];
+  const opts = [['l','特大'],['l3','大'],['mw','中横'],['m','中'],['w','小横'],['s','小']];
   return '<label class="f">アイコンサイズ</label>'+
     '<div class="seg" id="cSize" role="radiogroup" aria-label="アイコンサイズ">'+
     opts.map(function(p){
       return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
     }).join('')+
     '</div>'+
-    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は大と同じ幅・中と同じ高さで、どちらもアイコンの右にラベルを1行で出します。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
+    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、どちらもアイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅で、高さはマス3つ分）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
 }
 function readEditorSize(){
   const on = document.querySelector('#cSize button.on');
@@ -6381,6 +6552,7 @@ window.KakeLog = {
   persistShortcuts: persistShortcuts,
   setShortcutReorder: setShortcutReorder,
   isShortcutReorder: isShortcutReorder,
+  getShortcutDragMetrics: getShortcutDragMetrics,
   persistSettings: persistSettings,
   persistCategories: persistCategories,
   persistLooks: persistLooks,
