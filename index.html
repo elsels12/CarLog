@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.36</title>
+<title>CarLog beta 0.9.38</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -1444,7 +1444,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.36</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.38</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3889,6 +3889,11 @@ function alertsFor(veh){
 function isActiveAlert(a){
   return !!a && (a.status==='overdue' || a.status==='action' || a.status==='reserved' || a.status==='caution' || a.status==='soon' || a.status==='info');
 }
+// ホームの点検アラートに出す項目: 通常の注意・超過に加えて、距離の残りが visibleKm（1,300km）以内の項目（緑）も出す
+function isVisibleAlert(a){
+  if(isActiveAlert(a)) return true;
+  return !!a && a.status==='ok' && a.remainKm!=null && a.visibleKm!=null && a.remainKm <= a.visibleKm;
+}
 function updateAlertBadge(){
   const btn = document.querySelector('nav.nav button[data-page="alert"]');
   if(!btn) return;
@@ -4034,8 +4039,8 @@ function renderHome(){
   const ecoMap = C.fuelEconomyByRecordId(recs, vname);
   const tax = taxBundle(veh);
   const alerts = alertsFor(veh);
-  const hotRank = { overdue:0, action:1, reserved:2, caution:3, soon:4, info:5 };
-  const hot = alerts.filter(isActiveAlert).slice().sort(function(a,b){ return (hotRank[a.status]||9) - (hotRank[b.status]||9); });
+  const hotRank = { overdue:0, action:1, reserved:2, caution:3, soon:4, info:5, ok:6 };
+  const hot = alerts.filter(isVisibleAlert).slice().sort(function(a,b){ return (hotRank[a.status]==null?9:hotRank[a.status]) - (hotRank[b.status]==null?9:hotRank[b.status]); });
   const odo = currentOdo(veh);
 
   let alertHtml = hot.length ? hot.map(function(a){
@@ -4186,16 +4191,35 @@ function alertUsedPct(a){
     return Math.max(0, Math.min(100, (1 - a.remainDays/cycle)*100));
   }
   if(!C.hasBaselineValue(a && a.last)) return 0;
-  const pcts = [];
-  if(a.remainKm!=null && Number(item.km)>0){
-    pcts.push(((Number(item.km) - a.remainKm) / Number(item.km)) * 100);
+  // バーの長さを色の段階にそろえる: 緑=0〜60% / 黄=60〜80% / オレンジ=80〜100%未満 / 超過=100%
+  // （項目ごとの間隔が違っても、色が変わる位置は同じになる）
+  function zone(remain, total, soon){
+    if(remain==null || !(total>0)) return null;
+    const orange = soon/2;
+    if(remain<=0) return 100;
+    if(remain<=orange) return 80 + 20*(1 - remain/orange)*0.999;
+    if(remain<=soon) return 60 + 20*(1 - (remain-orange)/(soon-orange));
+    const span = Math.max(1, total - soon);
+    return Math.max(0, Math.min(60, 60*(1 - (remain-soon)/span)));
   }
-  if(a.remainDays!=null && a.last && a.last.date && a.dueDate){
-    const start = C.toDate(a.last.date), end = C.toDate(a.dueDate), now = new Date();
-    if(start && end && end>start) pcts.push(((now-start)/(end-start))*100);
-  } else if(a.remainDays!=null && Number(item.months)>0){
-    const total = Number(item.months)*30.4375;
-    if(total>0) pcts.push(((total - a.remainDays)/total)*100);
+  const pcts = [];
+  const kmInt = Number(item.km);
+  if(a.remainKm!=null && kmInt>0){
+    const soon = Number(a.soonKm)>0 ? Number(a.soonKm) : 1000;
+    const orange = Number(a.orangeKm)>0 ? Number(a.orangeKm) : soon/2;
+    // orange境界を soon/2 でなく実際の値に合わせる
+    const r = a.remainKm;
+    let v;
+    if(r<=0) v=100;
+    else if(r<=orange) v = 80 + 19.9*(1 - r/orange);
+    else if(r<=soon) v = 60 + 20*(1 - (r-orange)/Math.max(1,soon-orange));
+    else v = Math.max(0, Math.min(60, 60*(1 - (r-soon)/Math.max(1,kmInt-soon))));
+    pcts.push(v);
+  }
+  const soonDays = item.soonDays!=null ? Number(item.soonDays) : C.SOON_REMAIN_DAYS;
+  const monthsTotal = Number(item.months)*30.4375;
+  if(a.remainDays!=null && monthsTotal>0){
+    pcts.push(zone(a.remainDays, monthsTotal, soonDays));
   }
   if(!pcts.length) return 0;
   return Math.max.apply(null, pcts);
@@ -7062,7 +7086,9 @@ window.KakeLog = {
   openReplacementInput: openReplacementInput,
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
+  alertCardHtml: alertCardHtml,
   isActiveAlert: isActiveAlert,
+  isVisibleAlert: isVisibleAlert,
   remainLines: remainLines,
   escapeHtml: escapeHtml,
   loadDemoData: loadDemoData,

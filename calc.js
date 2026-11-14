@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.36 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.38 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -770,6 +770,7 @@
   // 間隔が短い項目では、間隔の半分・4分の1を上限にする（最初から黄色にならないように）。
   var SOON_KM_FIXED = 1000;
   var ORANGE_KM_FIXED = 500;
+  var VISIBLE_KM_FIXED = 1300;
   function soonKmFor(item, opts) {
     if (item.soonKm != null) return item.soonKm;
     var kmInt = Number(item.km) || 0;
@@ -816,8 +817,11 @@
     var dayStatus = remainAxisStatus(remainDays, { overdueAt: 0, cautionAt: soonDays, cautionStatus: "soon" });
     var status = !last ? "unknown" : (worseStatus(kmStatus, dayStatus) || "ok");
     var orangeKm = orangeKmFor(item, soonKm);
+    // 点検アラートに出し始める残り距離（緑で表示）。間隔が短い項目では間隔の65%まで。
+    var visibleKm = Math.max(soonKm, Math.round(Math.min(VISIBLE_KM_FIXED, kmInt > 0 ? kmInt * 0.65 : VISIBLE_KM_FIXED) / 100) * 100);
     var kmTier = remainKm == null ? null : (remainKm <= 0 ? "red" : (remainKm <= orangeKm ? "orange" : (remainKm <= soonKm ? "yellow" : "green")));
     var dayTier = tierFromStatus(dayStatus);
+    if (dayTier === "yellow" && remainDays != null && remainDays <= soonDays / 2) dayTier = "orange";
     var tier = !last ? null : (worseTier(kmTier, dayTier) || "green");
     var triggeredBy = (remainKm != null && remainDays != null)
       ? (remainKm <= 0 || remainDays <= 0
@@ -834,6 +838,7 @@
       remainKm: remainKm,
       soonKm: soonKm,
       orangeKm: orangeKm,
+      visibleKm: visibleKm,
       tier: tier,
       remainDays: remainDays,
       kmStatus: kmStatus,
