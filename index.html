@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.18</title>
+<title>CarLog beta 0.9.20</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -84,8 +84,8 @@ h1,h2,h3{margin:0;font-family:var(--font-display);font-weight:700;}
 .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
 .kpi .val,.stat-line .v,.rank-row .km,.rank-row .kml,.rank-row .lit,.alert-item .adetail,.alert-item .meta,.bar-row .amt,.hist-item .kml,.hist-item .d,.hist-item .a,.int-row input,.home-banner .banner-odo{font-variant-numeric:tabular-nums;}
 .topbar{position:sticky;top:0;z-index:30;background:var(--topbar-bg);
-  border-bottom:3px solid color-mix(in srgb, var(--screen) 72%, var(--line));padding:8px 12px 8px;display:flex;align-items:center;gap:8px;}
-.topbar .brand{flex:1;min-width:0;}
+  border-bottom:3px solid color-mix(in srgb, var(--screen) 72%, var(--line));padding:8px 12px 8px;display:flex;align-items:center;gap:6px;}
+.topbar .brand{flex:0 0 auto;flex-shrink:0;min-width:auto;}
 .topbar .eyebrow{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--screen);text-transform:none;}
 .beta-badge{display:inline-block;margin-left:6px;vertical-align:middle;font-family:var(--font-mono);font-size:9px;font-weight:800;letter-spacing:.12em;color:var(--screen);border:1.5px solid color-mix(in srgb, var(--screen) 55%, transparent);background:color-mix(in srgb, var(--screen) 14%, transparent);border-radius:4px;padding:1px 5px;position:relative;top:-2px;text-transform:uppercase;}
 body[data-tab="home"]{--screen:var(--tab-home);}
@@ -93,10 +93,10 @@ body[data-tab="input"]{--screen:var(--tab-input);}
 body[data-tab="hist"]{--screen:var(--tab-hist);}
 body[data-tab="alert"]{--screen:var(--tab-alert);}
 body[data-tab="set"]{--screen:var(--tab-set);}
-.topbar h1{font-size:22px;letter-spacing:.02em;line-height:1.1;text-transform:none;}
-.topbar .tagline{font-family:var(--font-ui);font-size:10px;font-weight:600;color:var(--paper-dim);margin-top:2px;letter-spacing:.02em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.sc-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-flow:dense;gap:6px;margin:0 0 8px;align-items:stretch;}
-.sc-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-tile);padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--paper);min-height:64px;box-shadow:var(--tile-shadow);grid-column:span 1;grid-row:span 1;min-width:0;}
+.topbar h1{font-size:22px;letter-spacing:.02em;line-height:1.1;text-transform:none;white-space:nowrap;}
+.topbar .tagline{font-family:var(--font-ui);font-size:10px;font-weight:600;color:var(--paper-dim);margin-top:2px;letter-spacing:.02em;line-height:1.3;white-space:nowrap;overflow:visible;text-overflow:clip;width:auto;min-width:0;}
+.sc-grid{--sc-gap:6px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-auto-flow:dense;gap:var(--sc-gap);margin:0 0 8px;align-items:stretch;}
+.sc-tile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-tile);padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--paper);min-height:64px;box-shadow:var(--tile-shadow);grid-column:span 2;grid-row:span 2;min-width:0;}
 .sc-tile:active{border-color:var(--amber);background:rgba(223,172,88,.08);}
 .sc-tile .icn{width:28px;height:28px;color:var(--amber);display:flex;align-items:center;justify-content:center;}
 .sc-tile .icn svg{width:26px;height:26px;display:block;}
@@ -104,11 +104,18 @@ body[data-tab="set"]{--screen:var(--tab-set);}
 .sc-tile.sc-fill{border-width:1.5px;border-style:solid;}
 .sc-tile.sc-fill .lbl{font-weight:800;text-shadow:0 1px 1px rgba(0,0,0,.4);}
 .sc-tile.sc-fill .icn{filter:drop-shadow(0 1px 1px rgba(0,0,0,.35));}
-#scGrid .sc-tile.sc-s{min-height:52px;padding:6px 2px 4px;gap:3px;}
-#scGrid .sc-tile.sc-s .icn{width:22px;height:22px;}
-#scGrid .sc-tile.sc-s .icn svg{width:20px;height:20px;}
-#scGrid .sc-tile.sc-s .lbl{font-size:9px;line-height:1.2;}
-#scGrid .sc-tile.sc-l{grid-column:span 2;grid-row:span 2;min-height:0;height:100%;padding:12px 8px;gap:8px;}
+#scWrap{container-type:inline-size;}
+#scGrid.sc-grid{--sc-cell:calc((100cqi - 7 * var(--sc-gap)) / 8);grid-auto-rows:var(--sc-cell);}
+#scGrid .sc-tile{min-height:0;height:auto;}
+#scGrid .sc-tile.sc-s{grid-column:span 1;grid-row:span 1;padding:3px 2px 2px;gap:1px;}
+#scGrid .sc-tile.sc-s .icn{width:18px;height:18px;}
+#scGrid .sc-tile.sc-s .icn svg{width:16px;height:16px;}
+#scGrid .sc-tile.sc-s .lbl{font-size:8px;line-height:1.1;letter-spacing:0;max-width:100%;overflow:hidden;white-space:nowrap;word-break:normal;}
+#scGrid .sc-tile.sc-s.sc-icon-only .lbl{display:none;}
+#scGrid .sc-tile.sc-s.sc-icon-only .icn{width:20px;height:20px;}
+#scGrid .sc-tile.sc-s.sc-icon-only .icn svg{width:18px;height:18px;}
+#scGrid .sc-tile.sc-m{grid-column:span 2;grid-row:span 2;}
+#scGrid .sc-tile.sc-l{grid-column:span 4;grid-row:span 4;min-height:0;height:100%;padding:12px 8px;gap:8px;}
 #scGrid .sc-tile.sc-l .icn{width:48px;height:48px;}
 #scGrid .sc-tile.sc-l .icn svg{width:44px;height:44px;}
 #scGrid .sc-tile.sc-l .lbl{font-size:13px;font-weight:800;line-height:1.25;}
@@ -191,22 +198,31 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-item .meta{font-size:10px;color:var(--paper-dim);font-family:var(--font-mono);text-align:right;font-weight:700;}
 .link-btn{background:none;border:0;color:var(--amber);font-size:10px;font-weight:700;padding:0 0 0 4px;cursor:pointer;vertical-align:baseline;}
 .alert-card{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;
-  column-gap:8px;row-gap:4px;align-items:center;padding:14px 16px;margin:0 0 8px;
+  column-gap:8px;row-gap:4px;align-items:center;padding:14px 12px;margin:0 0 8px;
   border:1px solid var(--line);border-radius:var(--radius-card);background:var(--kpi-bg);box-sizing:border-box;}
 .alert-card:last-child{margin-bottom:0;}
-.alert-card-head{grid-column:1;grid-row:1;display:flex;align-items:center;gap:8px;min-width:0;}
-.alert-card-head .name{font-size:16px;font-weight:800;min-width:0;line-height:1.4;letter-spacing:-.01em;}
-.alert-card .badge{flex:0 0 auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;letter-spacing:.04em;line-height:1.2;}
-.alert-card-actions{grid-column:2;grid-row:1;display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:4px;margin:0;}
-.alert-card-sub{grid-column:1 / -1;grid-row:2;display:flex;align-items:baseline;gap:8px;min-width:0;margin-top:0;}
+.alert-card-head{grid-column:1;grid-row:1;display:flex;align-items:center;gap:5px;min-width:0;}
+.alert-card-head .name{font-size:16px;font-weight:800;min-width:0;line-height:1.3;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.alert-card .badge{flex:0 0 auto;font-size:10px;font-weight:700;padding:2px 5px;border-radius:999px;letter-spacing:.02em;line-height:1.2;}
+.alert-card-remain{grid-column:2;grid-row:1 / 3;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:1px;min-width:0;max-width:38%;width:max-content;justify-self:end;align-self:center;}
+.alert-card-sub{grid-column:1;grid-row:2;display:flex;align-items:baseline;gap:8px;min-width:0;margin-top:0;}
+.alert-card-foot{grid-column:1 / -1;grid-row:3;display:flex;flex-direction:row;align-items:center;gap:10px;min-width:0;margin-top:4px;}
+.alert-card-actions{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:4px;margin:0;flex:0 0 auto;}
 .alert-info{flex:1 1 auto;min-width:0;font-size:13px;font-weight:600;line-height:1.4;color:var(--paper-dim);font-family:var(--font-mono);}
-.alert-remain{flex:0 0 auto;font-size:14px;font-weight:800;line-height:1.4;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;letter-spacing:-.02em;}
+.alert-remain{flex:0 0 auto;font-size:13px;font-weight:800;line-height:1.35;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;letter-spacing:-.02em;}
+@media (max-width:360px){
+  .alert-card{padding:12px 10px;column-gap:6px;}
+  .alert-card-head{gap:4px;}
+  .alert-card .badge{padding:1px 4px;font-size:9px;letter-spacing:0;}
+  .alert-remain{font-size:12px;}
+}
+
 .alert-remain.is-ok{color:var(--ok);}
 .alert-remain.is-soon,.alert-remain.is-caution{color:var(--amber);}
 .alert-remain.is-overdue,.alert-remain.is-action{color:var(--danger);}
 .alert-remain.is-info{color:var(--cold,#4a90c8);}
 .alert-remain.is-unknown{color:var(--paper-dim);}
-.alert-bar{grid-column:1 / -1;grid-row:3;height:4px;margin-top:4px;border-radius:2px;overflow:hidden;
+.alert-bar{flex:1 1 auto;min-width:0;height:4px;margin:0;border-radius:2px;overflow:hidden;align-self:center;
   background:color-mix(in srgb, var(--paper-dim) 28%, transparent);}
 .alert-bar>i{display:block;height:100%;width:0;max-width:100%;border-radius:2px;background:var(--paper-dim);}
 .alert-bar.is-ok>i{background:var(--ok);}
@@ -321,27 +337,26 @@ body:has(.modal-bg.show) .nav{visibility:hidden;pointer-events:none;}
 #firstRunHome h2,#needVehicle h2{margin:0 0 8px;text-align:center;font-size:18px;}
 #firstRunHome .help,#needVehicle .help{text-align:center;margin:0 0 4px;}
 #firstRunHome .btn-row,#needVehicle .btn-row{justify-content:center;margin-top:16px;}
+.veh-title-wrap{position:relative;flex:1 1 auto;min-width:0;max-width:none;height:42px;margin:0;align-self:center;}
+.veh-title-wrap[hidden]{display:none;}
+.veh-title{
+  display:block;box-sizing:border-box;height:42px;line-height:42px;padding:0 2px;
+  font-family:var(--font-ui);font-size:20px;font-weight:600;letter-spacing:.03em;
+  color:var(--paper);background:none;border:0;border-radius:0;box-shadow:none;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-align:center;pointer-events:none;-webkit-text-size-adjust:100%;
+}
+.veh-title-wrap.is-overflow .veh-title{text-align:left;}
 #vehicleSelect[hidden]{display:none;}
 #vehicleSelect{
+  position:absolute;inset:0;z-index:1;
   -webkit-appearance:none;appearance:none;
-  box-sizing:border-box;flex:0 1 200px;width:200px;min-width:120px;
-  max-width:min(200px, calc(100vw - 160px));
-  height:42px;margin:0;padding:0 26px 0 10px;
-  font-family:var(--font-ui);font-size:20px;font-weight:800;line-height:40px;letter-spacing:-.03em;
-  color:var(--chip-fg);background-color:var(--chip-bg);
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23cbd5e1' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' d='M2.4 4.2L6 8L9.6 4.2'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 8px center;background-size:12px 12px;
-  border:1px solid var(--chip-line);border-radius:var(--radius-chip);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  cursor:pointer;text-align:left;text-align-last:left;-webkit-text-size-adjust:100%;
-  align-self:center;
+  box-sizing:border-box;width:100%;height:100%;margin:0;padding:0;
+  opacity:0;border:0;border-radius:0;background:none;background-image:none;box-shadow:none;
+  color:transparent;font-size:16px;cursor:pointer;-webkit-text-size-adjust:100%;
 }
-#vehicleSelect:focus{outline:none;border-color:var(--amber);}
-#vehicleSelect option{font-size:20px;font-weight:700;}
-html[data-theme="neumo"] #vehicleSelect,
-html[data-theme="glass-light"] #vehicleSelect{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23141518' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' d='M2.4 4.2L6 8L9.6 4.2'/%3E%3C/svg%3E");
-}
+#vehicleSelect:focus{outline:none;}
+#vehicleSelect option{font-size:16px;font-weight:600;color:initial;text-align:left;}
 .sync-dot.err{background:var(--danger);}
 .nav-sync-dot{
   position:absolute;top:3px;right:10%;z-index:1;
@@ -383,9 +398,9 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 .seg button{flex:1;background:var(--chip-bg);border:1px solid var(--chip-line);color:var(--chip-fg);border-radius:8px;font-size:11px;font-weight:700;padding:7px 6px;}
 .seg button.on{border-color:var(--amber);color:var(--amber);background:rgba(223,172,88,.12);}
 #tilePreview{display:flex;justify-content:center;padding:8px 0 4px;}
-#tilePreview .sc-tile{width:76px;min-height:68px;}
-#tilePreview .sc-tile.sc-s{width:64px;min-height:52px;}
-#tilePreview .sc-tile.sc-l{width:156px;min-height:136px;}
+#tilePreview .sc-tile{width:76px;min-height:76px;}
+#tilePreview .sc-tile.sc-s{width:36px;min-height:36px;height:36px;padding:3px 2px;}
+#tilePreview .sc-tile.sc-l{width:156px;min-height:156px;}
 .sc-edit .look-btn{flex-shrink:0;}
 
 /* per-section accents: faint wash + left rail, dark theme, AA contrast */
@@ -735,7 +750,7 @@ html[data-theme="neumo"] .card,html[data-theme="neumo"] details.tax-fold,html[da
   border:1px solid #9ea2a8;background:#c9ccd1;margin-bottom:14px;
 }
 html[data-theme="neumo"] .kpi-row{margin-bottom:14px;gap:8px;}
-html[data-theme="neumo"] .sc-grid{gap:8px;}
+html[data-theme="neumo"] .sc-grid{--sc-gap:8px;}
 html[data-theme="neumo"] .tint,html[data-theme="neumo"] .kpi.tint,html[data-theme="neumo"] details.tax-fold.tint{
   background:#c9ccd1;border:1px solid #9ea2a8;border-left:1px solid #9ea2a8;
   box-shadow:var(--card-shadow);
@@ -831,7 +846,7 @@ html[data-theme="neumo-dark"] .card,html[data-theme="neumo-dark"] details.tax-fo
   border:1px solid #4a4e55;background:#2c2e33;margin-bottom:14px;
 }
 html[data-theme="neumo-dark"] .kpi-row{margin-bottom:14px;gap:8px;}
-html[data-theme="neumo-dark"] .sc-grid{gap:8px;}
+html[data-theme="neumo-dark"] .sc-grid{--sc-gap:8px;}
 html[data-theme="neumo-dark"] .tint,html[data-theme="neumo-dark"] .kpi.tint,html[data-theme="neumo-dark"] details.tax-fold.tint{
   background:#2c2e33;border:1px solid #4a4e55;border-left:1px solid #4a4e55;
   box-shadow:var(--card-shadow);
@@ -1285,11 +1300,14 @@ html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.18</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.20</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
-  <select id="vehicleSelect" aria-label="車両"></select>
+  <div class="veh-title-wrap" id="vehicleTitleWrap" hidden>
+    <span class="veh-title" id="vehicleTitle" aria-hidden="true"></span>
+    <select id="vehicleSelect" aria-label="車両を切り替え"></select>
+  </div>
 </header>
 <div id="app">
   <section class="page active" id="page-home"></section>
@@ -2796,10 +2814,16 @@ const HELP_TOPICS = [
     '<li>金額だけの経費も、同じ画面で残せます。</li>'+
     '<li>交通費の内訳は、初期値が高速代です。有料道路、フェリー、カーシェア・レンタカー、代行運転、レッカー・ロードサービスなども選べます。装備やカスタムは「カスタム・装備品」にまとまっています。</li></ol>'
   },
+  { id:'hist', title:'履歴（今月・今年・燃費）', body:
+    '<p>履歴タブの一番上に、いま選んでいる車の今月・今年の合計と、通算の平均燃費が出ます。車を切り替えると、これらの数字もその車に合わせて変わります。</p>'+
+    '<ol><li>平均燃費をタップすると、下の燃費の詳細（月平均や給油ごと）へ進みます。</li>'+
+    '<li>費目のフィルタと記録一覧は、その下に続きます。</li>'+
+    '<li>これらの合計はホームには出しません。ホームはショートカット、点検アラート、最近の記録です。</li></ol>'
+  },
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
-    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。初期は中）を項目ごとに設定できます。大は2マス分のタイルになり、空いたマスは詰めて並びます。</li>'+
+    '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。大は中2つ分の幅×2段で、空いたマスは詰めて並びます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
   { id:'maint', title:'点検（間隔・前回交換・交換した）', body:
@@ -2807,6 +2831,8 @@ const HELP_TOPICS = [
     '<ol><li>各項目の鉛筆アイコン（編集）から、間隔（km / 月）と前回交換（日付・走行距離）を変えられます。</li>'+
     '<li>アプリに記録がなくても、前回交換を手で入れて基準にできます。記録があるときは、新しいほうを使います。</li>'+
     '<li>まだ入れていなければ「前回交換を設定」と出ます。交換したら「交換した」を押します。</li>'+
+    '<li>カード右に残りの日数と残り距離を別々に出します（例：あと38日／あと420 km）。間隔が一方だけの項目は、その一方だけです。</li>'+
+    '<li>残り距離が500km以下で「注意」、期限の距離を過ぎると「超過」です。日数の目安（30日以内で間近、期限切れで超過）はこれまでどおりです。カード全体は厳しいほうの状態になり、点検タブの印とホームのアラートにも距離の注意が入ります。</li>'+
     '<li>下の「＋項目を追加」で、タイミングベルトなど独自の項目を足せます。</li></ol>'
   },
   { id:'shaken', title:'車検のアラート', body:
@@ -2924,19 +2950,73 @@ async function testGasConnection(){
 
 function fillVehicleSelect(){
   const sel = document.getElementById('vehicleSelect');
+  const wrap = document.getElementById('vehicleTitleWrap');
+  const title = document.getElementById('vehicleTitle');
   if(!sel) return;
   if(!state.vehicles.length){
     sel.innerHTML = '';
     sel.hidden = true;
     sel.setAttribute('aria-hidden','true');
+    if(title) title.textContent = '';
+    if(wrap){ wrap.hidden = true; wrap.classList.remove('is-overflow'); }
     return;
   }
   sel.hidden = false;
   sel.removeAttribute('aria-hidden');
+  if(wrap) wrap.hidden = false;
   const cur = state.settings.currentVehicleId;
   sel.innerHTML = state.vehicles.map(function(v){
     return '<option value="'+escapeHtml(v.id)+'"'+(v.id===cur?' selected':'')+'>'+escapeHtml(v.name)+'</option>';
   }).join('');
+  if(title) title.textContent = selectedVehicleLabel(sel);
+  scheduleVehicleSelectOverflow();
+}
+function selectedVehicleLabel(sel){
+  sel = sel || document.getElementById('vehicleSelect');
+  if(!sel || sel.selectedIndex < 0) return '';
+  const opt = sel.options[sel.selectedIndex];
+  return opt ? String(opt.text || '') : '';
+}
+function syncVehicleSelectOverflow(){
+  const sel = document.getElementById('vehicleSelect');
+  const wrap = document.getElementById('vehicleTitleWrap');
+  const title = document.getElementById('vehicleTitle');
+  if(!sel || sel.hidden || !wrap || wrap.hidden || !title){
+    if(wrap) wrap.classList.remove('is-overflow');
+    return false;
+  }
+  const label = selectedVehicleLabel(sel);
+  if(title.textContent !== label) title.textContent = label;
+  // Measure as the default (centered) so a name that fits is not left-aligned
+  // just because a previous overflow class changed padding/alignment.
+  wrap.classList.remove('is-overflow');
+  const cs = getComputedStyle(title);
+  let probe = document.getElementById('vehicleSelectProbe');
+  if(!probe){
+    probe = document.createElement('span');
+    probe.id = 'vehicleSelectProbe';
+    probe.setAttribute('aria-hidden','true');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;white-space:nowrap;pointer-events:none;';
+    document.body.appendChild(probe);
+  }
+  probe.style.font = cs.font;
+  probe.style.fontFamily = cs.fontFamily;
+  probe.style.fontSize = cs.fontSize;
+  probe.style.fontWeight = cs.fontWeight;
+  probe.style.letterSpacing = cs.letterSpacing;
+  probe.textContent = label;
+  const textW = probe.scrollWidth;
+  const avail = title.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+  const overflow = textW > avail + 0.5;
+  wrap.classList.toggle('is-overflow', overflow);
+  return overflow;
+}
+function scheduleVehicleSelectOverflow(){
+  if(scheduleVehicleSelectOverflow._raf) cancelAnimationFrame(scheduleVehicleSelectOverflow._raf);
+  scheduleVehicleSelectOverflow._raf = requestAnimationFrame(function(){
+    scheduleVehicleSelectOverflow._raf = 0;
+    syncVehicleSelectOverflow();
+  });
 }
 function selectVehicle(id){
   if(!id || !state.vehicles.some(function(v){ return v.id===id; })) return;
@@ -3362,6 +3442,36 @@ function monthShort(ym){
   return Number(m[2])+'月';
 }
 
+function fitShortcutLabels(root){
+  root = root || document.getElementById('scGrid');
+  if(!root) return;
+  root.querySelectorAll('.sc-tile.sc-s').forEach(function(t){
+    t.classList.remove('sc-icon-only');
+    const lbl = t.querySelector('.lbl');
+    if(!lbl) return;
+    if(lbl.scrollWidth > lbl.clientWidth + 0.5) t.classList.add('sc-icon-only');
+  });
+}
+function scheduleFitShortcutLabels(){
+  if(scheduleFitShortcutLabels._raf) cancelAnimationFrame(scheduleFitShortcutLabels._raf);
+  scheduleFitShortcutLabels._raf = requestAnimationFrame(function(){
+    scheduleFitShortcutLabels._raf = 0;
+    requestAnimationFrame(function(){ fitShortcutLabels(); });
+  });
+}
+function observeShortcutGrid(){
+  const grid = document.getElementById('scGrid');
+  if(!grid) return;
+  if(typeof ResizeObserver === 'function'){
+    if(!observeShortcutGrid._ro){
+      observeShortcutGrid._ro = new ResizeObserver(function(){ scheduleFitShortcutLabels(); });
+    }
+    observeShortcutGrid._ro.disconnect();
+    observeShortcutGrid._ro.observe(grid);
+  }
+  fitShortcutLabels(grid);
+  scheduleFitShortcutLabels();
+}
 function renderHome(){
   const veh = currentVehicle();
   if(!veh){
@@ -3376,19 +3486,12 @@ function renderHome(){
   }
   const recs = recordsOf(veh);
   const vname = vehicleName(veh);
-  const now = new Date();
-  const mo = monthRange(now), yr = yearToDateRange(now);
-  const monthSum = sumAmount(recs, mo.from, mo.to);
-  const yearSum = sumAmount(recs, yr.from, yr.to);
-  const fuel = C.averageFuelEconomy(recs, vname);
   const ecoMap = C.fuelEconomyByRecordId(recs, vname);
   const tax = taxBundle(veh);
   const alerts = alertsFor(veh);
   const hotRank = { overdue:0, action:1, caution:2, soon:3, info:4 };
   const hot = alerts.filter(isActiveAlert).slice().sort(function(a,b){ return (hotRank[a.status]||9) - (hotRank[b.status]||9); });
   const odo = currentOdo(veh);
-  const fuelTxt = fuel.kmPerL != null ? fuel.kmPerL.toFixed(1)+' km/L' : '—';
-  const fuelSub = fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出';
 
   let alertHtml = hot.length ? hot.map(function(a){
     return alertCardHtml(a, { edit:false });
@@ -3421,11 +3524,6 @@ function renderHome(){
     '<div class="card tint tint-vehicle'+(bannerHtml?' has-banner':'')+'" id="vehCard">'+
       bannerHtml+vehHead+vehDetails+
     '</div>'+
-    '<div class="row kpi-row">'+
-      '<div class="kpi tint tint-month"><div class="lbl">今月</div><div class="val">'+escapeHtml(yen(monthSum))+'</div></div>'+
-      '<div class="kpi tint tint-year"><div class="lbl">今年</div><div class="val">'+escapeHtml(yen(yearSum))+'</div></div>'+
-      '<div class="kpi tint tint-fuel" id="avgFuelKpi" title="燃費の詳細を見る"><div class="lbl">平均燃費</div><div class="val" style="font-size:15px">'+escapeHtml(fuelTxt)+'</div><div class="sub">'+escapeHtml(fuelSub)+'</div></div>'+
-    '</div>'+
     '<div class="card tint tint-shortcut sc-wrap" id="scWrap"><div class="sc-grid" id="scGrid">'+scHtml+'</div></div>'+
     '<div class="card tint tint-alert" id="alertCard"><h2>点検アラート <span class="hint">'+hot.length+'件</span></h2>'+alertHtml+'</div>'+
     '<div class="card tint tint-hist" id="recentCard"><h2>最近の記録 <span class="hint"><button type="button" class="more-link" id="btnAllHist">履歴を見る</button></span></h2>'+
@@ -3443,8 +3541,7 @@ function renderHome(){
     const b = e.target.closest('[data-sc]');
     if(b) openShortcut(b.getAttribute('data-sc'));
   };
-  const avg = document.getElementById('avgFuelKpi');
-  if(avg) avg.onclick = function(){ goFuelDetail(); };
+  observeShortcutGrid();
   const allBtn = document.getElementById('btnAllHist');
   if(allBtn) allBtn.onclick = function(){ go('hist'); };
   document.querySelectorAll('#recentCard .hist-item').forEach(function(el){
@@ -3502,23 +3599,28 @@ function alertKeyInfo(a){
   if(a.dueKm!=null) parts.push(km(a.dueKm));
   return parts.length ? '次回 '+parts.join('・') : '次回目安はありません';
 }
+function remainLines(a){
+  if(!a) return [];
+  const lines = [];
+  if(a.remainDays!=null && a.remainDays!==''){
+    const st = a.dayStatus || (a.kind==='shaken' ? (a.status||'ok') : (Number(a.remainDays)<=0 ? 'overdue' : 'ok'));
+    lines.push({ kind:'days', text: C.formatRemainDays(a.remainDays), status: st });
+  }
+  if(a.remainKm!=null && a.remainKm!==''){
+    const st = a.kmStatus || (Number(a.remainKm)<=0 ? 'overdue' : 'ok');
+    lines.push({ kind:'km', text: C.formatRemainKm(a.remainKm), status: st });
+  }
+  return lines.filter(function(ln){ return ln.text; });
+}
+function remainBlockHtml(a){
+  const lines = remainLines(a);
+  if(!lines.length) return '';
+  return '<div class="alert-card-remain">'+lines.map(function(ln){
+    return '<div class="alert-remain is-'+escapeHtml(ln.status)+'" data-remain="'+escapeHtml(ln.kind)+'">'+escapeHtml(ln.text)+'</div>';
+  }).join('')+'</div>';
+}
 function remainHighlight(a){
-  if(!a) return '';
-  const hasK = a.remainKm!=null, hasD = a.remainDays!=null;
-  if(!hasK && !hasD) return '';
-  function kmTxt(n){ return Math.abs(Math.round(n)).toLocaleString('ja-JP')+'km'; }
-  function dayTxt(n){ return Math.abs(Math.round(n))+'日'; }
-  let pick;
-  if(hasK && hasD){
-    const rk = a.remainKm, rd = a.remainDays;
-    if(rk<=0 && rd>0) pick = 'km';
-    else if(rd<=0 && rk>0) pick = 'months';
-    else if(rk<=0 && rd<=0) pick = (Math.abs(rd) >= Math.abs(rk/100)) ? 'months' : 'km';
-    else if(a.triggeredBy==='km' || a.triggeredBy==='months') pick = a.triggeredBy;
-    else pick = (rd<=rk) ? 'months' : 'km';
-  } else pick = hasK ? 'km' : 'months';
-  if(pick==='km') return a.remainKm<=0 ? kmTxt(a.remainKm)+'超過' : 'あと'+kmTxt(a.remainKm);
-  return a.remainDays<=0 ? dayTxt(a.remainDays)+'超過' : 'あと'+dayTxt(a.remainDays);
+  return remainLines(a).map(function(ln){ return ln.text; }).join('\n');
 }
 function alertUsedPct(a){
   const item = (a && a.item) || {};
@@ -3554,7 +3656,7 @@ function alertCardHtml(a, opts){
   const badgeLabel = (!isShaken && !hasLast) ? '未設定' : statusLabel(a.status);
   const badge = '<span class="badge '+escapeHtml(st)+'">'+escapeHtml(badgeLabel)+'</span>';
   const info = alertKeyInfo(a);
-  const remain = remainHighlight(a);
+  const remainHtml = remainBlockHtml(a);
   const pct = Math.max(0, Math.min(100, alertUsedPct(a)));
   const variant = alertCardVariant(opts);
   const actions = [];
@@ -3564,11 +3666,12 @@ function alertCardHtml(a, opts){
   const editAttr = (canEdit && variant==='B') ? ' data-edit-int="'+escapeHtml(item.id)+'"' : '';
   return '<div class="alert-card'+(isShaken?' alert-shaken':'')+(canEdit && variant==='B'?' is-editable':'')+'" data-iid="'+escapeHtml(item.id||'')+'"'+editAttr+'>'+
     '<div class="alert-card-head"><span class="name">'+escapeHtml(item.label||'')+'</span>'+badge+'</div>'+
-    (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
-    '<div class="alert-card-sub"><div class="alert-info">'+escapeHtml(info)+'</div>'+
-      (remain?'<div class="alert-remain is-'+escapeHtml(st)+'">'+escapeHtml(remain)+'</div>':'')+
+    remainHtml+
+    '<div class="alert-card-sub"><div class="alert-info">'+escapeHtml(info)+'</div></div>'+
+    '<div class="alert-card-foot">'+
+      '<div class="alert-bar is-'+escapeHtml(st)+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
+      (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
     '</div>'+
-    '<div class="alert-bar is-'+escapeHtml(st)+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
     '</div>';
 }
 function bindAlertActions(root){
@@ -3986,6 +4089,27 @@ function categoryBarsHtml(list, from, to){
       return '<div class="bar-row"><span class="n">'+escapeHtml(x.name)+'</span><span class="track"><i style="width:'+w+'%"></i></span><span class="amt">'+escapeHtml(yen(x.amount))+'</span></div>';
     }).join('')+'</div>';
 }
+function summaryKpiHtml(veh){
+  veh = veh || currentVehicle();
+  if(!veh) return '';
+  const recs = recordsOf(veh);
+  const now = new Date();
+  const mo = monthRange(now), yr = yearToDateRange(now);
+  const monthSum = sumAmount(recs, mo.from, mo.to);
+  const yearSum = sumAmount(recs, yr.from, yr.to);
+  const fuel = C.averageFuelEconomy(recs, vehicleName(veh));
+  const fuelTxt = fuel.kmPerL != null ? fuel.kmPerL.toFixed(1)+' km/L' : '—';
+  const fuelSub = fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出';
+  return '<div class="row kpi-row" id="histKpis">'+
+    '<div class="kpi tint tint-month" id="monthKpi"><div class="lbl">今月</div><div class="val">'+escapeHtml(yen(monthSum))+'</div></div>'+
+    '<div class="kpi tint tint-year" id="yearKpi"><div class="lbl">今年</div><div class="val">'+escapeHtml(yen(yearSum))+'</div></div>'+
+    '<div class="kpi tint tint-fuel" id="avgFuelKpi" title="燃費の詳細を見る"><div class="lbl">平均燃費</div><div class="val" style="font-size:15px">'+escapeHtml(fuelTxt)+'</div><div class="sub">'+escapeHtml(fuelSub)+'</div></div>'+
+  '</div>';
+}
+function bindSummaryKpis(){
+  const avg = document.getElementById('avgFuelKpi');
+  if(avg) avg.onclick = function(){ goFuelDetail(); };
+}
 function renderHist(){
   const veh = currentVehicle();
   if(!veh){
@@ -4034,10 +4158,12 @@ function renderHist(){
   }).join('') || '<div class="empty">記録はまだありません</div>';
   const yr = yearToDateRange(new Date());
   document.getElementById('page-hist').innerHTML =
+    summaryKpiHtml(veh)+
     fuelDetailHtml(recordsOf(veh), vehicleName(veh))+
     categoryBarsHtml(recordsOf(veh), yr.from, yr.to)+
     '<div class="filter-bar" id="histFilters">'+filters+'</div>'+
     '<div class="card tint tint-hist" style="padding-top:2px"><div class="hist">'+rows+'</div></div>';
+  bindSummaryKpis();
   document.getElementById('histFilters').onclick = function(e){
     const b = e.target.closest('button'); if(!b) return;
     state.histFilter = b.getAttribute('data-f');
@@ -4065,7 +4191,7 @@ function renderAlert(){
   const alerts = alertsFor(veh);
   const rows = alerts.map(function(a){ return alertCardHtml(a, { edit:true }); }).join('');
   document.getElementById('page-alert').innerHTML =
-    '<div class="card tint tint-alert"><h2>点検状況 <span class="hint">距離か期間の早い方</span></h2>'+
+    '<div class="card tint tint-alert"><h2>点検状況 <span class="hint">日数と距離（厳しい方）</span></h2>'+
     '<div class="help" id="odoSourceAlert" style="margin:0 0 6px">'+escapeHtml(odoSourceLabel(info))+'</div>'+
     (rows||'<div class="empty">項目がありません</div>')+
     '</div>'+
@@ -4109,7 +4235,7 @@ function renderSet(){
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
-    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。大は2マス分）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
+    '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（小・中・大。小は中の半分の幅・高さ（4つで中1つ分）、大は中2つ分の幅×2段）を項目ごとに設定できます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
     '</div>'+
     '<div class="card tint tint-csv" id="csvSet"><h2>書き出し（バックアップなど）</h2>'+
@@ -4262,7 +4388,7 @@ function sizeSegHtml(current){
       return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
     }).join('')+
     '</div>'+
-    '<div class="help">ホームのタイルの大きさです。小と中は1マス、大は2マス×2マスです。空いたマスは自動で詰まります。</div>';
+    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
 }
 function readEditorSize(){
   const on = document.querySelector('#cSize button.on');
@@ -5615,7 +5741,21 @@ document.getElementById('nav').addEventListener('click', function(e){
 });
 document.getElementById('vehicleSelect').addEventListener('change', function(){
   selectVehicle(this.value);
+  scheduleVehicleSelectOverflow();
 });
+window.addEventListener('resize', function(){
+  scheduleVehicleSelectOverflow();
+  scheduleFitShortcutLabels();
+});
+if(typeof ResizeObserver === 'function'){
+  const _vehSelRo = new ResizeObserver(function(){ scheduleVehicleSelectOverflow(); });
+  const _vehSelEl = document.getElementById('vehicleSelect');
+  if(_vehSelEl) _vehSelRo.observe(_vehSelEl);
+  const _vehWrap = document.getElementById('vehicleTitleWrap');
+  if(_vehWrap) _vehSelRo.observe(_vehWrap);
+  const _topbarEl = document.querySelector('header.topbar');
+  if(_topbarEl) _vehSelRo.observe(_topbarEl);
+}
 
 
 const THEME_IDS = ['glass','glass-light','neumo','neumo-dark','neon'];
@@ -5702,6 +5842,8 @@ window.KakeLog = {
   openReplacementInput: openReplacementInput,
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
+  isActiveAlert: isActiveAlert,
+  remainLines: remainLines,
   escapeHtml: escapeHtml,
   loadDemoData: loadDemoData,
   go: go,
@@ -5711,6 +5853,9 @@ window.KakeLog = {
   renderAll: renderAll,
   yen: yen,
   persistVehicles: persistVehicles,
+  fillVehicleSelect: fillVehicleSelect,
+  syncVehicleSelectOverflow: syncVehicleSelectOverflow,
+  fitShortcutLabels: fitShortcutLabels,
   persistSettings: persistSettings,
   persistCategories: persistCategories,
   persistLooks: persistLooks,

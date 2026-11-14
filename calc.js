@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.18 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.20 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -642,6 +642,40 @@
     return recBase || null;
   }
 
+  var ALERT_STATUS_RANK = { overdue: 0, action: 1, caution: 2, soon: 3, info: 4, ok: 5, unknown: 6 };
+  var CAUTION_REMAIN_KM = 500;
+  var SOON_REMAIN_DAYS = 30;
+
+  function worseStatus(a, b) {
+    if (!a) return b || null;
+    if (!b) return a;
+    var ra = ALERT_STATUS_RANK[a], rb = ALERT_STATUS_RANK[b];
+    if (ra == null) ra = 99;
+    if (rb == null) rb = 99;
+    return ra <= rb ? a : b;
+  }
+  function remainAxisStatus(remain, opts) {
+    opts = opts || {};
+    if (remain == null || remain === "" || !isFinite(Number(remain))) return null;
+    var n = Number(remain);
+    var overdueAt = opts.overdueAt != null ? opts.overdueAt : 0;
+    if (n <= overdueAt) return "overdue";
+    var cautionAt = opts.cautionAt;
+    if (cautionAt != null && n <= Number(cautionAt)) return opts.cautionStatus || "caution";
+    return "ok";
+  }
+  function formatRemainDays(remainDays) {
+    if (remainDays == null || remainDays === "" || !isFinite(Number(remainDays))) return "";
+    var n = Math.round(Number(remainDays));
+    return n <= 0 ? Math.abs(n) + "日超過" : "あと" + n + "日";
+  }
+  function formatRemainKm(remainKm) {
+    if (remainKm == null || remainKm === "" || !isFinite(Number(remainKm))) return "";
+    var n = Math.round(Number(remainKm));
+    var num = Math.abs(n).toLocaleString("ja-JP");
+    return n <= 0 ? num + " km超過" : "あと" + num + " km";
+  }
+
   function alertStatus(item, last, currentOdo, asOf) {
     var today = toDate(asOf) || new Date();
     var kmInt = Number(item.km) || 0;
@@ -657,31 +691,29 @@
         remainDays = Math.round((dueDate - today) / 86400000);
       }
     }
-    var overdue = (remainKm != null && remainKm <= 0) || (remainDays != null && remainDays <= 0);
-    var soonKm = item.soonKm != null ? item.soonKm : 500;
-    var soonDays = item.soonDays != null ? item.soonDays : 30;
-    var soon = !overdue && (
-      (remainKm != null && remainKm <= soonKm) ||
-      (remainDays != null && remainDays <= soonDays)
-    );
-    var status = !last ? "unknown" : overdue ? "overdue" : soon ? "soon" : "ok";
+    var soonKm = item.soonKm != null ? item.soonKm : CAUTION_REMAIN_KM;
+    var soonDays = item.soonDays != null ? item.soonDays : SOON_REMAIN_DAYS;
+    var kmStatus = remainAxisStatus(remainKm, { overdueAt: 0, cautionAt: soonKm, cautionStatus: "caution" });
+    var dayStatus = remainAxisStatus(remainDays, { overdueAt: 0, cautionAt: soonDays, cautionStatus: "soon" });
+    var status = !last ? "unknown" : (worseStatus(kmStatus, dayStatus) || "ok");
+    var triggeredBy = (remainKm != null && remainDays != null)
+      ? (remainKm <= 0 || remainDays <= 0
+        ? (remainKm != null && remainKm <= 0 && (remainDays == null || remainDays > 0) ? "km"
+          : (remainDays != null && remainDays <= 0 && (remainKm == null || remainKm > 0) ? "months"
+            : "both"))
+        : (kmStatus && kmStatus !== "ok" && dayStatus && dayStatus !== "ok" ? "both"
+          : (kmStatus && kmStatus !== "ok" ? "km" : dayStatus && dayStatus !== "ok" ? "months" : null)))
+      : (kmStatus && kmStatus !== "ok" ? "km" : dayStatus && dayStatus !== "ok" ? "months" : null);
     return {
       last: last,
       dueKm: dueKm,
       dueDate: dueDate ? ymd(dueDate) : null,
       remainKm: remainKm,
       remainDays: remainDays,
+      kmStatus: kmStatus,
+      dayStatus: dayStatus,
       status: status,
-      triggeredBy: (remainKm != null && remainDays != null)
-        ? (remainKm <= 0 || remainDays <= 0
-          ? (remainKm != null && remainKm <= 0 && (remainDays == null || remainDays > 0) ? "km"
-            : (remainDays != null && remainDays <= 0 && (remainKm == null || remainKm > 0) ? "months"
-              : "both"))
-          : (remainKm <= soonKm && remainDays <= soonDays ? "both"
-            : remainKm <= soonKm ? "km" : remainDays <= soonDays ? "months" : null))
-        : (remainKm != null && remainKm <= 0 ? "km" : remainDays != null && remainDays <= 0 ? "months"
-          : remainKm != null && remainKm <= soonKm ? "km"
-            : remainDays != null && remainDays <= soonDays ? "months" : null)
+      triggeredBy: triggeredBy
     };
   }
 
@@ -865,6 +897,12 @@
     hasBaselineValue: hasBaselineValue,
     alertStatus: alertStatus,
     computeAlerts: computeAlerts,
+    worseStatus: worseStatus,
+    remainAxisStatus: remainAxisStatus,
+    formatRemainDays: formatRemainDays,
+    formatRemainKm: formatRemainKm,
+    CAUTION_REMAIN_KM: CAUTION_REMAIN_KM,
+    SOON_REMAIN_DAYS: SOON_REMAIN_DAYS,
     escapeCsvField: escapeCsvField,
     parseCsv: parseCsv,
     addMonths: addMonths,
