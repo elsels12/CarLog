@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.31</title>
+<title>CarLog beta 0.9.32</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -311,6 +311,7 @@ input.auto-val{color:#9aa3b0;}
 a.more-link{color:var(--amber);font-size:10px;font-weight:700;text-decoration:none;letter-spacing:.04em;background:none;border:0;padding:0;cursor:pointer;}
 .hist-item .kml{font-family:var(--font-mono);font-size:10px;color:var(--amber);font-weight:700;margin-left:6px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.grid2>*{min-width:0;}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
 .cats{display:flex;flex-wrap:wrap;gap:4px;}
 .cats button{background:var(--chip-bg);border:1px solid var(--chip-line);color:var(--chip-fg);border-radius:14px;font-size:10px;font-weight:700;padding:5px 8px;}
@@ -1427,12 +1428,14 @@ html[data-theme] #modal.repl-sheet input[type=date]{
   width:15.5em;max-width:100%;font-size:16px;min-height:52px;display:inline-block;
 }
 html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
+/* 2列の中の日付欄: iOS の日付欄は中身の幅が大きく、隣の欄に被るため、列の幅に収める */
+html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width:100%;display:block;-webkit-appearance:none;appearance:none;font-size:16px;text-align:left;}
 </style>
 </head>
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.31</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.32</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
