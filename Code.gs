@@ -1,5 +1,5 @@
 /**
- * CarLog beta 0.9.32 — Google Apps Script バックエンド
+ * CarLog beta 0.9.36 — Google Apps Script バックエンド
  *
  * スプレッドシート構成:
  *   1枚目「記録」…経費レコード
@@ -12,7 +12,7 @@
  *  - 削除はゴミ箱へ退避（90日保持）
  *  - doGet は getDisplayValues() を使用
  *
- * カレンダー通知（車検の期限）:
+ * カレンダー通知（車検・月数が決まっている点検項目の期限）:
  *  - 専用カレンダー「CarLog」に終日予定を作り、約1か月前・1週間前・前日の朝9時に通知します。
  *  - 初回だけ、エディタで authorizeCalendar を実行してカレンダーの承認をしてください。
  */
@@ -413,7 +413,8 @@ function getCalEvent_(cal, id) {
   try { return cal.getEventById(id) || null; } catch (err) { return null; }
 }
 
-// events: [{key, title, date:'YYYY-MM-DD'|'' , description}]  date が空なら、その key の予定を消す
+// events: [{key, title, date:'YYYY-MM-DD'|'' , description, skipIfNew}]  date が空なら、その key の予定を消す
+// key は 'shaken:<車両ID>' / 'maint:<車両ID>:<点検項目ID>'。同じ key で日付が変わったら、古い予定を消して新しい日に作り直す。
 function syncCalendar_(events, force) {
   var cal = getCarlogCalendar_();
   var props = PropertiesService.getScriptProperties();
@@ -432,6 +433,7 @@ function syncCalendar_(events, force) {
       if (raw) props.deleteProperty(pkey);
       return;
     }
+    if (!existing && ev.skipIfNew === true) return;  // すぎた期限は、新しく予定を作らない
     var title = String(ev.title || '車検期限').slice(0, 120);
     var desc = String(ev.description || '').slice(0, 1000);
     if (!force && existing && rec.date === date && rec.title === title && rec.desc === desc) {

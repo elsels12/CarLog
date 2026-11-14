@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.32</title>
+<title>CarLog beta 0.9.36</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -40,6 +40,7 @@
   --paper:#e9e6df;
   --paper-dim:#b0b7c0;
   --amber:#dfac58;
+  --tier-green:#34c773;--tier-yellow:#e6c229;--tier-orange:#ff8a1f;--tier-red:#e5383b;
   --ok:#4ade80;
   --danger:#ff5a2e;
   --cold:#3fa9f5;
@@ -260,6 +261,14 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-bar.is-overdue>i,.alert-bar.is-action>i{background:var(--danger);}
 .alert-bar.is-info>i{background:var(--cold,#4a90c8);}
 .alert-bar.is-reserved>i{background:var(--ok);}
+.alert-bar.is-t-green>i{background:var(--tier-green);}
+.alert-bar.is-t-yellow>i{background:var(--tier-yellow);}
+.alert-bar.is-t-orange>i{background:var(--tier-orange);}
+.alert-bar.is-t-red>i{background:var(--tier-red);}
+.alert-remain.t-green{color:var(--tier-green);}
+.alert-remain.t-yellow{color:var(--tier-yellow);}
+.alert-remain.t-orange{color:var(--tier-orange);}
+.alert-remain.t-red{color:var(--tier-red);}
 .alert-action{
   flex:0 0 auto;width:auto;min-width:0;min-height:26px;height:26px;padding:0 11px;font-size:12px;font-weight:700;
   border-radius:999px;box-sizing:border-box;touch-action:manipulation;cursor:pointer;font-family:inherit;
@@ -1435,7 +1444,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.32</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.36</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -1672,10 +1681,10 @@ function migrateMergedCategories(){
     if(mapped!==fil) state.histFilter = mapped;
   }
 }
-function persistRecords(){ saveJson(KEYS.records, state.records); }
+function persistRecords(){ saveJson(KEYS.records, state.records); scheduleCalendarSync(); }
 let calTimer = 0;
 function persistVehicles(){ saveJson(KEYS.vehicles, state.vehicles); scheduleCalendarSync(); }
-function persistIntervals(){ saveJson(KEYS.intervals, state.intervals); }
+function persistIntervals(){ saveJson(KEYS.intervals, state.intervals); scheduleCalendarSync(); }
 
 function normalizeShortcutIconSize(v){
   v = String(v==null?'':v).toLowerCase();
@@ -3027,12 +3036,12 @@ function fuelDetailHtml(recs, vname){
   }).join('');
   const fills = fuel.intervals.slice().reverse().slice(0, 3);
   const fillHtml = fills.length ? fills.map(function(iv){
-    return '<div class="stat-line fill-eco"><span class="k">'+escapeHtml(fmtDate(iv.toDate))+'　'+escapeHtml(Math.round(iv.km)+' km / '+iv.liters+' L')+'</span><span class="v">'+escapeHtml(fmtKmL(iv.kmPerL))+'</span></div>';
+    return '<div class="stat-line fill-eco"><span class="k">'+escapeHtml(fmtDate(iv.toDate))+'　'+escapeHtml(Math.round(iv.km)+' km / '+iv.liters+' '+volUnit())+'</span><span class="v">'+escapeHtml(fmtKmL(iv.kmPerL))+'</span></div>';
   }).join('') : '';
   const ranks = C.rangeRanking(recs, vname, 3);
   const medals = ['🥇','🥈','🥉'];
   const rankHtml = ranks.length ? ranks.map(function(iv, i){
-    const lit = (iv.liters != null && isFinite(Number(iv.liters))) ? '<span class="lit">'+escapeHtml(String(iv.liters)+' L')+'</span>' : '';
+    const lit = (iv.liters != null && isFinite(Number(iv.liters))) ? '<span class="lit">'+escapeHtml(String(iv.liters)+' '+volUnit())+'</span>' : '';
     const kml = (iv.kmPerL != null && isFinite(iv.kmPerL)) ? '<span class="kml">'+escapeHtml(fmtKmL(iv.kmPerL))+'</span>' : '';
     return '<div class="rank-row" data-rank="'+(i+1)+'">'+
       '<span class="rk">'+medals[i]+'</span>'+
@@ -3598,6 +3607,10 @@ function intervalsFor(veh){
   all.filter(function(it){ return it.vehicleId === vid && !isCustomInterval(it); }).forEach(function(it){
     if(!seen[it.id]){ list.push(it); seen[it.id]=true; }
   });
+  if(veh.fuelType==='ev'){
+    const evSkip = { engine_oil:1, oil_filter:1, spark_plug:1, air_filter:1 };
+    for(let i=list.length-1;i>=0;i--){ if(evSkip[list[i].id] && !isCustomInterval(list[i])) list.splice(i,1); }
+  }
   return list.concat(customAlertItems());
 }
 function ensureVehicleInterval(id, veh){
@@ -3854,7 +3867,8 @@ function openMaintenanceEditor(id){
 
 function alertsFor(veh){
   if(!veh) return [];
-  const list = C.computeAlerts(intervalsFor(veh), recordsOf(veh), vehicleName(veh), currentOdo(veh), new Date());
+  const monthlyKm = C.estimateMonthlyKm(recordsOf(veh), vehicleName(veh), new Date());
+  const list = C.computeAlerts(intervalsFor(veh), recordsOf(veh), vehicleName(veh), currentOdo(veh), new Date(), { monthlyKm: monthlyKm });
   const sh = C.shakenAlert(veh, new Date());
   if(sh){
     list.unshift({
@@ -3931,9 +3945,12 @@ function byCategory(list, from, to){
 }
 
 /* ---------- render ---------- */
+function isEvVeh(veh){ veh = veh || currentVehicle(); return !!veh && veh.fuelType==='ev'; }
+function volUnit(veh){ return isEvVeh(veh) ? 'kWh' : 'L'; }
+function ecoUnit(veh){ return isEvVeh(veh) ? 'km/kWh' : 'km/L'; }
 function fmtKmL(n){
   if(n==null || n==='' || !isFinite(Number(n))) return '—';
-  return Number(n).toFixed(1)+' km/L';
+  return Number(n).toFixed(1)+' '+ecoUnit();
 }
 function sortedRecords(veh){
   return recordsOf(veh).slice().sort(function(a,b){
@@ -4145,11 +4162,16 @@ function remainLines(a){
   }
   return lines.filter(function(ln){ return ln.text; });
 }
+function alertTier(a){
+  if(!a) return '';
+  return a.tier || C.tierFromStatus(a.status) || '';
+}
 function remainBlockHtml(a){
   const lines = remainLines(a);
   if(!lines.length) return '';
+  const tcls = alertTier(a) ? ' t-'+alertTier(a) : '';
   return '<div class="alert-card-remain">'+lines.map(function(ln){
-    return '<div class="alert-remain is-'+escapeHtml(ln.status)+'" data-remain="'+escapeHtml(ln.kind)+'">'+escapeHtml(ln.text)+'</div>';
+    return '<div class="alert-remain is-'+escapeHtml(ln.status)+tcls+'" data-remain="'+escapeHtml(ln.kind)+'">'+escapeHtml(ln.text)+'</div>';
   }).join('')+'</div>';
 }
 function remainHighlight(a){
@@ -4208,7 +4230,7 @@ function alertCardHtml(a, opts){
     remainHtml+
     '<div class="alert-card-sub"><div class="alert-info">'+alertKeyInfoHtml(a)+'</div></div>'+
     '<div class="alert-card-foot">'+
-      '<div class="alert-bar is-'+escapeHtml(st)+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
+      '<div class="alert-bar is-'+escapeHtml(st)+(hasLast||isShaken?(alertTier(a)?' is-t-'+alertTier(a):''):'')+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
       (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
     '</div>'+
     '</div>';
@@ -4632,12 +4654,12 @@ function fillFuelExtra(cat, rec){
   }
   box.innerHTML =
     '<div class="grid2">'+
-      '<div><label class="f">リッター（L）<span class="auto-tag" id="tag-liters" hidden>自動</span></label><input type="number" id="fLiters" inputmode="decimal" step="0.01" enterkeyhint="next" value="'+escapeHtml(rec&&rec.liters!=null?rec.liters:'')+'"></div>'+
-      '<div><label class="f">単価（円/L）<span class="auto-tag" id="tag-unitPrice" hidden>自動</span></label><input type="number" id="fUnit" inputmode="decimal" step="0.1" enterkeyhint="next" value="'+escapeHtml(rec&&rec.unitPrice!=null?rec.unitPrice:'')+'"></div>'+
+      '<div><label class="f">'+(isEvVeh()?'充電量（kWh）':'リッター（L）')+'<span class="auto-tag" id="tag-liters" hidden>自動</span></label><input type="number" id="fLiters" inputmode="decimal" step="0.01" enterkeyhint="next" value="'+escapeHtml(rec&&rec.liters!=null?rec.liters:'')+'"></div>'+
+      '<div><label class="f">'+(isEvVeh()?'単価（円/kWh）':'単価（円/L）')+'<span class="auto-tag" id="tag-unitPrice" hidden>自動</span></label><input type="number" id="fUnit" inputmode="decimal" step="0.1" enterkeyhint="next" value="'+escapeHtml(rec&&rec.unitPrice!=null?rec.unitPrice:'')+'"></div>'+
     '</div>'+
-    '<label class="check"><input type="checkbox" id="fFull"'+(rec&&rec.isFullTank?' checked':'')+'>満タン（満タン法で燃費を計算）</label>'+
-    gradeChipsHtml((rec && rec.fuelGrade) || lastFuelGradeFor(currentVehicle()))+
-    '<div class="help">合計・リッター・単価は、入力した2つから残りを自動で出します（自動の欄は薄く表示。自分で直すとその値が優先されます）。区間燃費は前回の満タンからの距離÷その間の給油量（途中の給油も含む）です。油種は任意で、同じボタンをもう一度押すと外せます。</div>';
+    '<label class="check"><input type="checkbox" id="fFull"'+(rec&&rec.isFullTank?' checked':'')+'>'+(isEvVeh()?'満充電（満充電法で電費を計算）':'満タン（満タン法で燃費を計算）')+'</label>'+
+    (isEvVeh()?'':gradeChipsHtml((rec && rec.fuelGrade) || lastFuelGradeFor(currentVehicle())))+
+    '<div class="help">合計・'+(isEvVeh()?'充電量':'リッター')+'・単価は、入力した2つから残りを自動で出します（自動の欄は薄く表示。自分で直すとその値が優先されます）。'+(isEvVeh()?'区間の電費は前回の満充電からの距離÷その間の充電量（途中の充電も含む）です。':'区間燃費は前回の満タンからの距離÷その間の給油量（途中の給油も含む）です。')+'油種は任意で、同じボタンをもう一度押すと外せます。</div>';
   bindFuelCalc();
   bindGradeChips();
 }
@@ -4771,7 +4793,7 @@ function summaryKpiHtml(veh){
   const monthSum = sumAmount(recs, mo.from, mo.to);
   const yearSum = sumAmount(recs, yr.from, yr.to);
   const fuel = C.averageFuelEconomy(recs, vehicleName(veh));
-  const fuelTxt = fuel.kmPerL != null ? fuel.kmPerL.toFixed(1)+' km/L' : '—';
+  const fuelTxt = fuel.kmPerL != null ? fuel.kmPerL.toFixed(1)+' '+ecoUnit(veh) : '—';
   const fuelSub = fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出';
   return '<div class="row kpi-row" id="histKpis">'+
     '<div class="kpi tint tint-month" id="monthKpi"><div class="lbl">今月</div><div class="val">'+escapeHtml(yen(monthSum))+'</div></div>'+
@@ -6298,15 +6320,51 @@ async function syncAll(manual){
 let calendarMsg = '';
 function calendarEvents(){
   const base = location.href.split('#')[0].split('?')[0];
-  return state.vehicles.map(function(v){
+  const today = C.ymd(C.toDate(new Date()));
+  const out = [];
+  state.vehicles.forEach(function(v){
+    const vn = v.name || '車';
     const due = C.effectiveShakenDue(v, new Date()) || '';
-    return {
+    out.push({
       key: 'shaken:' + v.id,
-      title: '車検期限　' + (v.name || '車'),
+      title: '車検期限　' + vn,
       date: due,
+      skipIfNew: !!due && due < today,
       description: 'CarLog が自動で作った予定です。車検証の日付を優先してください。自賠責も同じ時期に切れるので、あわせて確認してください。\n' + base
-    };
+    });
+    // 点検・メンテ: 月数が決まっている項目だけ（前回交換＋月数の日付）。距離だけの項目は対象外。
+    let list = [];
+    try{ list = C.computeAlerts(intervalsFor(v), recordsOf(v), vehicleName(v), currentOdo(v), new Date()); }catch(e){ list = []; }
+    list.forEach(function(a){
+      const it = a.item || {};
+      if(!(Number(it.months) > 0)) return;
+      const id = it.id || it.label;
+      if(!id) return;
+      const mkey = 'maint:' + v.id + ':' + id;
+      const last = a.last || {};
+      let d = a.dueDate || '';
+      let provisional = false;
+      if(!state.settings.calendarBase || typeof state.settings.calendarBase !== 'object') state.settings.calendarBase = {};
+      if(d){
+        if(state.settings.calendarBase[mkey]) delete state.settings.calendarBase[mkey];
+      } else {
+        // 前回が未記録: 初めて見た日を仮の起点にして「起点＋月数」で予定を入れる（完了や前回日の入力で実績に置き換わる）
+        if(!state.settings.calendarBase[mkey]) state.settings.calendarBase[mkey] = today;
+        d = C.ymd(C.addMonths(C.toDate(state.settings.calendarBase[mkey]), Number(it.months)));
+        provisional = true;
+      }
+      const lastTxt = (last.date ? String(last.date).replace(/-/g,'/') : '') + (last.odometer != null && last.odometer !== '' ? '・' + Math.round(Number(last.odometer)).toLocaleString('ja-JP') + ' km' : '');
+      const kmTxt = Number(it.km) > 0 ? '（' + Number(it.km).toLocaleString('ja-JP') + ' km ごと）' : '';
+      out.push({
+        key: mkey,
+        title: (it.label || '点検') + (provisional ? '（仮）' : '') + '　' + vn,
+        date: d,
+        skipIfNew: !!d && d < today,
+        description: 'CarLog が自動で作った予定です。' + (provisional ? '前回の記録がないため、アプリに登録した日を起点にした仮の予定です。点検タブで「完了」にすると、実績の日付に置き換わります。' : '') + '\n前回：' + (lastTxt || '未設定') + '\n目安：' + Number(it.months) + 'か月ごと' + kmTxt + '\n距離が先に目安へ達したときは、アプリの点検タブで確認してください。\n' + base
+      });
+    });
   });
+  return out;
 }
 function calStatusHtml(){
   if(!state.settings.calendarOn) return '<span class="sync-dot off"></span>オフ';
@@ -6371,11 +6429,11 @@ function scheduleCalendarSync(){
 }
 function calendarCardHtml(){
   const on = !!state.settings.calendarOn;
-  return '<div class="card tint tint-sync" id="calCard"><h2>カレンダー通知（車検）</h2>'+
-    '<label class="check"><input type="checkbox" id="calOn"'+(on?' checked':'')+'>車検の期限を Google カレンダーに入れる</label>'+
-    '<div class="help">「CarLog」という専用カレンダーに、車検期限の終日予定を作ります。約1か月前（4週間前）・1週間前・前日の朝9時に通知します。車検日を直したり「完了」にしたりすると予定も自動で置き換わり、車両を消すと予定も消えます。</div>'+
-    '<div class="help">距離（km）が基準の点検（オイルなど）は、日付では決まらないので通知しません。点検タブとホームで確認してください。</div>'+
-    '<div class="help">使うには、スプレッドシート連携の設定と、最新の Code.gs への入れ替え（カレンダーの承認あり）が必要です。通知を受けるには、スマホの Google カレンダーアプリ、または標準カレンダーに Google アカウントを追加してください。</div>'+
+  return '<div class="card tint tint-sync" id="calCard"><h2>カレンダー通知（車検・点検）</h2>'+
+    '<label class="check"><input type="checkbox" id="calOn"'+(on?' checked':'')+'>車検と点検の期限を Google カレンダーに入れる</label>'+
+    '<div class="help">「CarLog」という専用カレンダーに、車検期限と、月数が決まっている点検項目（オイルなど）の終日予定を作ります。約1か月前（4週間前）・1週間前・前日の朝9時に通知します。期限の前に「完了」にすると、いまの予定を消して、次のタイミングの日に予定を入れ直します。</div>'+
+    '<div class="help">距離（km）だけで決まる項目は、日付では決まらないので通知しません。月数と距離の両方がある項目は、月数の日付で通知します（距離が先に来たときは、点検タブとホームで確認してください）。</div>'+
+    '<div class="help">使うには、スプレッドシート連携の設定と、最新の Code.gs への入れ替え（カレンダーの承認あり）が必要です。期限をすぎた項目は、新しく予定を作りません。通知を受けるには、スマホの Google カレンダーアプリ、または標準カレンダーに Google アカウントを追加してください。</div>'+
     '<div class="btn-row"><button type="button" class="btn ghost" id="btnCalNow">今すぐカレンダーに反映</button></div>'+
     '<div class="help" id="calStatus">'+calStatusHtml()+'</div></div>';
 }

@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.32 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.36 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -748,7 +748,54 @@
     return n <= 0 ? num + " km超過" : "あと" + num + " km";
   }
 
-  function alertStatus(item, last, currentOdo, asOf) {
+  // 直近180日のオドメーターから、1か月あたりの走行距離を見積もる（14日以上・増加があるときだけ）
+  function estimateMonthlyKm(records, vehicleId, asOf) {
+    var today = toDate(asOf) || new Date();
+    var from = addDays(today, -180);
+    var pts = (records || []).filter(function (r) {
+      return r && !r.deleted && matchVehicle_(r, vehicleId) && r.date &&
+        r.odometer != null && r.odometer !== "" && isFinite(Number(r.odometer)) && Number(r.odometer) > 0;
+    }).map(function (r) { return { d: toDate(r.date), o: Number(r.odometer) }; })
+      .filter(function (p) { return p.d && p.d >= from && p.d <= today; });
+    if (pts.length < 2) return null;
+    pts.sort(function (a, b) { return (a.d - b.d) || (a.o - b.o); });
+    var first = pts[0], last = pts[pts.length - 1];
+    var days = Math.round((last.d - first.d) / 86400000);
+    var km = last.o - first.o;
+    if (days < 14 || !(km > 0)) return null;
+    return km / days * 30;
+  }
+
+  // 距離の色段階（残り距離）: 1,000 km より多い=緑 / 1,000〜500 km=黄 / 500〜0 km=オレンジ / 超過=赤。
+  // 間隔が短い項目では、間隔の半分・4分の1を上限にする（最初から黄色にならないように）。
+  var SOON_KM_FIXED = 1000;
+  var ORANGE_KM_FIXED = 500;
+  function soonKmFor(item, opts) {
+    if (item.soonKm != null) return item.soonKm;
+    var kmInt = Number(item.km) || 0;
+    if (!(kmInt > 0)) return CAUTION_REMAIN_KM;
+    var cand = Math.min(SOON_KM_FIXED, kmInt * 0.5);
+    return Math.max(100, Math.round(cand / 100) * 100);
+  }
+  function orangeKmFor(item, soonKm) {
+    var kmInt = Number(item.km) || 0;
+    var cand = Math.min(ORANGE_KM_FIXED, Number(soonKm) / 2 || ORANGE_KM_FIXED, kmInt > 0 ? kmInt * 0.25 : ORANGE_KM_FIXED);
+    return Math.max(50, Math.round(cand / 50) * 50);
+  }
+  var TIER_RANK = { red: 0, orange: 1, yellow: 2, green: 3 };
+  function worseTier(a, b) {
+    if (!a) return b || null;
+    if (!b) return a;
+    return TIER_RANK[a] <= TIER_RANK[b] ? a : b;
+  }
+  function tierFromStatus(status) {
+    if (status === "overdue" || status === "action") return "red";
+    if (status === "caution" || status === "soon") return "yellow";
+    if (status === "ok" || status === "reserved") return "green";
+    return null;
+  }
+
+  function alertStatus(item, last, currentOdo, asOf, opts) {
     var today = toDate(asOf) || new Date();
     var kmInt = Number(item.km) || 0;
     var moInt = Number(item.months) || 0;
@@ -763,11 +810,15 @@
         remainDays = Math.round((dueDate - today) / 86400000);
       }
     }
-    var soonKm = item.soonKm != null ? item.soonKm : CAUTION_REMAIN_KM;
+    var soonKm = soonKmFor(item, opts);
     var soonDays = item.soonDays != null ? item.soonDays : SOON_REMAIN_DAYS;
     var kmStatus = remainAxisStatus(remainKm, { overdueAt: 0, cautionAt: soonKm, cautionStatus: "caution" });
     var dayStatus = remainAxisStatus(remainDays, { overdueAt: 0, cautionAt: soonDays, cautionStatus: "soon" });
     var status = !last ? "unknown" : (worseStatus(kmStatus, dayStatus) || "ok");
+    var orangeKm = orangeKmFor(item, soonKm);
+    var kmTier = remainKm == null ? null : (remainKm <= 0 ? "red" : (remainKm <= orangeKm ? "orange" : (remainKm <= soonKm ? "yellow" : "green")));
+    var dayTier = tierFromStatus(dayStatus);
+    var tier = !last ? null : (worseTier(kmTier, dayTier) || "green");
     var triggeredBy = (remainKm != null && remainDays != null)
       ? (remainKm <= 0 || remainDays <= 0
         ? (remainKm != null && remainKm <= 0 && (remainDays == null || remainDays > 0) ? "km"
@@ -781,6 +832,9 @@
       dueKm: dueKm,
       dueDate: dueDate ? ymd(dueDate) : null,
       remainKm: remainKm,
+      soonKm: soonKm,
+      orangeKm: orangeKm,
+      tier: tier,
       remainDays: remainDays,
       kmStatus: kmStatus,
       dayStatus: dayStatus,
@@ -789,10 +843,10 @@
     };
   }
 
-  function computeAlerts(items, records, vehicleId, currentOdo, asOf) {
+  function computeAlerts(items, records, vehicleId, currentOdo, asOf, opts) {
     return (items || []).map(function (item) {
       var last = lastReplacementBaseline(item, records, vehicleId);
-      var st = alertStatus(item, last, currentOdo, asOf);
+      var st = alertStatus(item, last, currentOdo, asOf, opts);
       return Object.assign({ item: item }, st);
     });
   }
@@ -974,6 +1028,10 @@
     isNewerBaseline: isNewerBaseline,
     hasBaselineValue: hasBaselineValue,
     alertStatus: alertStatus,
+    estimateMonthlyKm: estimateMonthlyKm,
+    soonKmFor: soonKmFor,
+    orangeKmFor: orangeKmFor,
+    tierFromStatus: tierFromStatus,
     computeAlerts: computeAlerts,
     worseStatus: worseStatus,
     remainAxisStatus: remainAxisStatus,
