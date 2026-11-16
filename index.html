@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.41</title>
+<title>CarLog beta 0.9.43</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -95,6 +95,8 @@ body[data-tab="input"]{--screen:var(--tab-input);}
 body[data-tab="hist"]{--screen:var(--tab-hist);}
 body[data-tab="alert"]{--screen:var(--tab-alert);}
 body[data-tab="set"]{--screen:var(--tab-set);}
+/* 上のバー（CarLog・バージョン・BETA）はタブを切り替えても色を変えない */
+.topbar{--screen:var(--tab-home);}
 .topbar h1{font-size:22px;letter-spacing:.02em;line-height:1.1;text-transform:none;white-space:nowrap;}
 .topbar .tagline{font-family:var(--font-ui);font-size:10px;font-weight:600;color:var(--paper-dim);margin-top:2px;letter-spacing:.02em;line-height:1.3;white-space:nowrap;overflow:visible;text-overflow:clip;width:auto;min-width:0;}
 .sc-grid{--sc-gap:6px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-auto-flow:dense;gap:var(--sc-gap);margin:0 0 8px;align-items:stretch;}
@@ -1453,7 +1455,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.41</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.43</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -2272,6 +2274,15 @@ function safeColor(v){
   }
   return '';
 }
+// 塗りの色と線の色を、シートの「色」列に1つの文字列で入れる（Code.gs は変えない）: 「#塗り/#線」
+function packColors(fill, line){
+  const f = safeColor(fill), l = safeColor(line);
+  return l ? (f + '/' + l) : f;
+}
+function unpackColors(v){
+  const parts = String(v==null?'':v).split('/');
+  return { color: safeColor(parts[0]), lineColor: safeColor(parts[1]) };
+}
 function parseLookField(v){
   const raw = String(v==null?'':v).trim();
   let base = raw, op = null;
@@ -2386,8 +2397,10 @@ function applyBuiltinLookFromRow(row){
     return;
   }
   const parsed = parseLookField(row.style);
+  const uc = unpackColors(row.color);
   state.builtinLooks[key] = {
-    color: safeColor(row.color),
+    color: uc.color,
+    lineColor: uc.lineColor,
     style: parsed.style || safeStyle(row.style),
     opacity: clampOpacity(row.opacity!=null?row.opacity:parsed.opacity, cur.opacity),
     icon: row.icon || cur.icon || '',
@@ -2402,6 +2415,7 @@ function upsertBuiltinLook(name, fields){
   const prev = state.builtinLooks[name] || {};
   const look = {
     color: fields && 'color' in fields ? safeColor(fields.color) : (prev.color||''),
+    lineColor: fields && 'lineColor' in fields ? safeColor(fields.lineColor) : (prev.lineColor||''),
     style: fields && 'style' in fields ? safeStyle(fields.style) : (prev.style||''),
     opacity: fields && 'opacity' in fields ? clampOpacity(fields.opacity, null) : (prev.opacity!=null?prev.opacity:null),
     icon: (fields && fields.icon) || prev.icon || '',
@@ -2416,14 +2430,16 @@ function upsertBuiltinLook(name, fields){
 function resolvedLook(sc, override){
   sc = sc || {};
   override = override || {};
-  let color = '', style = '', opacity = null;
+  let color = '', lineColor = '', style = '', opacity = null;
   function takeFrom(src){
     if(!src) return;
+    if(!Object.prototype.hasOwnProperty.call(override, 'lineColor') && src.lineColor) lineColor = src.lineColor;
     if(!Object.prototype.hasOwnProperty.call(override, 'color') && src.color) color = src.color;
     if(!Object.prototype.hasOwnProperty.call(override, 'style') && src.style) style = src.style;
     if(!Object.prototype.hasOwnProperty.call(override, 'opacity') && src.opacity!=null && src.opacity!=='') opacity = src.opacity;
   }
   if(Object.prototype.hasOwnProperty.call(override, 'color')) color = override.color;
+  if(Object.prototype.hasOwnProperty.call(override, 'lineColor')) lineColor = override.lineColor;
   if(Object.prototype.hasOwnProperty.call(override, 'style')) style = override.style;
   if(Object.prototype.hasOwnProperty.call(override, 'opacity')) opacity = override.opacity;
   if(sc.customId){
@@ -2434,6 +2450,7 @@ function resolvedLook(sc, override){
     else takeFrom(sc);
   }
   color = safeColor(color);
+  lineColor = safeColor(lineColor);
   style = safeStyle(style) || globalIconStyle();
   if(style==='fill' && !color) color = '#dfac58';
   opacity = lookOpacity(style, opacity);
@@ -2441,7 +2458,7 @@ function resolvedLook(sc, override){
   if(Object.prototype.hasOwnProperty.call(override, 'size')) size = override.size;
   else size = shortcutSizeOf(sc);
   size = normalizeShortcutIconSize(size) || defaultShortcutIconSize();
-  return { color: color, style: style, opacity: opacity, size: size };
+  return { color: color, lineColor: lineColor, style: style, opacity: opacity, size: size };
 }
 function shortcutTileHtml(sc, attrs){
   sc = sc || {};
@@ -2455,15 +2472,16 @@ function shortcutTileHtml(sc, attrs){
   const data = attrs.dataAttr || ('data-sc="'+escapeHtml(id)+'" data-sc-size="'+look.size+'"');
   const op = look.opacity;
   if(look.style==='fill' && look.color){
-    const ink = readableInk(look.color, 'fill', op);
-    return '<button type="button" class="sc-tile sc-fill'+extra+'" '+data+' aria-label="'+escapeHtml(label)+'" style="--cat:'+escapeHtml(look.color)+';background:'+escapeHtml(fillBg(look.color, op))+';border-color:'+escapeHtml(look.color)+';color:'+escapeHtml(ink)+'">'+
+    const ink = look.lineColor || readableInk(look.color, 'fill', op);
+    return '<button type="button" class="sc-tile sc-fill'+extra+'" '+data+' aria-label="'+escapeHtml(label)+'" style="--cat:'+escapeHtml(look.color)+';background:'+escapeHtml(fillBg(look.color, op))+';border-color:'+escapeHtml(look.lineColor||look.color)+';color:'+escapeHtml(ink)+'">'+
       '<span class="icn" style="color:'+escapeHtml(ink)+'">'+shortcutSvg(icon)+'</span><span class="lbl">'+escapeHtml(label)+'</span></button>';
   }
-  const lineCol = look.color ? lineTint(look.color, op) : '';
-  const tint = look.color ? fillBg(look.color, Math.min(op, 40)) : '';
-  const ink = look.color || '';
+  const baseCol = look.lineColor || look.color;
+  const lineCol = baseCol ? lineTint(baseCol, op) : '';
+  const tint = baseCol ? fillBg(look.color || baseCol, Math.min(op, 40)) : '';
+  const ink = baseCol || '';
   const st = [];
-  if(look.color) st.push('--cat:'+look.color);
+  if(baseCol) st.push('--cat:'+baseCol);
   if(lineCol) st.push('border-color:'+lineCol);
   if(tint) st.push('background:'+tint);
   if(ink) st.push('color:'+ink);
@@ -2474,7 +2492,7 @@ function shortcutTileHtml(sc, attrs){
 }
 function categoriesForSync(){
   const list = (state.customCats||[]).map(function(c){
-    return Object.assign({}, c, { color: safeColor(c.color), style: safeStyle(c.style), opacity: clampOpacity(c.opacity, null), size: normalizeShortcutIconSize(c.size||'') || '' });
+    return Object.assign({}, c, { color: packColors(c.color, c.lineColor), style: safeStyle(c.style), opacity: clampOpacity(c.opacity, null), size: normalizeShortcutIconSize(c.size||'') || '' });
   });
   const looks = state.builtinLooks || {};
   Object.keys(looks).forEach(function(key){
@@ -2484,7 +2502,7 @@ function categoriesForSync(){
       id: 'bi:'+key,
       name: key==='_default' ? '_default' : key,
       icon: look.icon || '',
-      color: safeColor(look.color),
+      color: packColors(look.color, look.lineColor),
       style: safeStyle(look.style) || (key==='_default' ? globalIconStyle() : ''),
       opacity: look.opacity!=null ? look.opacity : null,
       size: normalizeShortcutIconSize(look.size||'') || '',
@@ -4176,14 +4194,16 @@ function remainLines(a){
   }
   return lines.filter(function(ln){ return ln.text; });
 }
-const SCORE_STOPS = [[255,90,46],[255,154,31],[242,208,59],[52,199,115]]; // 赤(最初の赤)→オレンジ→黄→緑
+// 点検アラートの色: すべて固定色（テーマで変えない）。赤は点検タブに近い色、ほかは同じくすみ・透け感のそろった色
+const SCORE_STOPS = ['#ff7a5c','#f0a561','#e6cb7c','#79c9a0']; // 赤(点検タブに近い色・固定)→オレンジ→黄→緑。テーマで変えない
 function scoreColor(score){
   if(score==null || !isFinite(score)) return '';
   const x = Math.max(0, Math.min(3, score));
   const i = Math.min(2, Math.floor(x)), f = x - i;
-  const a = SCORE_STOPS[i], b = SCORE_STOPS[i+1];
-  const c = [0,1,2].map(function(k){ return Math.round(a[k] + (b[k]-a[k])*f); });
-  return 'rgb('+c.join(',')+')';
+  if(f<=0.001) return SCORE_STOPS[i];
+  if(f>=0.999) return SCORE_STOPS[i+1];
+  const pa = Math.round((1-f)*100);
+  return 'color-mix(in srgb, '+SCORE_STOPS[i]+' '+pa+'%, '+SCORE_STOPS[i+1]+')';
 }
 function alertScore(a){
   if(!a) return null;
@@ -5060,6 +5080,7 @@ function upsertCustomCategory(fields, opts){
     name: String(fields.name).trim(),
     icon: fields.icon || 'star',
     color: safeColor(fields.color),
+    lineColor: 'lineColor' in fields ? safeColor(fields.lineColor) : undefined,
     style: safeStyle(fields.style),
     opacity: 'opacity' in fields ? clampOpacity(fields.opacity, null) : (fields.style!=null ? parseLookField(fields.style).opacity : undefined),
     subs: Array.isArray(fields.subs) ? fields.subs.filter(Boolean) : parseSubs(fields.subs),
@@ -5074,6 +5095,7 @@ function upsertCustomCategory(fields, opts){
   const i = (state.customCats||[]).findIndex(function(c){ return c.id===id; });
   if(!('opacity' in fields)) delete cat.opacity;
   if(!('size' in fields)) delete cat.size;
+  if(!('lineColor' in fields)) delete cat.lineColor;
   if(i>=0) state.customCats[i] = Object.assign({}, state.customCats[i], cat, { deleted:false });
   else {
     if(!state.customCats) state.customCats = [];
@@ -5174,12 +5196,13 @@ function updateEditorPreview(){
   const name = (document.getElementById('cName') && document.getElementById('cName').value.trim()) || (box.getAttribute('data-label')||'プレビュー');
   const icon = (document.getElementById('cIcon') && document.getElementById('cIcon').value) || 'star';
   const color = document.getElementById('cColor') ? document.getElementById('cColor').value : '';
+  const lineColor = document.getElementById('cLineColor') ? document.getElementById('cLineColor').value : '';
   const style = readEditorStyle();
   const opacity = readEditorOpacity();
   const size = readEditorSize();
   const customId = box.getAttribute('data-cid') || '';
   const category = box.getAttribute('data-category') || name;
-  box.innerHTML = shortcutTileHtml({ id:'preview', label:name, icon:icon, category:category, customId:customId, size:size }, { override:{ color:color, style:style, opacity:opacity, size:size }, dataAttr:'data-preview="1"', className:'' });
+  box.innerHTML = shortcutTileHtml({ id:'preview', label:name, icon:icon, category:category, customId:customId, size:size }, { override:{ color:color, lineColor:lineColor, style:style, opacity:opacity, size:size }, dataAttr:'data-preview="1"', className:'' });
   syncOpacityUi();
 }
 function openCategoryEditor(id, opts){
@@ -5195,6 +5218,7 @@ function openCategoryEditor(id, opts){
       name: builtinKey,
       icon: (shortcut && (shortcut.icon||shortcut.id)) || look.icon || 'star',
       color: look.color || '',
+      lineColor: look.lineColor || '',
       style: look.style || '',
       opacity: look.opacity,
       size: look.size || (shortcut && shortcutSizeOf(shortcut)) || defaultShortcutIconSize(),
@@ -5213,6 +5237,9 @@ function openCategoryEditor(id, opts){
   const colorBtns = ['<button type="button" class="'+(!cat.color?'on':'')+'" data-color="" title="標準" style="--c:#555"></button>'].concat(CAT_COLORS.map(function(col){
     return '<button type="button" class="'+(cat.color===col?'on':'')+'" data-color="'+escapeHtml(col)+'" style="--c:'+escapeHtml(col)+'"></button>';
   })).join('');
+  const lineColorBtns = ['<button type="button" class="'+(!cat.lineColor?'on':'')+'" data-lcolor="" title="自動" style="--c:#555"></button>'].concat(CAT_COLORS.map(function(col){
+    return '<button type="button" class="'+(cat.lineColor===col?'on':'')+'" data-lcolor="'+escapeHtml(col)+'" style="--c:'+escapeHtml(col)+'"></button>';
+  })).join('');
   const titleName = isBuiltin ? ((shortcut && shortcut.label) || C.categoryLabel(cat.name) || cat.name) : (cat.name||''); const title = isBuiltin ? (titleName+'の見た目') : (id ? '費目を編集' : '費目を追加');
   box.innerHTML =
     '<h3 id="catEditorTitle">'+escapeHtml(title)+'</h3>'+
@@ -5221,10 +5248,12 @@ function openCategoryEditor(id, opts){
       '<label class="f">名前</label><input type="text" id="cName" value="'+escapeHtml(cat.name||'')+'" placeholder="ブレーキパッド、ドラレコ など">')+
     (isBuiltin ? '<input type="hidden" id="cIcon" value="'+escapeHtml(cat.icon||'star')+'">' :
       '<label class="f">アイコン</label><div class="icon-pick" id="cIcons">'+iconBtns+'</div><input type="hidden" id="cIcon" value="'+escapeHtml(cat.icon||'star')+'">')+
-    '<label class="f">色（任意）</label><div class="color-pick" id="cColors">'+colorBtns+'</div>'+
+    '<label class="f">塗りの色（任意）</label><div class="color-pick" id="cColors">'+colorBtns+'</div>'+
     '<input type="hidden" id="cColor" value="'+escapeHtml(safeColor(cat.color)||'')+'">'+
+    '<label class="f">線の色（任意）</label><div class="color-pick" id="cLineColors">'+lineColorBtns+'</div>'+
+    '<input type="hidden" id="cLineColor" value="'+escapeHtml(safeColor(cat.lineColor)||'')+'">'+
     '<label class="f">スタイル</label>'+styleSegHtml(cat.style||'', true)+
-    '<div class="help">線はアイコンと枠の色です。塗りはタイル全体をその色で塗ります。標準は、このショートカットにまだ指定がないときの初期値です。</div>'+
+    '<div class="help">塗りの色はタイルの背景、線の色はアイコン・文字・枠の色で、別々に選べます。線の色を「自動」にすると、塗りのときは読みやすい色、線のときは塗りの色になります。スタイルが「塗り」のときは塗りの色でタイル全体を塗り、「線」のときは枠とアイコンを線の色にして、背景は塗りの色をうすく重ねます。標準は、このショートカットにまだ指定がないときの初期値です。</div>'+
     opacityControlHtml(cat.style||'', cat.opacity)+
     sizeSegHtml(cat.size || (isBuiltin ? (shortcut && shortcutSizeOf(shortcut)) : (cat.size || defaultShortcutIconSize())) || defaultShortcutIconSize())+
     '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?((shortcut&&shortcut.label)||C.categoryLabel(cat.name)||cat.name): (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
@@ -5251,6 +5280,13 @@ function openCategoryEditor(id, opts){
   document.getElementById('cColors').onclick = function(e){
     const b = e.target.closest('[data-color]'); if(!b) return;
     document.getElementById('cColor').value = safeColor(b.getAttribute('data-color') || '');
+    Array.prototype.forEach.call(this.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
+    updateEditorPreview();
+  };
+  const lcBox = document.getElementById('cLineColors');
+  if(lcBox) lcBox.onclick = function(e){
+    const b = e.target.closest('[data-lcolor]'); if(!b) return;
+    document.getElementById('cLineColor').value = safeColor(b.getAttribute('data-lcolor') || '');
     Array.prototype.forEach.call(this.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
     updateEditorPreview();
   };
@@ -5284,10 +5320,11 @@ function openCategoryEditor(id, opts){
   document.getElementById('cSave').onclick = function(){
     const style = readEditorStyle();
     const color = safeColor(document.getElementById('cColor').value);
+    const lineColor = safeColor(document.getElementById('cLineColor').value);
     const opacity = readEditorOpacity();
     if(isBuiltin){
       const size = readEditorSize();
-      upsertBuiltinLook(builtinKey, { color:color, style:style, opacity:opacity, icon:cat.icon, size:size });
+      upsertBuiltinLook(builtinKey, { color:color, lineColor:lineColor, style:style, opacity:opacity, icon:cat.icon, size:size });
       if(shortcut && shortcut.id) setShortcutSize(shortcut.id, size, true);
       else setShortcutSize(builtinKey, size, true);
       closeModal();
@@ -5303,6 +5340,7 @@ function openCategoryEditor(id, opts){
       name: name,
       icon: document.getElementById('cIcon').value || 'star',
       color: color,
+      lineColor: lineColor,
       style: style,
       opacity: opacity,
       size: size,
@@ -5942,7 +5980,9 @@ function mergeBackupCategories(list, looks){
         return;
       }
       const parsed = parseLookField(rc.style);
-      rc.color = safeColor(rc.color);
+      const ucb = unpackColors(rc.color);
+      rc.color = ucb.color;
+      if(ucb.lineColor) rc.lineColor = ucb.lineColor;
       rc.style = parsed.style;
       if(rc.opacity==null) rc.opacity = parsed.opacity;
       const i = state.customCats.findIndex(function(c){ return c.id===rc.id; });
@@ -6537,7 +6577,9 @@ function mergeRemote(entries, vehicles, intervals, categories){
         applyBuiltinLookFromRow(rc);
         return;
       }
-      rc.color = safeColor(rc.color);
+      const ucr = unpackColors(rc.color);
+      rc.color = ucr.color;
+      if(ucr.lineColor) rc.lineColor = ucr.lineColor; else if(!('lineColor' in rc)) rc.lineColor = '';
       rc.style = safeStyle(rc.style);
       const i = state.customCats.findIndex(function(c){ return c.id===rc.id; });
       if(i<0) state.customCats.push(rc);
