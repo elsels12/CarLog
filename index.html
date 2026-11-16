@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.43</title>
+<title>CarLog beta 0.9.45</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -456,7 +456,16 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 .seg{display:flex;gap:4px;margin:4px 0 8px;}
 .seg button{flex:1;background:var(--chip-bg);border:1px solid var(--chip-line);color:var(--chip-fg);border-radius:8px;font-size:11px;font-weight:700;padding:7px 6px;}
 .seg button.on{border-color:var(--amber);color:var(--amber);background:rgba(223,172,88,.12);}
-#tilePreview{display:flex;justify-content:center;padding:8px 0 4px;}
+/* 見た目の編集: タイトルとサンプルは上に固定し、設定欄だけをスクロールする（サンプルがいつも見える） */
+#modal.cat-editor{display:flex;flex-direction:column;overflow:hidden;max-height:88vh;max-height:88dvh;}
+#modal.cat-editor>h3{flex:none;margin:0 0 6px;}
+#modal.cat-editor #tilePreview{flex:none;position:static;top:auto;margin:0 -12px 6px;min-height:84px;padding:6px 0;}
+#modal.cat-editor #catEditor{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding-bottom:6px;}
+#modal.cat-editor #catEditor .help{font-size:11px;line-height:1.5;margin:4px 0 6px;}
+#modal.cat-editor>.btn-row{flex:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+/* ホームの「点検アラート」「最近の記録」の見出しは、アクセント色を白寄りにやわらげる */
+#alertCard>h2,#recentCard>h2{color:color-mix(in srgb, var(--amber) 48%, var(--paper) 52%);}
+#tilePreview{display:flex;justify-content:center;align-items:center;padding:8px 0 8px;position:sticky;top:-14px;z-index:5;margin:0 -12px 6px;background:var(--panel,var(--kpi-bg));border-bottom:1px solid var(--line);min-height:92px;}
 #tilePreview .sc-tile{width:76px;min-height:76px;}
 #tilePreview .sc-tile.sc-s{width:36px;min-height:36px;height:36px;padding:3px 2px;}
 #tilePreview .sc-tile.sc-l{width:156px;min-height:156px;}
@@ -520,6 +529,11 @@ html.sc-drag-lock,body.sc-drag-lock{overflow:hidden;overscroll-behavior:none;tou
 .tint-fuel{--_t:#e0b15c;}
 .tint-alert{--_t:#ff7a55;}
 .tint-hist{--_t:#6ea8ff;}
+/* ホームの見出し: 点検アラート=点検タブ寄りのやわらかい色、最近の記録=履歴タブ寄りのやわらかい青（テーマで変えない） */
+#alertCard>h2{color:#e8b4a0;}
+#recentCard>h2{color:#8fb4ee;}
+html[data-theme="glass-light"] #alertCard>h2,html[data-theme="neumo"] #alertCard>h2{color:#b2573f;}
+html[data-theme="glass-light"] #recentCard>h2,html[data-theme="neumo"] #recentCard>h2{color:#3d6bb8;}
 .tint-tax{--_t:#d4bc7d;}
 .tint-sum{--_t:#3ad0c0;}
 .tint-interval{--_t:#5eead4;}
@@ -1455,7 +1469,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.43</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.45</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -2473,12 +2487,14 @@ function shortcutTileHtml(sc, attrs){
   const op = look.opacity;
   if(look.style==='fill' && look.color){
     const ink = look.lineColor || readableInk(look.color, 'fill', op);
-    return '<button type="button" class="sc-tile sc-fill'+extra+'" '+data+' aria-label="'+escapeHtml(label)+'" style="--cat:'+escapeHtml(look.color)+';background:'+escapeHtml(fillBg(look.color, op))+';border-color:'+escapeHtml(look.lineColor||look.color)+';color:'+escapeHtml(ink)+'">'+
+    return '<button type="button" class="sc-tile sc-fill'+extra+'" '+data+' aria-label="'+escapeHtml(label)+'" style="--cat:'+escapeHtml(look.color)+';background:'+escapeHtml(fillBg(look.color, op))+';border-color:'+escapeHtml(look.color)+';color:'+escapeHtml(ink)+'">'+
       '<span class="icn" style="color:'+escapeHtml(ink)+'">'+shortcutSvg(icon)+'</span><span class="lbl">'+escapeHtml(label)+'</span></button>';
   }
+  // 枠は「塗りの色」（なければ線の色）、アイコンと文字は「線の色」（なければ塗りの色）。線の色を変えても枠は変わらない
   const baseCol = look.lineColor || look.color;
-  const lineCol = baseCol ? lineTint(baseCol, op) : '';
-  const tint = baseCol ? fillBg(look.color || baseCol, Math.min(op, 40)) : '';
+  const borderCol = look.color || look.lineColor;
+  const lineCol = borderCol ? lineTint(borderCol, op) : '';
+  const tint = borderCol ? fillBg(borderCol, Math.min(op, 40)) : '';
   const ink = baseCol || '';
   const st = [];
   if(baseCol) st.push('--cat:'+baseCol);
@@ -4116,7 +4132,7 @@ function renderHome(){
     '</details>';
   bindShortcutGrid();
   const allBtn = document.getElementById('btnAllHist');
-  if(allBtn) allBtn.onclick = function(){ go('hist'); };
+  if(allBtn) allBtn.onclick = function(){ goHistList(); };
   document.querySelectorAll('#recentCard .hist-item').forEach(function(el){
     el.addEventListener('click', function(){
       state.editId = el.getAttribute('data-id');
@@ -5139,7 +5155,7 @@ function sizeSegHtml(current){
       return '<button type="button" data-sc-size="'+p[0]+'" class="'+(p[0]===cur?'on':'')+'" role="radio" aria-checked="'+(p[0]===cur?'true':'false')+'">'+p[1]+'</button>';
     }).join('')+
     '</div>'+
-    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（中1つの位置に小が4つ、2×2で並びます）。文字は1行だけ出し、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、どちらもアイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅で、高さはマス3つ分）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段です。空いたマスは自動で詰まります。</div>';
+    '<div class="help">ホームのタイルの大きさです。小は中の半分の幅と高さ（2×2で4つ並ぶ）、小横・中横はアイコンの右にラベルを1行で出します。大・特大は大きく表示します。空いたマスは自動で詰まります。</div>';
 }
 function readEditorSize(){
   const on = document.querySelector('#cSize button.on');
@@ -5243,6 +5259,7 @@ function openCategoryEditor(id, opts){
   const titleName = isBuiltin ? ((shortcut && shortcut.label) || C.categoryLabel(cat.name) || cat.name) : (cat.name||''); const title = isBuiltin ? (titleName+'の見た目') : (id ? '費目を編集' : '費目を追加');
   box.innerHTML =
     '<h3 id="catEditorTitle">'+escapeHtml(title)+'</h3>'+
+    '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?((shortcut&&shortcut.label)||C.categoryLabel(cat.name)||cat.name): (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
     '<div id="catEditor">'+
     (isBuiltin ? '<input type="hidden" id="cName" value="'+escapeHtml(cat.name)+'">' :
       '<label class="f">名前</label><input type="text" id="cName" value="'+escapeHtml(cat.name||'')+'" placeholder="ブレーキパッド、ドラレコ など">')+
@@ -5253,10 +5270,9 @@ function openCategoryEditor(id, opts){
     '<label class="f">線の色（任意）</label><div class="color-pick" id="cLineColors">'+lineColorBtns+'</div>'+
     '<input type="hidden" id="cLineColor" value="'+escapeHtml(safeColor(cat.lineColor)||'')+'">'+
     '<label class="f">スタイル</label>'+styleSegHtml(cat.style||'', true)+
-    '<div class="help">塗りの色はタイルの背景、線の色はアイコン・文字・枠の色で、別々に選べます。線の色を「自動」にすると、塗りのときは読みやすい色、線のときは塗りの色になります。スタイルが「塗り」のときは塗りの色でタイル全体を塗り、「線」のときは枠とアイコンを線の色にして、背景は塗りの色をうすく重ねます。標準は、このショートカットにまだ指定がないときの初期値です。</div>'+
+    '<div class="help">塗りの色=タイルの背景と枠、線の色=アイコンと文字だけ（枠は変わりません）。線の色が「自動」なら、塗りでは読みやすい色、線では塗りの色になります。</div>'+
     opacityControlHtml(cat.style||'', cat.opacity)+
     sizeSegHtml(cat.size || (isBuiltin ? (shortcut && shortcutSizeOf(shortcut)) : (cat.size || defaultShortcutIconSize())) || defaultShortcutIconSize())+
-    '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?((shortcut&&shortcut.label)||C.categoryLabel(cat.name)||cat.name): (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
     (isBuiltin ? '' :
       '<label class="f">内訳（任意・カンマ区切り）</label><input type="text" id="cSubs" value="'+escapeHtml((cat.subs||[]).join('、'))+'" placeholder="フロント、リア">'+
       '<div class="grid2">'+
@@ -5264,9 +5280,11 @@ function openCategoryEditor(id, opts){
         '<div><label class="f">点検間隔 月（任意）</label><input type="number" id="cMo" inputmode="numeric" value="'+escapeHtml(cat.alertMonths!=null?cat.alertMonths:'')+'"></div>'+
       '</div>'+
       '<label class="check"><input type="checkbox" id="cShortcut"'+(onHome?' checked':'')+'>ホームのショートカットに出す</label>')+
+    '</div>'+
     '<div class="btn-row"><button type="button" class="btn primary" id="cSave">保存</button>'+
     ((!isBuiltin && id)?'<button type="button" class="btn danger" id="cDel">削除</button>':'')+
-    '<button type="button" class="btn ghost" id="cCancel">閉じる</button></div></div>';
+    '<button type="button" class="btn ghost" id="cCancel">閉じる</button></div>';
+  box.className = 'modal cat-editor';
   bg.classList.add('show');
   document.getElementById('cCancel').onclick = closeModal;
   bindModalBackdrop(bg);
