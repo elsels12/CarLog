@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.38 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.41 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -766,11 +766,9 @@
     return km / days * 30;
   }
 
-  // 距離の色段階（残り距離）: 1,000 km より多い=緑 / 1,000〜500 km=黄 / 500〜0 km=オレンジ / 超過=赤。
-  // 間隔が短い項目では、間隔の半分・4分の1を上限にする（最初から黄色にならないように）。
-  var SOON_KM_FIXED = 1000;
-  var ORANGE_KM_FIXED = 500;
-  var VISIBLE_KM_FIXED = 1300;
+  // 距離の段階（残り）: 1,200 km 以下で「確認」から点検アラートに出る。
+  //   確認 1,200〜800 / 注意 800〜500 / 警告 500〜0 / 超過。間隔が短い項目では、間隔の半分（確認の入口）までに縮める。
+  var SOON_KM_FIXED = 1200, YELLOW_KM_FIXED = 800, ORANGE_KM_FIXED = 500;
   function soonKmFor(item, opts) {
     if (item.soonKm != null) return item.soonKm;
     var kmInt = Number(item.km) || 0;
@@ -778,10 +776,23 @@
     var cand = Math.min(SOON_KM_FIXED, kmInt * 0.5);
     return Math.max(100, Math.round(cand / 100) * 100);
   }
+  function yellowKmFor(item, soonKm) {
+    return Math.max(50, Math.round(Math.min(YELLOW_KM_FIXED, Number(soonKm) * YELLOW_KM_FIXED / SOON_KM_FIXED) / 50) * 50);
+  }
   function orangeKmFor(item, soonKm) {
-    var kmInt = Number(item.km) || 0;
-    var cand = Math.min(ORANGE_KM_FIXED, Number(soonKm) / 2 || ORANGE_KM_FIXED, kmInt > 0 ? kmInt * 0.25 : ORANGE_KM_FIXED);
-    return Math.max(50, Math.round(cand / 50) * 50);
+    return Math.max(50, Math.round(Math.min(ORANGE_KM_FIXED, Number(soonKm) * ORANGE_KM_FIXED / SOON_KM_FIXED) / 50) * 50);
+  }
+  // 期間（日数）の段階: 確認 80〜60日 / 注意 60〜30日 / 警告 30〜1日 / 超過（0日以下）
+  var DAY_SOON = 80, DAY_YELLOW = 60, DAY_ORANGE = 30;
+  // 色の位置（0=赤, 1=オレンジ, 2=黄, 3=緑）を残りの値から連続で出す。距離も日数も同じ尺度なので色がそろう。
+  function scoreFromStops(remain, o, y, g) {
+    if (remain == null || !isFinite(Number(remain))) return null;
+    var r = Number(remain);
+    if (r <= 0) return 0;
+    if (r > g) return 3;
+    if (r <= o) return r / o;
+    if (r <= y) return 1 + (r - o) / Math.max(1, y - o);
+    return Math.min(2.999, 2 + (r - y) / Math.max(1, g - y));
   }
   var TIER_RANK = { red: 0, orange: 1, yellow: 2, green: 3 };
   function worseTier(a, b) {
@@ -812,17 +823,20 @@
       }
     }
     var soonKm = soonKmFor(item, opts);
-    var soonDays = item.soonDays != null ? item.soonDays : SOON_REMAIN_DAYS;
+    var soonDays = item.soonDays != null ? item.soonDays : DAY_SOON;
     var kmStatus = remainAxisStatus(remainKm, { overdueAt: 0, cautionAt: soonKm, cautionStatus: "caution" });
     var dayStatus = remainAxisStatus(remainDays, { overdueAt: 0, cautionAt: soonDays, cautionStatus: "soon" });
     var status = !last ? "unknown" : (worseStatus(kmStatus, dayStatus) || "ok");
     var orangeKm = orangeKmFor(item, soonKm);
-    // 点検アラートに出し始める残り距離（緑で表示）。間隔が短い項目では間隔の65%まで。
-    var visibleKm = Math.max(soonKm, Math.round(Math.min(VISIBLE_KM_FIXED, kmInt > 0 ? kmInt * 0.65 : VISIBLE_KM_FIXED) / 100) * 100);
+    var yellowKm = yellowKmFor(item, soonKm);
+    var visibleKm = soonKm;
     var kmTier = remainKm == null ? null : (remainKm <= 0 ? "red" : (remainKm <= orangeKm ? "orange" : (remainKm <= soonKm ? "yellow" : "green")));
     var dayTier = tierFromStatus(dayStatus);
-    if (dayTier === "yellow" && remainDays != null && remainDays <= soonDays / 2) dayTier = "orange";
+    if (dayTier === "yellow" && remainDays != null && remainDays <= DAY_ORANGE) dayTier = "orange";
     var tier = !last ? null : (worseTier(kmTier, dayTier) || "green");
+    var kmScore = scoreFromStops(remainKm, orangeKm, yellowKm, soonKm);
+    var dayScore = scoreFromStops(remainDays, Math.min(DAY_ORANGE, soonDays * DAY_ORANGE / DAY_SOON), Math.min(DAY_YELLOW, soonDays * DAY_YELLOW / DAY_SOON), soonDays);
+    var score = !last ? null : (kmScore == null ? dayScore : (dayScore == null ? kmScore : Math.min(kmScore, dayScore)));
     var triggeredBy = (remainKm != null && remainDays != null)
       ? (remainKm <= 0 || remainDays <= 0
         ? (remainKm != null && remainKm <= 0 && (remainDays == null || remainDays > 0) ? "km"
@@ -839,6 +853,9 @@
       soonKm: soonKm,
       orangeKm: orangeKm,
       visibleKm: visibleKm,
+      visibleDays: soonDays,
+      yellowKm: yellowKm,
+      score: score,
       tier: tier,
       remainDays: remainDays,
       kmStatus: kmStatus,
@@ -1035,6 +1052,7 @@
     alertStatus: alertStatus,
     estimateMonthlyKm: estimateMonthlyKm,
     soonKmFor: soonKmFor,
+    scoreFromStops: scoreFromStops,
     orangeKmFor: orangeKmFor,
     tierFromStatus: tierFromStatus,
     computeAlerts: computeAlerts,

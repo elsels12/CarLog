@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.38</title>
+<title>CarLog beta 0.9.41</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -261,14 +261,23 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-bar.is-overdue>i,.alert-bar.is-action>i{background:var(--danger);}
 .alert-bar.is-info>i{background:var(--cold,#4a90c8);}
 .alert-bar.is-reserved>i{background:var(--ok);}
-.alert-bar.is-t-green>i{background:var(--tier-green);}
-.alert-bar.is-t-yellow>i{background:var(--tier-yellow);}
-.alert-bar.is-t-orange>i{background:var(--tier-orange);}
-.alert-bar.is-t-red>i{background:var(--tier-red);}
-.alert-remain.t-green{color:var(--tier-green);}
-.alert-remain.t-yellow{color:var(--tier-yellow);}
-.alert-remain.t-orange{color:var(--tier-orange);}
-.alert-remain.t-red{color:var(--tier-red);}
+.filter-bar#histFilters{scroll-margin-top:calc(env(safe-area-inset-top,0px) + 10px);}
+.alert-card[style*="--tc"] .alert-bar>i{background:var(--tc);}
+.alert-card[style*="--tc"] .badge:not(.unknown):not(.reserved):not(.info){
+  color:var(--tc);border-color:color-mix(in srgb, var(--tc) 50%, transparent);background:color-mix(in srgb, var(--tc) 16%, transparent);
+}
+html[data-theme="glass-light"] .alert-card[style*="--tc"] .badge:not(.unknown),html[data-theme="neumo"] .alert-card[style*="--tc"] .badge:not(.unknown){
+  color:color-mix(in srgb, var(--tc) 62%, #1b1b1b);background:color-mix(in srgb, var(--tc) 18%, #ffffff);
+}
+.alert-card[style*="--tc"] .alert-remain{color:var(--tc);}
+.alert-card[style*="--tc"] .alert-action:not(.is-reserved){
+  color:var(--tc);border-color:color-mix(in srgb, var(--tc) 55%, transparent);
+  background:color-mix(in srgb, var(--tc) 16%, transparent);
+}
+html[data-theme="glass-light"] .alert-card[style*="--tc"] .alert-remain,html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-remain{color:color-mix(in srgb, var(--tc) 68%, #1b1b1b);}
+html[data-theme="glass-light"] .alert-card[style*="--tc"] .alert-action:not(.is-reserved),html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-action:not(.is-reserved){
+  color:color-mix(in srgb, var(--tc) 62%, #1b1b1b);background:color-mix(in srgb, var(--tc) 18%, #ffffff);
+}
 .alert-action{
   flex:0 0 auto;width:auto;min-width:0;min-height:26px;height:26px;padding:0 11px;font-size:12px;font-weight:700;
   border-radius:999px;box-sizing:border-box;touch-action:manipulation;cursor:pointer;font-family:inherit;
@@ -1444,7 +1453,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.38</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.41</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3316,7 +3325,7 @@ const HELP_TOPICS = [
   { id:'input', title:'給油・経費の入力', body:
     '<p>入力タブ、またはホームのショートカットから記録します。</p>'+
     '<ol><li>日付と費目（給油、オイル、車検など）を選びます。費目は大きなボタンをタップすると一覧が開き、選ぶとすぐに閉じます。</li>'+
-    '<li>給油では、合計金額（円）を入れて次へ（Enter）を押すと、リッター、走行距離の順に進みます。金額とリッター、単価のうち2つを入れると、残りは自動で出ます。空や0にも戻せます。</li>'+
+    '<li>給油では、合計金額（円）を入れて次へ（Enter）を押すと、給油量、走行距離の順に進みます。金額と給油量、単価のうち2つを入れると、残りは自動で出ます。空や0にも戻せます。</li>'+
     '<li>油種（レギュラー・ハイオク・軽油）は任意です。選ばなくても保存できます。同じ車では、前回選んだ油種を覚えています。</li>'+
     '<li>満タンにチェックすると、燃費（km/L）の計算に使います。</li>'+
     '<li>金額だけの経費も、同じ画面で残せます。</li>'+
@@ -3783,6 +3792,7 @@ function openReplacementSheet(itemId){
     updateSyncBtn();
     renderAll();
     toast('完了を記録しました');
+    goHistList();
   };
 }
 function openMaintenanceEditor(id){
@@ -3889,10 +3899,9 @@ function alertsFor(veh){
 function isActiveAlert(a){
   return !!a && (a.status==='overdue' || a.status==='action' || a.status==='reserved' || a.status==='caution' || a.status==='soon' || a.status==='info');
 }
-// ホームの点検アラートに出す項目: 通常の注意・超過に加えて、距離の残りが visibleKm（1,300km）以内の項目（緑）も出す
+// ホームの点検アラートに出す項目: 確認（距離は残り1,200km以内、期間は80日以内）から出す。余裕（緑）は出さない
 function isVisibleAlert(a){
-  if(isActiveAlert(a)) return true;
-  return !!a && a.status==='ok' && a.remainKm!=null && a.visibleKm!=null && a.remainKm <= a.visibleKm;
+  return isActiveAlert(a);
 }
 function updateAlertBadge(){
   const btn = document.querySelector('nav.nav button[data-page="alert"]');
@@ -4167,6 +4176,30 @@ function remainLines(a){
   }
   return lines.filter(function(ln){ return ln.text; });
 }
+const SCORE_STOPS = [[255,90,46],[255,154,31],[242,208,59],[52,199,115]]; // 赤(最初の赤)→オレンジ→黄→緑
+function scoreColor(score){
+  if(score==null || !isFinite(score)) return '';
+  const x = Math.max(0, Math.min(3, score));
+  const i = Math.min(2, Math.floor(x)), f = x - i;
+  const a = SCORE_STOPS[i], b = SCORE_STOPS[i+1];
+  const c = [0,1,2].map(function(k){ return Math.round(a[k] + (b[k]-a[k])*f); });
+  return 'rgb('+c.join(',')+')';
+}
+function alertScore(a){
+  if(!a) return null;
+  if(a.score!=null) return a.score;
+  const m = { overdue:0, action:0, caution:1.5, soon:1.5, ok:3, reserved:3 };
+  return m[a.status]!=null ? m[a.status] : null;
+}
+// 色の位置（0=赤〜3=緑）に合わせた5段階: 余裕 / 確認（1,200km・80日〜）/ 注意 / 警告 / 超過
+function scoreLabel(score){
+  if(score==null || !isFinite(score)) return '';
+  if(score<=0) return '超過';
+  if(score<1) return '警告';
+  if(score<2) return '注意';
+  if(score<3) return '確認';
+  return '余裕';
+}
 function alertTier(a){
   if(!a) return '';
   return a.tier || C.tierFromStatus(a.status) || '';
@@ -4174,7 +4207,7 @@ function alertTier(a){
 function remainBlockHtml(a){
   const lines = remainLines(a);
   if(!lines.length) return '';
-  const tcls = alertTier(a) ? ' t-'+alertTier(a) : '';
+  const tcls = '';
   return '<div class="alert-card-remain">'+lines.map(function(ln){
     return '<div class="alert-remain is-'+escapeHtml(ln.status)+tcls+'" data-remain="'+escapeHtml(ln.kind)+'">'+escapeHtml(ln.text)+'</div>';
   }).join('')+'</div>';
@@ -4191,38 +4224,11 @@ function alertUsedPct(a){
     return Math.max(0, Math.min(100, (1 - a.remainDays/cycle)*100));
   }
   if(!C.hasBaselineValue(a && a.last)) return 0;
-  // バーの長さを色の段階にそろえる: 緑=0〜60% / 黄=60〜80% / オレンジ=80〜100%未満 / 超過=100%
-  // （項目ごとの間隔が違っても、色が変わる位置は同じになる）
-  function zone(remain, total, soon){
-    if(remain==null || !(total>0)) return null;
-    const orange = soon/2;
-    if(remain<=0) return 100;
-    if(remain<=orange) return 80 + 20*(1 - remain/orange)*0.999;
-    if(remain<=soon) return 60 + 20*(1 - (remain-orange)/(soon-orange));
-    const span = Math.max(1, total - soon);
-    return Math.max(0, Math.min(60, 60*(1 - (remain-soon)/span)));
-  }
-  const pcts = [];
-  const kmInt = Number(item.km);
-  if(a.remainKm!=null && kmInt>0){
-    const soon = Number(a.soonKm)>0 ? Number(a.soonKm) : 1000;
-    const orange = Number(a.orangeKm)>0 ? Number(a.orangeKm) : soon/2;
-    // orange境界を soon/2 でなく実際の値に合わせる
-    const r = a.remainKm;
-    let v;
-    if(r<=0) v=100;
-    else if(r<=orange) v = 80 + 19.9*(1 - r/orange);
-    else if(r<=soon) v = 60 + 20*(1 - (r-orange)/Math.max(1,soon-orange));
-    else v = Math.max(0, Math.min(60, 60*(1 - (r-soon)/Math.max(1,kmInt-soon))));
-    pcts.push(v);
-  }
-  const soonDays = item.soonDays!=null ? Number(item.soonDays) : C.SOON_REMAIN_DAYS;
-  const monthsTotal = Number(item.months)*30.4375;
-  if(a.remainDays!=null && monthsTotal>0){
-    pcts.push(zone(a.remainDays, monthsTotal, soonDays));
-  }
-  if(!pcts.length) return 0;
-  return Math.max.apply(null, pcts);
+  // バーの長さを色（残りの近さ）にそろえる: 緑の入口は短く、赤（超過）で満杯。連続で伸びる。
+  const sc = alertScore(a);
+  if(sc==null) return 0;
+  if(sc<=0) return 100;
+  return Math.max(6, (1 - sc/3)*100);
 }
 function alertCardHtml(a, opts){
   opts = opts || {};
@@ -4232,11 +4238,13 @@ function alertCardHtml(a, opts){
   const canEdit = !!(opts.edit && !isShaken && (isReplaceableInterval(item) || isCustomInterval(item)));
   const hasLast = !isShaken && C.hasBaselineValue(a.last);
   const st = (!isShaken && !hasLast) ? 'unknown' : (a.status||'unknown');
-  const badgeLabel = (!isShaken && !hasLast) ? '未設定' : statusLabel(a.status);
+  const keepLabel = (a.status==='reserved' || a.status==='info' || a.status==='action');
+  const badgeLabel = (!isShaken && !hasLast) ? '未設定' : (keepLabel ? statusLabel(a.status) : (scoreLabel(alertScore(a)) || statusLabel(a.status)));
   const badge = '<span class="badge '+escapeHtml(st)+'">'+escapeHtml(badgeLabel)+'</span>';
   const info = alertKeyInfo(a);
   const remainHtml = remainBlockHtml(a);
   const pct = Math.max(0, Math.min(100, alertUsedPct(a)));
+  const tcol = (isShaken || hasLast) ? scoreColor(alertScore(a)) : '';
   const variant = alertCardVariant(opts);
   const actions = [];
   const shakenOpen = isShaken && !!(a.windowOpen || (a.dueDate && C.shakenWindowIsOpen(a.dueDate, new Date())));
@@ -4249,12 +4257,12 @@ function alertCardHtml(a, opts){
   if(canEdit && variant==='B') actions.push('<span class="alert-chevron" aria-hidden="true">'+ICO_CHEVRON+'</span>');
   const editBtn = (canEdit && variant==='A') ? '<button type="button" class="alert-edit" data-edit-int="'+escapeHtml(item.id)+'" aria-label="編集">'+ICO_PENCIL+'</button>' : '';
   const editAttr = (canEdit && variant==='B') ? ' data-edit-int="'+escapeHtml(item.id)+'"' : '';
-  return '<div class="alert-card'+(isShaken?' alert-shaken':'')+(canEdit && variant==='B'?' is-editable':'')+'" data-iid="'+escapeHtml(item.id||'')+'"'+editAttr+'>'+
+  return '<div class="alert-card'+(isShaken?' alert-shaken':'')+(canEdit && variant==='B'?' is-editable':'')+'" data-iid="'+escapeHtml(item.id||'')+'"'+(tcol?' style="--tc:'+tcol+'"':'')+editAttr+'>'+
     '<div class="alert-card-head"><span class="name">'+escapeHtml(item.label||'')+'</span>'+badge+editBtn+'</div>'+
     remainHtml+
     '<div class="alert-card-sub"><div class="alert-info">'+alertKeyInfoHtml(a)+'</div></div>'+
     '<div class="alert-card-foot">'+
-      '<div class="alert-bar is-'+escapeHtml(st)+(hasLast||isShaken?(alertTier(a)?' is-t-'+alertTier(a):''):'')+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
+      '<div class="alert-bar is-'+escapeHtml(st)+''+'" aria-hidden="true"><i style="width:'+pct.toFixed(1)+'%"></i></div>'+
       (actions.length?'<div class="alert-card-actions">'+actions.join('')+'</div>':'')+
     '</div>'+
     '</div>';
@@ -4678,12 +4686,12 @@ function fillFuelExtra(cat, rec){
   }
   box.innerHTML =
     '<div class="grid2">'+
-      '<div><label class="f">'+(isEvVeh()?'充電量（kWh）':'リッター（L）')+'<span class="auto-tag" id="tag-liters" hidden>自動</span></label><input type="number" id="fLiters" inputmode="decimal" step="0.01" enterkeyhint="next" value="'+escapeHtml(rec&&rec.liters!=null?rec.liters:'')+'"></div>'+
+      '<div><label class="f">'+(isEvVeh()?'充電量（kWh）':'給油量（ℓ）')+'<span class="auto-tag" id="tag-liters" hidden>自動</span></label><input type="number" id="fLiters" inputmode="decimal" step="0.01" enterkeyhint="next" value="'+escapeHtml(rec&&rec.liters!=null?rec.liters:'')+'"></div>'+
       '<div><label class="f">'+(isEvVeh()?'単価（円/kWh）':'単価（円/L）')+'<span class="auto-tag" id="tag-unitPrice" hidden>自動</span></label><input type="number" id="fUnit" inputmode="decimal" step="0.1" enterkeyhint="next" value="'+escapeHtml(rec&&rec.unitPrice!=null?rec.unitPrice:'')+'"></div>'+
     '</div>'+
     '<label class="check"><input type="checkbox" id="fFull"'+(rec&&rec.isFullTank?' checked':'')+'>'+(isEvVeh()?'満充電（満充電法で電費を計算）':'満タン（満タン法で燃費を計算）')+'</label>'+
     (isEvVeh()?'':gradeChipsHtml((rec && rec.fuelGrade) || lastFuelGradeFor(currentVehicle())))+
-    '<div class="help">合計・'+(isEvVeh()?'充電量':'リッター')+'・単価は、入力した2つから残りを自動で出します（自動の欄は薄く表示。自分で直すとその値が優先されます）。'+(isEvVeh()?'区間の電費は前回の満充電からの距離÷その間の充電量（途中の充電も含む）です。':'区間燃費は前回の満タンからの距離÷その間の給油量（途中の給油も含む）です。')+'油種は任意で、同じボタンをもう一度押すと外せます。</div>';
+    '<div class="help">合計・'+(isEvVeh()?'充電量':'給油量')+'・単価は、入力した2つから残りを自動で出します（自動の欄は薄く表示。自分で直すとその値が優先されます）。'+(isEvVeh()?'区間の電費は前回の満充電からの距離÷その間の充電量（途中の充電も含む）です。':'区間燃費は前回の満タンからの距離÷その間の給油量（途中の給油も含む）です。')+'油種は任意で、同じボタンをもう一度押すと外せます。</div>';
   bindFuelCalc();
   bindGradeChips();
 }
@@ -4780,7 +4788,7 @@ function saveForm(){
   state.inputPreset = null;
   toast('保存しました');
   updateSyncBtn();
-  go('hist');
+  goHistList();
 }
 
 function deleteRecord(id){
@@ -6929,8 +6937,26 @@ function renderAll(){
   else renderSet();
   updateAlertBadge();
 }
+// 保存後: 履歴タブを開き、「すべて」などの絞り込みタブ（全部の履歴の先頭）が画面の一番上に来るようにスクロールする
+function goHistList(){
+  state.histFilter = 'all';
+  go('hist');
+  const jump = function(){
+    const el = document.getElementById('histFilters');
+    const pg = document.getElementById('page-hist');
+    if(!el) return;
+    // 記録が少なくて下まで届かないときは、下に余白を足して先頭までスクロールできるようにする
+    if(pg){
+      const need = el.getBoundingClientRect().top + (window.scrollY||0) + window.innerHeight;
+      if(pg.offsetHeight < need) pg.style.minHeight = Math.ceil(need) + 'px';
+    }
+    el.scrollIntoView({ block:'start', behavior:'auto' });
+  };
+  requestAnimationFrame(function(){ jump(); setTimeout(jump, 120); setTimeout(jump, 400); });
+}
 function go(page, opts){
   opts = opts || {};
+  try{ const hp = document.getElementById('page-hist'); if(hp && hp.style.minHeight && !(opts && opts.keepHistPad)) hp.style.minHeight = ''; }catch(e){}
   if(tabSwipe || tabAnim){
     const mid = !!(tabSwipe || tabAnim);
     abortTabSwipe();
@@ -7086,6 +7112,7 @@ window.KakeLog = {
   openReplacementInput: openReplacementInput,
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
+  goHistList: goHistList,
   alertCardHtml: alertCardHtml,
   isActiveAlert: isActiveAlert,
   isVisibleAlert: isVisibleAlert,
