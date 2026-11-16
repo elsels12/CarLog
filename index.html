@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.45</title>
+<title>CarLog beta 0.9.46</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -457,6 +457,15 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 .seg button{flex:1;background:var(--chip-bg);border:1px solid var(--chip-line);color:var(--chip-fg);border-radius:8px;font-size:11px;font-weight:700;padding:7px 6px;}
 .seg button.on{border-color:var(--amber);color:var(--amber);background:rgba(223,172,88,.12);}
 /* 見た目の編集: タイトルとサンプルは上に固定し、設定欄だけをスクロールする（サンプルがいつも見える） */
+#modal.alert-popup{display:flex;flex-direction:column;overflow:hidden;max-height:80vh;max-height:80dvh;}
+#modal.alert-popup .ap-title{flex:none;margin:0 0 8px;font-size:18px;}
+#modal.alert-popup .ap-count{font-size:12px;font-weight:700;color:var(--paper-dim);margin-left:6px;}
+#modal.alert-popup .ap-list{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px;}
+#modal.alert-popup .ap-row{display:flex;align-items:center;gap:12px;padding:12px 12px;border-radius:12px;border:1px solid color-mix(in srgb, var(--tc) 45%, transparent);background:color-mix(in srgb, var(--tc) 14%, transparent);}
+#modal.alert-popup .ap-dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--tc);}
+#modal.alert-popup .ap-msg{font-size:15px;font-weight:800;line-height:1.35;}
+#modal.alert-popup .ap-sub{font-size:13px;font-weight:700;color:var(--tc);margin-top:2px;}
+#modal.alert-popup .ap-close{flex:none;width:100%;min-height:56px;font-size:18px;font-weight:800;border-radius:14px;}
 #modal.cat-editor{display:flex;flex-direction:column;overflow:hidden;max-height:88vh;max-height:88dvh;}
 #modal.cat-editor>h3{flex:none;margin:0 0 6px;}
 #modal.cat-editor #tilePreview{flex:none;position:static;top:auto;margin:0 -12px 6px;min-height:84px;padding:6px 0;}
@@ -1469,7 +1478,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.45</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.46</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3827,6 +3836,7 @@ function openReplacementSheet(itemId){
     renderAll();
     toast('完了を記録しました');
     goHistList();
+    setTimeout(showAlertPopup, 450);
   };
 }
 function openMaintenanceEditor(id){
@@ -4825,6 +4835,7 @@ function saveForm(){
   toast('保存しました');
   updateSyncBtn();
   goHistList();
+  setTimeout(showAlertPopup, 450);
 }
 
 function deleteRecord(id){
@@ -6997,6 +7008,42 @@ function renderAll(){
   else renderSet();
   updateAlertBadge();
 }
+// 入力のあと、注意（残り800km／60日）以上の点検があれば、近いものを全部ポップアップで知らせる
+function alertPopupItems(){
+  const veh = currentVehicle();
+  if(!veh) return [];
+  return alertsFor(veh).filter(function(a){
+    if(!a || a.status==='reserved' || a.status==='info') return false;
+    const sc = alertScore(a);
+    return sc!=null && sc < 2;
+  }).sort(function(a,b){ return alertScore(a) - alertScore(b); });
+}
+function showAlertPopup(){
+  const list = alertPopupItems();
+  if(!list.length) return;
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  if(!bg || !box) return;
+  const rows = list.map(function(a){
+    const sc = alertScore(a);
+    const name = (a.item && (a.item.label || a.item.id)) || '点検';
+    const isShaken = a.kind==='shaken' || (a.item && a.item.id==='shaken');
+    const over = sc<=0;
+    const msg = isShaken
+      ? (over ? '車検の期限を過ぎています' : '車検が迫っています')
+      : (over ? escapeHtml(name)+'の交換時期を過ぎています' : escapeHtml(name)+'の交換が迫っています');
+    const detail = remainLines(a).map(function(ln){ return ln.text; }).join('・');
+    return '<li class="ap-row" style="--tc:'+scoreColor(sc)+'"><span class="ap-dot" aria-hidden="true"></span>'+
+      '<div class="ap-txt"><div class="ap-msg">'+msg+'</div>'+(detail?'<div class="ap-sub">'+escapeHtml(scoreLabel(sc))+'　'+escapeHtml(detail)+'</div>':'')+'</div></li>';
+  }).join('');
+  box.className = 'modal alert-popup';
+  box.innerHTML = '<h3 class="ap-title">点検のお知らせ <span class="ap-count">'+list.length+'件</span></h3>'+
+    '<ul class="ap-list">'+rows+'</ul>'+
+    '<button type="button" class="btn primary ap-close" id="apClose">閉じる</button>';
+  bg.classList.add('show');
+  document.getElementById('apClose').onclick = closeModal;
+  bindModalBackdrop(bg);
+}
 // 保存後: 履歴タブを開き、「すべて」などの絞り込みタブ（全部の履歴の先頭）が画面の一番上に来るようにスクロールする
 function goHistList(){
   state.histFilter = 'all';
@@ -7173,6 +7220,8 @@ window.KakeLog = {
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
   goHistList: goHistList,
+  showAlertPopup: showAlertPopup,
+  alertPopupItems: alertPopupItems,
   alertCardHtml: alertCardHtml,
   isActiveAlert: isActiveAlert,
   isVisibleAlert: isVisibleAlert,
