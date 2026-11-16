@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carlog-beta-0.9.46';
+const CACHE_NAME = 'carlog-beta-0.9.47';
 const ASSETS = [
   './',
   './index.html',

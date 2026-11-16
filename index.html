@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.46</title>
+<title>CarLog beta 0.9.47</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -466,6 +466,10 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 #modal.alert-popup .ap-msg{font-size:15px;font-weight:800;line-height:1.35;}
 #modal.alert-popup .ap-sub{font-size:13px;font-weight:700;color:var(--tc);margin-top:2px;}
 #modal.alert-popup .ap-close{flex:none;width:100%;min-height:56px;font-size:18px;font-weight:800;border-radius:14px;}
+@keyframes histSlideNext{from{transform:translateX(34px);opacity:.25;}to{transform:none;opacity:1;}}
+@keyframes histSlidePrev{from{transform:translateX(-34px);opacity:.25;}to{transform:none;opacity:1;}}
+.hist-slide-next{animation:histSlideNext .24s cubic-bezier(.2,.8,.2,1);}
+.hist-slide-prev{animation:histSlidePrev .24s cubic-bezier(.2,.8,.2,1);}
 #modal.cat-editor{display:flex;flex-direction:column;overflow:hidden;max-height:88vh;max-height:88dvh;}
 #modal.cat-editor>h3{flex:none;margin:0 0 6px;}
 #modal.cat-editor #tilePreview{flex:none;position:static;top:auto;margin:0 -12px 6px;min-height:84px;padding:6px 0;}
@@ -1478,7 +1482,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.46</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.47</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -4936,12 +4940,13 @@ function renderHist(){
     fuelDetailHtml(recordsOf(veh), vehicleName(veh))+
     categoryBarsHtml(recordsOf(veh), yr.from, yr.to)+
     '<div class="filter-bar" id="histFilters">'+filters+'</div>'+
-    '<div class="card tint tint-hist" style="padding-top:2px"><div class="hist">'+rows+'</div></div>';
+    '<div class="card tint tint-hist" id="histListCard" style="padding-top:2px"><div class="hist">'+rows+'</div></div>';
   bindSummaryKpis();
   document.getElementById('histFilters').onclick = function(e){
     const b = e.target.closest('button'); if(!b) return;
     state.histFilter = b.getAttribute('data-f');
     renderHist();
+    pinHistFiltersSoon();
   };
   document.querySelectorAll('.hist-item').forEach(function(el){
     el.addEventListener('click', function(){
@@ -6632,8 +6637,10 @@ function isHorizontallyScrollable(el){
   }catch(e){}
   return false;
 }
+let histSwipeZone = false;
 function isSwipeIgnoredTarget(el){
   if(!el) return true;
+  if(histSwipeZone) return true; // 履歴の絞り込みタブより下は、タブ移動ではなく絞り込みの前後移動に使う
   if(document.getElementById('modalBg') && document.getElementById('modalBg').classList.contains('show')) return true;
   const node = el.nodeType===3 ? el.parentElement : el;
   if(!node || !node.closest) return true;
@@ -6892,6 +6899,28 @@ function bindTabSwipe(){
   const root = document.getElementById('app');
   if(!root || root._tabSwipeBound) return;
   root._tabSwipeBound = true;
+  // 履歴タブの、絞り込みタブより下を横にスライドしたら、絞り込み（すべて／給油／…）を前後へずらす
+  let hsX=0, hsY=0;
+  root.addEventListener('touchstart', function(e){
+    histSwipeZone = false;
+    if(state.tab!=='hist' || e.touches.length!==1) return;
+    const bar = document.getElementById('histFilters');
+    if(!bar) return;
+    const t = e.touches[0];
+    const node = e.target && (e.target.nodeType===3 ? e.target.parentElement : e.target);
+    if(!node || !node.closest || node.closest('.nav, .topbar, .modal-bg, .modal, input, textarea, select')) return;
+    if(t.clientY > bar.getBoundingClientRect().bottom + 2){
+      histSwipeZone = true; hsX = t.clientX; hsY = t.clientY;
+    }
+  }, {passive:true, capture:true});
+  root.addEventListener('touchend', function(e){
+    if(!histSwipeZone) return;
+    const t = (e.changedTouches && e.changedTouches[0]);
+    if(!t) return;
+    const dx = t.clientX - hsX, dy = t.clientY - hsY;
+    if(Math.abs(dx) < 48 || Math.abs(dy) >= Math.abs(dx) * 0.75) return;
+    stepHistFilter(dx < 0 ? 1 : -1);
+  }, {passive:true, capture:true});
   root.addEventListener('touchstart', function(e){
     if(tabAnim || scDrag) { tracking=false; return; }
     if(e.touches.length!==1){ tracking=false; return; }
@@ -7045,20 +7074,46 @@ function showAlertPopup(){
   bindModalBackdrop(bg);
 }
 // 保存後: 履歴タブを開き、「すべて」などの絞り込みタブ（全部の履歴の先頭）が画面の一番上に来るようにスクロールする
+// 絞り込みタブ（全部の履歴の先頭）を画面の一番上に合わせる。記録が少なくて下まで届かないときは、下に余白を足す
+function pinHistFilters(){
+  const el = document.getElementById('histFilters');
+  const pg = document.getElementById('page-hist');
+  if(!el) return;
+  if(pg){
+    const need = el.getBoundingClientRect().top + (window.scrollY||0) + window.innerHeight;
+    if(pg.offsetHeight < need) pg.style.minHeight = Math.ceil(need) + 'px';
+  }
+  el.scrollIntoView({ block:'start', behavior:'auto' });
+}
+function pinHistFiltersSoon(){
+  pinHistFilters();
+  requestAnimationFrame(function(){ pinHistFilters(); setTimeout(pinHistFilters, 120); });
+}
+// 履歴の絞り込みを前後へずらす（dir: +1=次、-1=前）。端では動かさない
+function stepHistFilter(dir){
+  const bar = document.getElementById('histFilters');
+  if(!bar) return false;
+  const btns = Array.prototype.slice.call(bar.querySelectorAll('button[data-f]'));
+  const cur = btns.findIndex(function(b){ return b.classList.contains('on'); });
+  const next = cur + dir;
+  if(cur<0 || next<0 || next>=btns.length) return false;
+  state.histFilter = btns[next].getAttribute('data-f');
+  renderHist();
+  const card = document.getElementById('histListCard');
+  if(card && !reduceMotion()){
+    card.classList.add(dir>0 ? 'hist-slide-next' : 'hist-slide-prev');
+    setTimeout(function(){ card.classList.remove('hist-slide-next','hist-slide-prev'); }, 280);
+  }
+  const nb = document.querySelector('#histFilters button.on');
+  const nbar = document.getElementById('histFilters');
+  if(nb && nbar) nbar.scrollLeft = Math.max(0, nb.offsetLeft - (nbar.clientWidth - nb.offsetWidth)/2);
+  pinHistFiltersSoon();
+  return true;
+}
 function goHistList(){
   state.histFilter = 'all';
   go('hist');
-  const jump = function(){
-    const el = document.getElementById('histFilters');
-    const pg = document.getElementById('page-hist');
-    if(!el) return;
-    // 記録が少なくて下まで届かないときは、下に余白を足して先頭までスクロールできるようにする
-    if(pg){
-      const need = el.getBoundingClientRect().top + (window.scrollY||0) + window.innerHeight;
-      if(pg.offsetHeight < need) pg.style.minHeight = Math.ceil(need) + 'px';
-    }
-    el.scrollIntoView({ block:'start', behavior:'auto' });
-  };
+  const jump = pinHistFilters;
   requestAnimationFrame(function(){ jump(); setTimeout(jump, 120); setTimeout(jump, 400); });
 }
 function go(page, opts){
@@ -7220,6 +7275,8 @@ window.KakeLog = {
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
   goHistList: goHistList,
+  stepHistFilter: stepHistFilter,
+  pinHistFilters: pinHistFilters,
   showAlertPopup: showAlertPopup,
   alertPopupItems: alertPopupItems,
   alertCardHtml: alertCardHtml,
