@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.47</title>
+<title>CarLog beta 0.9.48</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -465,11 +465,14 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:10px 0;}
 #modal.alert-popup .ap-dot{flex:none;width:12px;height:12px;border-radius:50%;background:var(--tc);}
 #modal.alert-popup .ap-msg{font-size:15px;font-weight:800;line-height:1.35;}
 #modal.alert-popup .ap-sub{font-size:13px;font-weight:700;color:var(--tc);margin-top:2px;}
+#modal.alert-popup .ap-note{flex:none;font-size:11px;line-height:1.5;color:var(--paper-dim);margin:0 2px 10px;}
+.est-note{margin-top:8px;font-size:11px;line-height:1.5;}
 #modal.alert-popup .ap-close{flex:none;width:100%;min-height:56px;font-size:18px;font-weight:800;border-radius:14px;}
-@keyframes histSlideNext{from{transform:translateX(34px);opacity:.25;}to{transform:none;opacity:1;}}
-@keyframes histSlidePrev{from{transform:translateX(-34px);opacity:.25;}to{transform:none;opacity:1;}}
-.hist-slide-next{animation:histSlideNext .24s cubic-bezier(.2,.8,.2,1);}
-.hist-slide-prev{animation:histSlidePrev .24s cubic-bezier(.2,.8,.2,1);}
+/* 全車の履歴 */
+.hist-scope{margin:2px 2px 8px;font-size:13px;font-weight:800;color:var(--amber);}
+.hist-scope span{font-weight:600;font-size:11px;color:var(--paper-dim);}
+.hist-veh{display:inline-block;margin-right:6px;padding:0 6px;border-radius:8px;font-size:11px;font-weight:800;color:var(--amber);border:1px solid color-mix(in srgb, var(--amber) 45%, transparent);vertical-align:1px;}
+.veh-chip-all{margin-left:2px;}
 #modal.cat-editor{display:flex;flex-direction:column;overflow:hidden;max-height:88vh;max-height:88dvh;}
 #modal.cat-editor>h3{flex:none;margin:0 0 6px;}
 #modal.cat-editor #tilePreview{flex:none;position:static;top:auto;margin:0 -12px 6px;min-height:84px;padding:6px 0;}
@@ -1482,7 +1485,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.47</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.48</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3114,6 +3117,19 @@ function fuelDetailHtml(recs, vname){
 
 function persistPending(){ saveJson(KEYS.pending, state.pending); saveJson(KEYS.pendingDel, state.pendingDel); }
 
+// 履歴を全車分にするか（車が2台以上のときだけ有効）
+function histAllMode(){ return !!(state.settings && state.settings.histAll && state.vehicles && state.vehicles.length>1); }
+function setHistScope(on){
+  if(on && !(state.vehicles && state.vehicles.length>1)) return;
+  state.settings.histAll = !!on;
+  persistSettings();
+  fillVehicleSelect();
+  renderAll();
+}
+function vehicleOfRecord(r){
+  if(!r) return null;
+  return state.vehicles.find(function(v){ return r.vehicleId===v.id || r.vehicle===v.id || r.vehicle===vehicleName(v); }) || null;
+}
 function currentVehicle(){
   if(!state.vehicles || !state.vehicles.length) return null;
   return state.vehicles.find(function(v){ return v.id === state.settings.currentVehicleId; }) || state.vehicles[0] || null;
@@ -3378,26 +3394,65 @@ const HELP_TOPICS = [
     '<li>金額だけの経費も、同じ画面で残せます。</li>'+
     '<li>交通費の内訳は、初期値が高速代です。有料道路、フェリー、カーシェア・レンタカー、代行運転、レッカー・ロードサービスなども選べます。装備やカスタムは「カスタム・装備品」にまとまっています。</li></ol>'
   },
-  { id:'hist', title:'履歴（今月・今年・燃費）', body:
+  { id:'hist', title:'履歴（今月・今年・燃費・全車）', body:
     '<p>履歴タブの一番上に、いま選んでいる車の今月・今年の合計と、通算の平均燃費が出ます。車を切り替えると、これらの数字もその車に合わせて変わります。</p>'+
     '<ol><li>平均燃費をタップすると、下の燃費の詳細（月平均や給油ごと）へ進みます。</li>'+
-    '<li>費目のフィルタと記録一覧は、その下に続きます。</li>'+
-    '<li>これらの合計はホームには出しません。ホームはショートカット、点検アラート、最近の記録です。</li></ol>'
+    '<li>費目のタブ（すべて・給油・タイヤ…）を押すと、その費目だけに絞れます。タブの列は左右にスライドして、隠れている費目を出せます。押したタブは画面の一番上に合わせます。</li>'+
+    '<li>記録をタップすると、内容を直せます。</li>'+
+    '<li><b>全車の履歴：</b>車が2台以上のとき、ホームの車名チップの右端の「全車」、または画面上の車名の選択肢「全車（履歴）」を選ぶと、履歴が全車分になります。各記録に車名が付きます。合計（今月・今年）と費目別の内訳も全車分です。平均燃費は車ごとなので、全車では出しません。</li>'+
+    '<li>全車の履歴は、見るためのものです。ホーム・点検・入力は、最後に選んだ車のままです。履歴の記録をタップすると、その記録の車に切り替えてから直します。車の名前を選ぶと、その車だけの表示に戻ります。</li>'+
+    '<li>これらの合計はホームには出しません。ホームはショートカット、点検アラート、最近の記録です。「履歴を見る」を押すと、履歴の費目タブが一番上に来ます。</li></ol>'
   },
+
   { id:'shortcut', title:'ショートカットと交換ボタン', body:
     '<p>ホームのタイルは、よく使う入力への近道です。</p>'+
     '<ol><li>設定の「ホームのショートカット」で、出す項目と順番を変えられます。</li>'+
     '<li>「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。初期は中）を項目ごとに設定できます。小は中の半分の幅・高さ（中1つの位置に小が4つ、2×2で並びます）。ラベルは1行、入らなければアイコンのみです。小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さで、アイコンの右にラベルを1行で出します。大は小横を横に2つ・縦に3つ分（特大と同じ幅、マス3つ分の高さ）で、アイコンとラベルを中央に重ねます。特大は中2つ分の幅×2段で、空いたマスは詰めて並びます。ショートカットを長押しすると並べ替えできます。終わったら「完了」を押します。サイズや色は設定の「ホームのショートカット」→「見た目」から変えられます。</li>'+
     '<li>「オイル交換」などの交換ボタンも足せます。タップすると確認シートが開き、今日の日付と最新の走行距離で交換を記録し、前回交換も更新されます。金額とメモは任意です。</li></ol>'
   },
-  { id:'maint', title:'点検（間隔・前回交換・完了）', body:
-    '<p>点検タブで、オイルなど交換時期の目安を管理します。</p>'+
+  { id:'maint', title:'点検（間隔・前回交換・完了・色）', body:
+    '<p>点検タブで、オイルなど交換時期の目安を管理します。時期はあくまで目安です（「金額・時期は目安です」も見てください）。</p>'+
     '<ol><li>各項目の状態バッジの右にある鉛筆アイコン（編集）から、間隔（km / 月）と前回交換（日付・走行距離）を変えられます。</li>'+
     '<li>アプリに記録がなくても、前回交換を手で入れて基準にできます。記録があるときは、新しいほうを使います。</li>'+
     '<li>まだ入れていなければ「前回交換を設定」と出ます。交換したら「完了」を押します。</li>'+
     '<li>カード右に残りの日数と残り距離を別々に出します（例：あと38日／あと420 km）。間隔が一方だけの項目は、その一方だけです。</li>'+
-    '<li>残り距離が500km以下で「注意」、期限の距離を過ぎると「超過」です。日数の目安（30日以内で間近、期限切れで超過）はこれまでどおりです。カード全体は厳しいほうの状態になり、点検タブの印とホームのアラートにも距離の注意が入ります。</li>'+
+    '<li><b>5段階の目安：</b>余裕（緑）→ 確認 → 注意 → 警告（オレンジ）→ 超過（赤）。距離は、残り1,200kmで「確認」、800kmで「注意」、500kmで「警告」、0kmで「超過」です。期間は、残り80日で「確認」、60日で「注意」、30日で「警告」、0日で「超過」です。距離と日数の悪いほうで決まり、色はなめらかに変わります。間隔が短い項目では、これらの値を間隔に合わせて小さくします。</li>'+
+    '<li>ホームの点検アラートには、「確認」から出ます。「余裕」の項目は点検タブで見られます。</li>'+
+    '<li>記録を保存したあと、または点検の「完了」を押したあとに、「注意」以上の項目があれば、迫っている項目を全部ポップアップで知らせます。</li>'+
+    '<li>前回の記録がない月数つきの項目は、アプリに登録した日を仮の起点にしたカレンダー予定（題名に「（仮）」）になります。「完了」を押すと実績の日付に置き換わります。</li>'+
     '<li>下の「＋項目を追加」で、タイミングベルトなど独自の項目を足せます。</li></ol>'
+  },
+
+  { id:'estimate', title:'金額・時期は目安です', body:
+    '<p>このアプリが出す金額・日付・距離は、すべて概算や目安です。実際の請求額や、整備で守るべき時期とは違うことがあります。</p>'+
+    '<ol><li><b>税金・自賠責・重量税：</b>公開されている税率表から計算した目安です。グリーン化特例、自治体の減免、年度途中の月割、離島・沖縄の自賠責などは入っていません。正しい金額は、納税通知書、保険証券、車検の見積書で確認してください。</li>'+
+    '<li><b>燃費・航続距離：</b>入力した給油量と走行距離からの計算で、満タン法の目安です。給油の入れ方（満タンの量）や入力の抜けで、ずれます。</li>'+
+    '<li><b>点検の時期：</b>間隔（km・月）と前回の交換から出した目安です。オイルなどの時期は、使い方や車種で変わります。取扱説明書、整備手帳、整備工場の指示を優先してください。</li>'+
+    '<li><b>車検の期限：</b>2年ごとの目安で出します（新車は初回が3年後）。正しい期限は、車検証の日付です。</li>'+
+    '<li><b>走行距離：</b>記録した最新の値からの目安です。実際のメーターと違うときは、記録を直してください。</li>'+
+    '<li>このアプリの表示を根拠にした損失や事故について、責任は負えません。大事な判断は、公式の書類と整備工場で確かめてください。</li></ol>'
+  },
+  { id:'gestures', title:'操作のコツ（スライド・長押しなど）', body:
+    '<p>知っておくと便利な操作です。</p>'+
+    '<ol><li><b>タブの移動：</b>画面を左右にスライドすると、下のタブ（ホーム・入力・履歴・点検・設定）が隣へ移ります。下のタブをタップしても移れます。</li>'+
+    '<li><b>履歴の費目タブ：</b>タブの列だけを左右にスライドすると、隠れている費目が出ます（下のタブは移りません）。</li>'+
+    '<li><b>ホームのショートカット：</b>長押しすると並べ替えができます。終わったら「完了」を押します。見た目は、設定のショートカットから、色（塗りの色・線の色）やサイズを変えられます。</li>'+
+    '<li><b>保存のあと：</b>記録を保存すると履歴に移ります。迫っている点検があるときは、ポップアップで知らせます。「閉じる」で閉じます。</li>'+
+    '<li><b>車の切り替え：</b>ホームの車名チップか、画面上の車名で切り替えます。「全車」を選ぶと、履歴だけ全車分になります。</li>'+
+    '<li><b>記録の修正・削除：</b>履歴の記録をタップすると、直したり削除したりできます。</li>'+
+    '<li><b>点検の完了：</b>点検タブやホームのカードの「完了」で、今日の日付と最新の走行距離を前回交換にします。間違えたときは、鉛筆アイコンから前回交換を直せます。</li></ol>'
+  },
+  { id:'calendar', title:'カレンダー通知（車検・点検）', body:
+    '<p>設定の「カレンダー通知」を使うと、車検と、月数が決まっている点検の期限が、Googleカレンダーの「CarLog」に入ります。スプレッドシート連携（Code.gs）が必要です。</p>'+
+    '<ol><li>期限が変わったときや、完了したときは、古い予定を消して新しい日付に入れ直します。</li>'+
+    '<li>距離だけで決まる項目は、日付が決められないので、通知しません。アプリの点検タブで確認してください。</li>'+
+    '<li>前回の記録がない項目は、登録した日を起点にした仮の予定（題名に「（仮）」）になります。</li>'+
+    '<li>通知はGoogleカレンダー側の機能です。時期は目安なので、予定の日付も目安です。</li></ol>'
+  },
+  { id:'evhelp', title:'電気自動車（EV）・ハイブリッド', body:
+    '<p>車の燃料でEVを選ぶと、エンジンオイル・オイルフィルター・プラグ・エアフィルターが点検から外れます。給油の記録は、充電量（kWh）と電費（km/kWh）の表示になります。</p>'+
+    '<ol><li>ハイブリッドとプラグインハイブリッドは、エンジンがあるので、オイル系も点検します。</li>'+
+    '<li>EVでも、ブレーキフルード、冷却水、ギヤオイルなどは点検の対象です。</li></ol>'
   },
   { id:'shaken', title:'車検のアラート', body:
     '<p>車検は、購入後の初回車検日を起点に、2年ごとに次の期限を自動で出します。新車は初度登録の3年後が初回です。</p>'+
@@ -3532,9 +3587,10 @@ function fillVehicleSelect(){
   sel.removeAttribute('aria-hidden');
   if(wrap) wrap.hidden = false;
   const cur = state.settings.currentVehicleId;
+  const allOn = histAllMode();
   sel.innerHTML = state.vehicles.map(function(v){
-    return '<option value="'+escapeHtml(v.id)+'"'+(v.id===cur?' selected':'')+'>'+escapeHtml(v.name)+'</option>';
-  }).join('');
+    return '<option value="'+escapeHtml(v.id)+'"'+(v.id===cur && !allOn?' selected':'')+'>'+escapeHtml(v.name)+'</option>';
+  }).join('') + (state.vehicles.length>1 ? '<option value="__all__"'+(allOn?' selected':'')+'>全車（履歴）</option>' : '');
   if(title) title.textContent = selectedVehicleLabel(sel);
   scheduleVehicleSelectOverflow();
 }
@@ -3587,8 +3643,9 @@ function scheduleVehicleSelectOverflow(){
 }
 function selectVehicle(id){
   if(!id || !state.vehicles.some(function(v){ return v.id===id; })) return;
-  if(state.settings.currentVehicleId===id) return;
+  if(state.settings.currentVehicleId===id && !histAllMode()) return;
   state.settings.currentVehicleId = id;
+  state.settings.histAll = false;
   persistSettings();
   fillVehicleSelect();
   renderAll();
@@ -3597,15 +3654,18 @@ function vehicleChipsHtml(){
   const cur = state.settings.currentVehicleId;
   return '<div class="veh-chips" id="vehChips" role="tablist" aria-label="車両">'+
     state.vehicles.map(function(v){
-      return '<button type="button" class="veh-chip'+(v.id===cur?' on':'')+'" role="tab" aria-selected="'+(v.id===cur?'true':'false')+'" data-vid="'+escapeHtml(v.id)+'">'+escapeHtml(v.name)+'</button>';
-    }).join('')+'</div>';
+      const on = v.id===cur && !histAllMode();
+      return '<button type="button" class="veh-chip'+(on?' on':'')+'" role="tab" aria-selected="'+(on?'true':'false')+'" data-vid="'+escapeHtml(v.id)+'">'+escapeHtml(v.name)+'</button>';
+    }).join('')+(state.vehicles.length>1 ? '<button type="button" class="veh-chip veh-chip-all'+(histAllMode()?' on':'')+'" role="tab" aria-selected="'+(histAllMode()?'true':'false')+'" data-vid="__all__" title="履歴を全車分にします">全車</button>' : '')+'</div>';
 }
 function bindVehicleChips(){
   const box = document.getElementById('vehChips');
   if(!box) return;
   box.addEventListener('click', function(e){
     const b = e.target.closest('[data-vid]');
-    if(b) selectVehicle(b.getAttribute('data-vid'));
+    if(!b) return;
+    const vid = b.getAttribute('data-vid');
+    if(vid==='__all__') setHistScope(true); else selectVehicle(vid);
   });
   const on = box.querySelector('.veh-chip.on');
   if(on && on.scrollIntoView) on.scrollIntoView({inline:'nearest', block:'nearest'});
@@ -4867,17 +4927,17 @@ function categoryBarsHtml(list, from, to){
       return '<div class="bar-row"><span class="n">'+escapeHtml(x.name)+'</span><span class="track"><i style="width:'+w+'%"></i></span><span class="amt">'+escapeHtml(yen(x.amount))+'</span></div>';
     }).join('')+'</div>';
 }
-function summaryKpiHtml(veh){
+function summaryKpiHtml(veh, allRecs){
   veh = veh || currentVehicle();
   if(!veh) return '';
-  const recs = recordsOf(veh);
+  const recs = allRecs || recordsOf(veh);
   const now = new Date();
   const mo = monthRange(now), yr = yearToDateRange(now);
   const monthSum = sumAmount(recs, mo.from, mo.to);
   const yearSum = sumAmount(recs, yr.from, yr.to);
-  const fuel = C.averageFuelEconomy(recs, vehicleName(veh));
+  const fuel = allRecs ? { kmPerL:null } : C.averageFuelEconomy(recs, vehicleName(veh));
   const fuelTxt = fuel.kmPerL != null ? fuel.kmPerL.toFixed(1)+' '+ecoUnit(veh) : '—';
-  const fuelSub = fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出';
+  const fuelSub = allRecs ? '車ごとに表示' : (fuel.kmPerL != null ? '通算・満タン法' : '満タン2回以上で算出');
   return '<div class="row kpi-row" id="histKpis">'+
     '<div class="kpi tint tint-month" id="monthKpi"><div class="lbl">今月</div><div class="val">'+escapeHtml(yen(monthSum))+'</div></div>'+
     '<div class="kpi tint tint-year" id="yearKpi"><div class="lbl">今年</div><div class="val">'+escapeHtml(yen(yearSum))+'</div></div>'+
@@ -4886,7 +4946,7 @@ function summaryKpiHtml(veh){
 }
 function bindSummaryKpis(){
   const avg = document.getElementById('avgFuelKpi');
-  if(avg) avg.onclick = function(){ goFuelDetail(); };
+  if(avg && !histAllMode()) avg.onclick = function(){ goFuelDetail(); };
 }
 function renderHist(){
   const veh = currentVehicle();
@@ -4898,7 +4958,9 @@ function renderHist(){
     bindNeedVehicle();
     return;
   }
-  const recs = recordsOf(veh).slice().sort(function(a,b){
+  const allMode = histAllMode();
+  const baseRecs = allMode ? state.records.filter(function(r){ return !r.deleted; }) : recordsOf(veh);
+  const recs = baseRecs.slice().sort(function(a,b){
     if(a.date!==b.date) return String(b.date).localeCompare(String(a.date));
     return String(b.updatedAt||'').localeCompare(String(a.updatedAt||''));
   });
@@ -4922,25 +4984,34 @@ function renderHist(){
   const filters = cats.map(function(c){
     return '<button type="button" class="'+(c===fil?'on':'')+'" data-f="'+escapeHtml(c)+'">'+escapeHtml(c==='all'?'すべて':c)+'</button>';
   }).join('');
-  const ecoMap = C.fuelEconomyByRecordId(recordsOf(veh), vehicleName(veh));
+  let ecoMap = {};
+  if(allMode){
+    state.vehicles.forEach(function(v){ Object.assign(ecoMap, C.fuelEconomyByRecordId(recordsOf(v), vehicleName(v))); });
+  } else {
+    ecoMap = C.fuelEconomyByRecordId(recordsOf(veh), vehicleName(veh));
+  }
   const rows = shown.map(function(r){
     const grade = fuelGradeMeta(r);
     const memo = r.memo || (r.category==='燃費' && r.liters ? (r.liters+'L'+(grade?' '+grade:'')+(r.isFullTank?' 満タン':'')) : (r.subcategory||''));
     const eco = ecoMap[r.id];
     const kml = (r.category==='燃費' && eco) ? '<span class="kml">'+escapeHtml(fmtKmL(eco.kmPerL))+'</span>' : '';
+    const rv = allMode ? vehicleOfRecord(r) : null;
+    const vtag = allMode ? '<span class="hist-veh">'+escapeHtml(rv ? rv.name : (r.vehicle||'不明'))+'</span>' : '';
     return '<div class="hist-item" data-id="'+escapeHtml(r.id)+'">'+
       '<div class="d">'+escapeHtml(fmtDate(r.date))+'</div>'+
       '<div class="b"><div class="t">'+escapeHtml(recordCategoryName(r))+(r.subcategory && r.subcategory!==recordCategoryName(r)?' · '+escapeHtml(r.subcategory):'')+(grade?' · '+escapeHtml(grade):'')+kml+'</div>'+
-      '<div class="m">'+escapeHtml(memo)+(r.odometer!=null?' · '+escapeHtml(km(r.odometer)):'')+'</div></div>'+
+      '<div class="m">'+vtag+escapeHtml(memo)+(r.odometer!=null?' · '+escapeHtml(km(r.odometer)):'')+'</div></div>'+
       '<div class="a">'+escapeHtml(yen(r.amount))+'</div></div>';
   }).join('') || '<div class="empty">記録はまだありません</div>';
   const yr = yearToDateRange(new Date());
   document.getElementById('page-hist').innerHTML =
-    summaryKpiHtml(veh)+
-    fuelDetailHtml(recordsOf(veh), vehicleName(veh))+
-    categoryBarsHtml(recordsOf(veh), yr.from, yr.to)+
+    (allMode ? '<div class="hist-scope">全車の履歴（'+state.vehicles.length+'台分）　<span>車を選ぶと、その車だけに戻ります</span></div>' : '')+
+    summaryKpiHtml(veh, allMode ? baseRecs : null)+
+    (allMode ? '' : fuelDetailHtml(recordsOf(veh), vehicleName(veh)))+
+    categoryBarsHtml(allMode ? baseRecs : recordsOf(veh), yr.from, yr.to)+
     '<div class="filter-bar" id="histFilters">'+filters+'</div>'+
-    '<div class="card tint tint-hist" id="histListCard" style="padding-top:2px"><div class="hist">'+rows+'</div></div>';
+    '<div class="card tint tint-hist" id="histListCard" style="padding-top:2px"><div class="hist">'+rows+'</div></div>'+
+    '<div class="help est-note" style="padding:0 4px 8px">金額・燃費・平均は、入力した記録からの<b>概算</b>です。税金などの正しい金額は、納税通知書や請求書で確認してください。</div>';
   bindSummaryKpis();
   document.getElementById('histFilters').onclick = function(e){
     const b = e.target.closest('button'); if(!b) return;
@@ -4951,6 +5022,12 @@ function renderHist(){
   document.querySelectorAll('.hist-item').forEach(function(el){
     el.addEventListener('click', function(){
       state.editId = el.getAttribute('data-id');
+      if(histAllMode()){
+        // 全車の履歴から開いたときは、その記録の車に切り替えてから編集する（全車表示は保ったまま）
+        const rec = state.records.find(function(r){ return r.id===state.editId; });
+        const rv = vehicleOfRecord(rec);
+        if(rv && rv.id!==state.settings.currentVehicleId){ state.settings.currentVehicleId = rv.id; persistSettings(); }
+      }
       go('input');
     });
   });
@@ -4973,6 +5050,7 @@ function renderAlert(){
     '<div class="card tint tint-alert"><h2>点検状況 <span class="hint">日数と距離（厳しい方）</span></h2>'+
     '<div class="help" id="odoSourceAlert" style="margin:0 0 6px">'+escapeHtml(odoSourceLabel(info))+'</div>'+
     (rows||'<div class="empty">項目がありません</div>')+
+    '<div class="help est-note">点検の時期や距離は、入力した記録と間隔からの<b>目安</b>です。実際の交換時期は、取扱説明書や整備工場の指示を優先してください。</div>'+
     '</div>'+
     '<div class="card tint tint-interval" id="intervalSet">'+
     '<div class="help" style="margin:0 0 8px">各項目の状態バッジの右にある鉛筆アイコンから交換間隔（km / 月）と前回交換を変えられます。「完了」で今回の交換を記録します。</div>'+
@@ -4992,7 +5070,7 @@ function renderSet(){
   }).join('');
   document.getElementById('page-set').innerHTML =
     '<div class="card tint tint-help" id="helpSet"><h2>使い方</h2>'+
-    '<div class="help">車の登録から、給油の入力、点検、書き出しまでの手順です。難しい操作はありません。</div>'+
+    '<div class="help">車の登録から、給油の入力、点検、書き出しまでの手順と、スライドなどの操作のコツです。<b>金額・時期はすべて概算や目安です。</b>詳しくは「金額・時期は目安です」を見てください。</div>'+
     '<div class="btn-row"><button type="button" class="btn primary" id="btnHelp">使い方を見る</button></div></div>'+
     themePickerHtml()+
     '<div class="card tint tint-sync"><h2>スプレッドシート連携</h2>'+
@@ -6637,10 +6715,8 @@ function isHorizontallyScrollable(el){
   }catch(e){}
   return false;
 }
-let histSwipeZone = false;
 function isSwipeIgnoredTarget(el){
   if(!el) return true;
-  if(histSwipeZone) return true; // 履歴の絞り込みタブより下は、タブ移動ではなく絞り込みの前後移動に使う
   if(document.getElementById('modalBg') && document.getElementById('modalBg').classList.contains('show')) return true;
   const node = el.nodeType===3 ? el.parentElement : el;
   if(!node || !node.closest) return true;
@@ -6899,28 +6975,6 @@ function bindTabSwipe(){
   const root = document.getElementById('app');
   if(!root || root._tabSwipeBound) return;
   root._tabSwipeBound = true;
-  // 履歴タブの、絞り込みタブより下を横にスライドしたら、絞り込み（すべて／給油／…）を前後へずらす
-  let hsX=0, hsY=0;
-  root.addEventListener('touchstart', function(e){
-    histSwipeZone = false;
-    if(state.tab!=='hist' || e.touches.length!==1) return;
-    const bar = document.getElementById('histFilters');
-    if(!bar) return;
-    const t = e.touches[0];
-    const node = e.target && (e.target.nodeType===3 ? e.target.parentElement : e.target);
-    if(!node || !node.closest || node.closest('.nav, .topbar, .modal-bg, .modal, input, textarea, select')) return;
-    if(t.clientY > bar.getBoundingClientRect().bottom + 2){
-      histSwipeZone = true; hsX = t.clientX; hsY = t.clientY;
-    }
-  }, {passive:true, capture:true});
-  root.addEventListener('touchend', function(e){
-    if(!histSwipeZone) return;
-    const t = (e.changedTouches && e.changedTouches[0]);
-    if(!t) return;
-    const dx = t.clientX - hsX, dy = t.clientY - hsY;
-    if(Math.abs(dx) < 48 || Math.abs(dy) >= Math.abs(dx) * 0.75) return;
-    stepHistFilter(dx < 0 ? 1 : -1);
-  }, {passive:true, capture:true});
   root.addEventListener('touchstart', function(e){
     if(tabAnim || scDrag) { tracking=false; return; }
     if(e.touches.length!==1){ tracking=false; return; }
@@ -7068,6 +7122,7 @@ function showAlertPopup(){
   box.className = 'modal alert-popup';
   box.innerHTML = '<h3 class="ap-title">点検のお知らせ <span class="ap-count">'+list.length+'件</span></h3>'+
     '<ul class="ap-list">'+rows+'</ul>'+
+    '<div class="ap-note">時期は目安です。実際の交換は、取扱説明書や整備工場の指示に合わせてください。</div>'+
     '<button type="button" class="btn primary ap-close" id="apClose">閉じる</button>';
   bg.classList.add('show');
   document.getElementById('apClose').onclick = closeModal;
@@ -7088,27 +7143,6 @@ function pinHistFilters(){
 function pinHistFiltersSoon(){
   pinHistFilters();
   requestAnimationFrame(function(){ pinHistFilters(); setTimeout(pinHistFilters, 120); });
-}
-// 履歴の絞り込みを前後へずらす（dir: +1=次、-1=前）。端では動かさない
-function stepHistFilter(dir){
-  const bar = document.getElementById('histFilters');
-  if(!bar) return false;
-  const btns = Array.prototype.slice.call(bar.querySelectorAll('button[data-f]'));
-  const cur = btns.findIndex(function(b){ return b.classList.contains('on'); });
-  const next = cur + dir;
-  if(cur<0 || next<0 || next>=btns.length) return false;
-  state.histFilter = btns[next].getAttribute('data-f');
-  renderHist();
-  const card = document.getElementById('histListCard');
-  if(card && !reduceMotion()){
-    card.classList.add(dir>0 ? 'hist-slide-next' : 'hist-slide-prev');
-    setTimeout(function(){ card.classList.remove('hist-slide-next','hist-slide-prev'); }, 280);
-  }
-  const nb = document.querySelector('#histFilters button.on');
-  const nbar = document.getElementById('histFilters');
-  if(nb && nbar) nbar.scrollLeft = Math.max(0, nb.offsetLeft - (nbar.clientWidth - nb.offsetWidth)/2);
-  pinHistFiltersSoon();
-  return true;
 }
 function goHistList(){
   state.histFilter = 'all';
@@ -7172,7 +7206,7 @@ document.getElementById('nav').addEventListener('click', function(e){
   go(page, { animate:true });
 });
 document.getElementById('vehicleSelect').addEventListener('change', function(){
-  selectVehicle(this.value);
+  if(this.value==='__all__') setHistScope(true); else selectVehicle(this.value);
   scheduleVehicleSelectOverflow();
 });
 window.addEventListener('resize', function(){
@@ -7275,7 +7309,6 @@ window.KakeLog = {
   intervalsFor: intervalsFor,
   alertsFor: alertsFor,
   goHistList: goHistList,
-  stepHistFilter: stepHistFilter,
   pinHistFilters: pinHistFilters,
   showAlertPopup: showAlertPopup,
   alertPopupItems: alertPopupItems,
