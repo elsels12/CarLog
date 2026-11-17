@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.48</title>
+<title>CarLog beta 0.9.49</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -1485,7 +1485,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.48</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.49</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3435,7 +3435,7 @@ const HELP_TOPICS = [
   { id:'gestures', title:'操作のコツ（スライド・長押しなど）', body:
     '<p>知っておくと便利な操作です。</p>'+
     '<ol><li><b>タブの移動：</b>画面を左右にスライドすると、下のタブ（ホーム・入力・履歴・点検・設定）が隣へ移ります。下のタブをタップしても移れます。</li>'+
-    '<li><b>履歴の費目タブ：</b>タブの列だけを左右にスライドすると、隠れている費目が出ます（下のタブは移りません）。</li>'+
+    '<li><b>履歴の費目タブ：</b>タブの列を左右にスライドすると、隠れている費目が出ます。タブより下を左右にスライドすると、画面の位置はそのままで項目（すべて／給油／…）だけが隣に切り替わります（履歴ページだけ。下のタブは移りません）。</li>'+
     '<li><b>ホームのショートカット：</b>長押しすると並べ替えができます。終わったら「完了」を押します。見た目は、設定のショートカットから、色（塗りの色・線の色）やサイズを変えられます。</li>'+
     '<li><b>保存のあと：</b>記録を保存すると履歴に移ります。迫っている点検があるときは、ポップアップで知らせます。「閉じる」で閉じます。</li>'+
     '<li><b>車の切り替え：</b>ホームの車名チップか、画面上の車名で切り替えます。「全車」を選ぶと、履歴だけ全車分になります。</li>'+
@@ -4948,6 +4948,31 @@ function bindSummaryKpis(){
   const avg = document.getElementById('avgFuelKpi');
   if(avg && !histAllMode()) avg.onclick = function(){ goFuelDetail(); };
 }
+let histCatsNow = ['all'], histFilNow = 'all';
+// 履歴: 絞り込みタブより下を横スワイプ → 画面の位置と高さはそのままで、項目（絞り込み）だけ隣に切り替える
+function stepHistFilter(dir){
+  const i = histCatsNow.indexOf(histFilNow);
+  const n = i + dir;
+  if(i<0 || n<0 || n>=histCatsNow.length) return false;
+  const pg = document.getElementById('page-hist');
+  const y = window.scrollY || 0;
+  if(pg){ const h = pg.offsetHeight; if(!pg.style.minHeight || parseInt(pg.style.minHeight,10) < h) pg.style.minHeight = h+'px'; }
+  state.histFilter = histCatsNow[n];
+  renderHist();
+  window.scrollTo(0, y);
+  const on = document.querySelector('#histFilters button.on');
+  const bar = document.getElementById('histFilters');
+  if(on && bar && bar.scrollWidth > bar.clientWidth){ bar.scrollLeft = Math.max(0, on.offsetLeft - (bar.clientWidth - on.offsetWidth)/2); }
+  const card = document.getElementById('histListCard');
+  if(card && card.animate && !reduceMotion()){ try{ card.animate([{opacity:.35, transform:'translateX('+(dir*28)+'px)'},{opacity:1, transform:'none'}],{duration:180, easing:'ease-out'}); }catch(e){} }
+  return true;
+}
+function isHistStepStart(el, y){
+  if(state.tab!=='hist') return false;
+  const bar = document.getElementById('histFilters');
+  if(!bar) return false;
+  return y >= bar.getBoundingClientRect().bottom;
+}
 function renderHist(){
   const veh = currentVehicle();
   if(!veh){
@@ -4981,6 +5006,7 @@ function renderHist(){
     }
   }
   const shown = recs.filter(function(r){ return recordMatchesFilter(r, fil); });
+  histCatsNow = cats.slice(); histFilNow = fil;
   const filters = cats.map(function(c){
     return '<button type="button" class="'+(c===fil?'on':'')+'" data-f="'+escapeHtml(c)+'">'+escapeHtml(c==='all'?'すべて':c)+'</button>';
   }).join('');
@@ -6971,7 +6997,7 @@ function trySwitchTabBySwipe(dx, dy, target){
   return true;
 }
 function bindTabSwipe(){
-  let startX=0, startY=0, tracking=false, armed=false;
+  let startX=0, startY=0, tracking=false, armed=false, histStep=false;
   const root = document.getElementById('app');
   if(!root || root._tabSwipeBound) return;
   root._tabSwipeBound = true;
@@ -6980,11 +7006,17 @@ function bindTabSwipe(){
     if(e.touches.length!==1){ tracking=false; return; }
     const t = e.touches[0];
     startX=t.clientX; startY=t.clientY;
-    tracking = !isSwipeIgnoredTarget(e.target);
+    histStep = isHistStepStart(e.target, t.clientY) && !isSwipeIgnoredTarget(e.target) && !document.getElementById('modalBg')?.classList.contains('show');
+    tracking = histStep || !isSwipeIgnoredTarget(e.target);
     armed = false;
   }, {passive:true});
   root.addEventListener('touchmove', function(e){
     if(!tracking || e.touches.length!==1) return;
+    if(histStep){
+      const t0 = e.touches[0];
+      if(Math.abs(t0.clientY-startY) > Math.abs(t0.clientX-startX) && Math.abs(t0.clientY-startY) > 12) tracking=false;
+      return;
+    }
     if(reduceMotion()){
       const t = e.touches[0];
       const dx = t.clientX-startX, dy = t.clientY-startY;
@@ -7021,6 +7053,11 @@ function bindTabSwipe(){
     tracking=false;
     const t = (e.changedTouches && e.changedTouches[0]) || {};
     const dx = (t.clientX||startX)-startX, dy = (t.clientY||startY)-startY;
+    if(histStep){
+      histStep = false;
+      if(Math.abs(dx) >= TAB_SWIPE_PX*0.7 && Math.abs(dy) < Math.abs(dx)*0.75) stepHistFilter(dx<0 ? 1 : -1);
+      return;
+    }
     if(armed && tabSwipe){
       const commit = Math.abs(tabSwipe.dx) >= Math.min(TAB_SWIPE_PX, tabSwipe.width*0.22);
       const dest = tabSwipe.dest;
@@ -7398,6 +7435,8 @@ window.KakeLog = {
   copyCodeGs: copyCodeGs,
   getCodeGsText: function(){ return codeGsText; },
   trySwitchTabBySwipe: trySwitchTabBySwipe,
+  stepHistFilter: stepHistFilter,
+  isHistStepStart: isHistStepStart,
   isSwipeIgnoredTarget: isSwipeIgnoredTarget,
   previewTabSwipe: previewTabSwipe,
   syncNavInd: syncNavInd,
