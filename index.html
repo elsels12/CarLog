@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.54</title>
+<title>CarLog beta 0.9.55</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -1368,8 +1368,16 @@ html[data-theme="glass-light"] .badge.action{color:#b45410;background:rgba(230,1
   background:var(--danger);color:#fff;font-size:9px;font-weight:800;line-height:15px;text-align:center;
   box-sizing:border-box;pointer-events:none;
 }
+html[data-theme] #page-input .cat-date-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:8px;align-items:end;}
+html[data-theme] #page-input .cat-date-row>div{min-width:0;}
+html[data-theme] #page-input .cat-date-row label.f{white-space:nowrap;}
+html[data-theme] #page-input .cat-date-row input[type=date]#fDate{margin:0 0 8px;padding:8px 8px;font-size:15px;}
+html[data-theme] #page-input .cat-date-row .cat-select{padding:10px 8px;gap:6px;}
+html[data-theme] #page-input .cat-date-row .cat-select .icn{width:22px;height:22px;}
+html[data-theme] #page-input .cat-date-row .cat-select .icn svg{width:20px;height:20px;}
+html[data-theme] #page-input .cat-date-row input[type=date]#fDate,html[data-theme] #page-input .cat-date-row .cat-select{height:52px;min-height:52px;box-sizing:border-box;}
 html[data-theme] #page-input input[type=date]#fDate{
-  width:15.5em;max-width:100%;display:inline-block;
+  width:100%;max-width:100%;display:block;min-width:0;-webkit-appearance:none;appearance:none;text-align:left;
   min-height:44px;font-size:16px;padding:8px 12px;
   border-width:2px;border-radius:10px;box-sizing:border-box;
 }
@@ -1513,7 +1521,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.54</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.55</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -4566,13 +4574,14 @@ function renderInput(){
   document.getElementById('page-input').innerHTML =
     '<div class="card tint tint-input">'+
     '<h2>'+(rec?'記録を編集':'新規入力')+(rec?' <span class="hint">ID '+escapeHtml(rec.id)+'</span>':'')+'</h2>'+
-    '<label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'">'+
-    '<label class="f">カテゴリ</label>'+
-    '<button type="button" class="cat-select" id="catSelect" aria-haspopup="dialog" aria-expanded="false"></button>'+
+    '<div class="cat-date-row">'+
+      '<div class="cd-cat"><label class="f">カテゴリ</label><button type="button" class="cat-select" id="catSelect" aria-haspopup="dialog" aria-expanded="false"></button></div>'+
+      '<div class="cd-date"><label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'"></div>'+
+    '</div>'+
     '<input type="hidden" id="fCat" value="'+escapeHtml(cat)+'">'+
     '<input type="hidden" id="fCatId" value="'+escapeHtml(catId)+'">'+
     '<input type="hidden" id="fMaintId" value="'+escapeHtml((rec&&rec.maintenanceItemId)||(preset&&preset.maintenanceItemId)||'')+'">'+
-    '<label class="f">内訳</label><div class="sub-select-wrap"><select id="fSub"></select><span class="chev" aria-hidden="true">'+ICO_CHEVRON_DOWN+'</span></div>'+
+    '<div id="subRow"><label class="f">内訳</label><div class="sub-select-wrap"><select id="fSub"></select><span class="chev" aria-hidden="true">'+ICO_CHEVRON_DOWN+'</span></div></div>'+
     '<div class="grid2">'+
       '<div><label class="f">合計金額（円）<span class="auto-tag" id="tag-amount" hidden>自動</span></label><input type="number" id="fAmt" inputmode="numeric" enterkeyhint="next" value="'+escapeHtml(rec&&rec.amount!=null?rec.amount:'')+'"></div>'+
       '<div><label class="f">走行距離（km）</label><input type="number" id="fOdo" inputmode="decimal" enterkeyhint="done" value="'+escapeHtml(odo)+'"></div>'+
@@ -4699,6 +4708,9 @@ function fillSubs(cat, selected, customId){
   sel.innerHTML = subs.map(function(s){
     return '<option value="'+escapeHtml(s)+'"'+(s===cur?' selected':'')+'>'+escapeHtml(s)+'</option>';
   }).join('');
+  // 内訳の選択肢がない（1つだけ）カテゴリでは内訳の行を隠す（値は今までどおり保存される）
+  const subRow = document.getElementById('subRow');
+  if(subRow) subRow.style.display = subs.length>1 ? '' : 'none';
 }
 let fuelTyped = [];
 const FUEL_IDS = { amount:'fAmt', liters:'fLiters', unitPrice:'fUnit' };
