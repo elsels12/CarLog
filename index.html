@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.55</title>
+<title>CarLog beta 0.9.56</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -1368,16 +1368,8 @@ html[data-theme="glass-light"] .badge.action{color:#b45410;background:rgba(230,1
   background:var(--danger);color:#fff;font-size:9px;font-weight:800;line-height:15px;text-align:center;
   box-sizing:border-box;pointer-events:none;
 }
-html[data-theme] #page-input .cat-date-row{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:8px;align-items:end;}
-html[data-theme] #page-input .cat-date-row>div{min-width:0;}
-html[data-theme] #page-input .cat-date-row label.f{white-space:nowrap;}
-html[data-theme] #page-input .cat-date-row input[type=date]#fDate{margin:0 0 8px;padding:8px 8px;font-size:15px;}
-html[data-theme] #page-input .cat-date-row .cat-select{padding:10px 8px;gap:6px;}
-html[data-theme] #page-input .cat-date-row .cat-select .icn{width:22px;height:22px;}
-html[data-theme] #page-input .cat-date-row .cat-select .icn svg{width:20px;height:20px;}
-html[data-theme] #page-input .cat-date-row input[type=date]#fDate,html[data-theme] #page-input .cat-date-row .cat-select{height:52px;min-height:52px;box-sizing:border-box;}
 html[data-theme] #page-input input[type=date]#fDate{
-  width:100%;max-width:100%;display:block;min-width:0;-webkit-appearance:none;appearance:none;text-align:left;
+  width:15.5em;max-width:100%;display:inline-block;
   min-height:44px;font-size:16px;padding:8px 12px;
   border-width:2px;border-radius:10px;box-sizing:border-box;
 }
@@ -1425,6 +1417,10 @@ html[data-theme] #modal.cat-sheet #catBtns button{
   white-space:normal;overflow:hidden;max-width:100%;min-width:0;
   -webkit-line-clamp:2;line-clamp:2;
 }
+#page-input .input-actions{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + var(--nav-pad));z-index:30;width:100%;max-width:480px;margin:0 auto;padding:8px 12px;box-sizing:border-box;background:var(--nav-bg);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);}
+#page-input .input-actions .btn{min-height:46px;}
+body:has(#page-input.active) .toast{bottom:calc(var(--nav-h) + 84px + var(--nav-pad));}
+#page-input{padding-bottom:70px;}
 html[data-theme] #page-input .cat-select{
   display:flex;align-items:center;gap:10px;width:100%;
   min-height:52px;padding:10px 14px;margin:0 0 8px;
@@ -1521,7 +1517,7 @@ html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.55</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.56</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -4574,10 +4570,9 @@ function renderInput(){
   document.getElementById('page-input').innerHTML =
     '<div class="card tint tint-input">'+
     '<h2>'+(rec?'記録を編集':'新規入力')+(rec?' <span class="hint">ID '+escapeHtml(rec.id)+'</span>':'')+'</h2>'+
-    '<div class="cat-date-row">'+
-      '<div class="cd-cat"><label class="f">カテゴリ</label><button type="button" class="cat-select" id="catSelect" aria-haspopup="dialog" aria-expanded="false"></button></div>'+
-      '<div class="cd-date"><label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'"></div>'+
-    '</div>'+
+    '<label class="f">日付</label><input type="date" id="fDate" value="'+escapeHtml(date)+'">'+
+    '<label class="f">カテゴリ</label>'+
+    '<button type="button" class="cat-select" id="catSelect" aria-haspopup="dialog" aria-expanded="false"></button>'+
     '<input type="hidden" id="fCat" value="'+escapeHtml(cat)+'">'+
     '<input type="hidden" id="fCatId" value="'+escapeHtml(catId)+'">'+
     '<input type="hidden" id="fMaintId" value="'+escapeHtml((rec&&rec.maintenanceItemId)||(preset&&preset.maintenanceItemId)||'')+'">'+
@@ -4589,7 +4584,7 @@ function renderInput(){
     '<div id="fuelExtra"></div>'+
     '<div id="shakenExtra"></div>'+
     '<label class="f">メモ</label><textarea id="fMemo" placeholder="店名・部品名・特記など">'+escapeHtml(rec&&rec.memo?rec.memo:'')+'</textarea>'+
-    '<div class="btn-row"><button type="button" class="btn primary" id="btnSave">保存</button>'+
+    '<div class="btn-row input-actions"><button type="button" class="btn primary" id="btnSave">保存</button>'+
     (rec?'<button type="button" class="btn danger" id="btnDel">削除</button>':'')+
     '<button type="button" class="btn ghost" id="btnReset">クリア</button></div>'+
     '</div>';
