@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.49 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.54 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -54,6 +54,19 @@
       36: { before: 23520, after: 24830 }
     }
   };
+
+  // 車検の「最低目安」: 整備・修理・交換が一切ない場合の下限の目安
+  // 印紙代（検査手数料）継続検査・普通車/小型・業者申請: OSS 1,850円 / 窓口 2,100円（2026-04-01改定）。高いほうの窓口額を使う
+  //   出典: ベストカーWeb「車検の印紙代が4月から値上げ」(bestcarweb.jp/?p=1511556)
+  // 代行手数料の相場 5,000〜10,000円（ディーラー約10,000円）。ディーラー額の 10,000円を使う
+  //   出典: グーネットマガジン (goo-net.com/magazine/?p=218074)
+  var SHAKEN_STAMP_FEE = 2100;
+  var SHAKEN_AGENCY_FEE = 10000;
+  function shakenMinEstimate(weightTaxAmount, jibaisekiAmount) {
+    var w = Number(weightTaxAmount), j = Number(jibaisekiAmount);
+    if (!(w > 0) || !(j > 0)) return null;
+    return { total: w + j + SHAKEN_STAMP_FEE + SHAKEN_AGENCY_FEE, weight: w, liability: j, stamp: SHAKEN_STAMP_FEE, agency: SHAKEN_AGENCY_FEE };
+  }
 
   function pad2(n) { return (n < 10 ? "0" : "") + n; }
 
@@ -1017,6 +1030,7 @@
     weightAgeTier: weightAgeTier,
     weightTax: weightTax,
     jibaiseki: jibaiseki,
+    shakenMinEstimate: shakenMinEstimate,
     estimateNextShaken: estimateNextShaken,
     firstShakenFromRegistration: firstShakenFromRegistration,
     shakenAnchorDate: shakenAnchorDate,
