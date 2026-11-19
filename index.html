@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.58</title>
+<title>CarLog beta 0.9.59</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -549,6 +549,29 @@ details.tax-fold.tint > summary{
 .sc-tile{-webkit-touch-callout:none;}
 .sc-toolbar{position:absolute;top:4px;right:4px;z-index:6;display:flex;align-items:center;justify-content:flex-end;gap:0;margin:0;min-height:0;pointer-events:none;}
 .sc-toolbar > *{pointer-events:auto;}
+.sc-bar{display:none;position:fixed;left:0;right:0;margin:0 auto;bottom:calc(var(--nav-h) + var(--nav-pad));z-index:36;width:100%;max-width:480px;box-sizing:border-box;padding:8px 12px;align-items:center;gap:8px;background:var(--nav-bg);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);color:var(--paper);}
+body:has(#page-home.active) .sc-bar.open{display:flex;}
+.sc-bar .scb-hint{flex:1;min-width:0;font-size:11px;opacity:.75;line-height:1.3;}
+.sc-bar .sc-color-btn,.sc-bar .sc-reorder-done{height:36px;line-height:34px;padding:0 16px;font-size:14px;}
+body:has(.sc-bar.open) #page-home{padding-bottom:64px;}
+body:has(.sc-color-panel.open) #page-home{padding-bottom:190px;}
+.sc-color-btn{flex:0 0 auto;min-width:0;height:28px;padding:0 10px;font-size:12px;font-weight:800;line-height:26px;border:1.5px solid var(--amber);border-radius:999px;background:transparent;color:var(--amber);}
+.sc-color-btn.on{background:var(--amber);color:var(--ink-on-accent);}
+.sc-tile{position:relative;}
+.sc-del{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;background:var(--danger,#e5484d);color:#fff;font-size:14px;font-weight:900;line-height:19px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.45);z-index:5;touch-action:none;}
+.sc-del::before{content:'';position:absolute;inset:-8px;}
+.sc-tile.sc-sel{outline:2px solid var(--amber);outline-offset:2px;}
+.sc-color-panel{display:none;position:fixed;left:0;right:0;margin:0 auto;bottom:calc(var(--nav-h) + var(--nav-pad) + 52px);z-index:35;width:100%;max-width:480px;box-sizing:border-box;padding:8px 12px 10px;background:var(--nav-bg);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);color:var(--paper);}
+body:has(#page-home.active) .sc-color-panel.open{display:block;}
+.sc-color-panel .scp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:13px;}
+.sc-color-panel .scp-head button{height:28px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:inherit;font-size:12px;font-weight:700;}
+.sc-color-panel .scp-row{display:flex;align-items:center;gap:8px;margin:4px 0;}
+.sc-color-panel .scp-row>span{flex:0 0 28px;font-size:12px;font-weight:800;}
+.sc-color-panel .scp-sws{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0;}
+.sc-color-panel .scp-sw{width:30px;height:30px;border-radius:50%;border:2px solid transparent;padding:0;background:var(--c,#555);color:#fff;font-size:11px;font-weight:800;}
+.sc-color-panel .scp-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--amber);}
+body:has(#page-home.active):has(.sc-color-panel.open) .toast{bottom:calc(var(--nav-h) + 210px + var(--nav-pad));}
+body:has(#page-home.active):has(.sc-bar.open) .toast{bottom:calc(var(--nav-h) + 64px + var(--nav-pad));}
 .sc-reorder-done,#btnScReorderDone{flex:0 0 auto;min-width:0;min-height:28px;height:28px;padding:0 10px;font-size:12px;font-weight:800;line-height:28px;border:0;border-radius:999px;background:var(--amber);color:var(--ink-on-accent);}
 html.tab-swipe-lock,body.tab-swipe-lock{overflow:hidden;overscroll-behavior:none;}
 .page.is-swipe-pane{-webkit-overflow-scrolling:touch;}
@@ -1899,7 +1922,7 @@ html[data-theme="sf"] #modal.modal{border-radius:2px;}
 html:is([data-theme="hygge"],[data-theme="industrial"],[data-theme="mecha"],[data-theme="sf"]) .nav-alert-badge{box-shadow:0 0 0 2px var(--nav-bg);}
 html[data-theme="sf"] .nav-alert-badge,html[data-theme="industrial"] .nav-alert-badge,html[data-theme="mecha"] .nav-alert-badge{border-radius:3px;}
 
-/* ===== 0.9.58 テーマ調整 ===== */
+/* ===== 0.9.59 テーマ調整 ===== */
 /* ヒュッゲ: 木の雰囲気を少しだけ（ヘッダーとタブバーに薄い木目、カード見出しに木の色） */
 html[data-theme="hygge"]{--wood:#c9a57a;--wood-dark:#a9835a;
   --wood-grain:
@@ -2042,7 +2065,7 @@ html[data-theme="sf"] .swatch-dummy{}
   linear-gradient(90deg, transparent 0 62%, #9a9ea4 62% 66%, transparent 66%) 0 70%/100% 10px no-repeat,
   linear-gradient(180deg, #4a4d52, #2c2e31) !important;}
 
-/* ===== 0.9.58 メカ・SF の機械感／メルヘン・パステル・フラワー ===== */
+/* ===== 0.9.59 メカ・SF の機械感／メルヘン・パステル・フラワー ===== */
 /* --- タブのハイライトが文字にかぶらないよう、これらのテーマでは薄い色の面にして文字は常に読める色にする --- */
 html:is([data-theme="mecha"],[data-theme="sf"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav button .tab-pill{position:relative;z-index:1;}
 
@@ -2276,7 +2299,7 @@ html[data-theme="flower"] .card > h2{padding-left:18px;background:var(--flw) lef
 .sw-pastel{background:linear-gradient(90deg,#f6c9d6 0 20%,#d9d3f1 20% 40%,#bfe3d4 40% 60%,#c6dcf5 60% 80%,#f5e7a8 80%);border-color:#e4e6f2 !important;}
 .sw-flower{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><g fill='%23eab3bf'><circle cx='10' cy='5' r='3.8'/><circle cx='14.8' cy='8.5' r='3.8'/><circle cx='13' cy='14' r='3.8'/><circle cx='7' cy='14' r='3.8'/><circle cx='5.2' cy='8.5' r='3.8'/></g><circle cx='10' cy='10' r='2.4' fill='%23f1d48a'/></svg>") 30% 50%/18px 18px no-repeat, #fdf6f3;border-color:#eedcd8 !important;}
 
-/* ===== 0.9.58 メカ（色の段差） ===== */
+/* ===== 0.9.59 メカ（色の段差） ===== */
 html[data-theme="mecha"]{
   --asphalt:#d3d9e1;--line:#a9b2bf;--paper-dim:#4f5a6c;
   --chip-bg:#e6ebf2;--chip-line:#aab4c2;--kpi-bg:#e6ebf2;--kpi-line:#bcc5d1;--hairline:#d5dbe3;
@@ -2344,7 +2367,7 @@ html[data-theme="mecha"] .sw-mecha{}
 /* clip-path は固定表示の「保存・クリア」まで切ってしまうので、入力画面のカードには使わない（0.9.57 のメカで保存ボタンが消えていた不具合の修正） */
 html[data-theme="mecha"] #page-input .card,html[data-theme="mecha"] .card:has(.input-actions){clip-path:none;}
 
-/* ===== 0.9.58 メカ（黄色の差し色・ゴツい機械感） ===== */
+/* ===== 0.9.59 メカ（黄色の差し色・ゴツい機械感） ===== */
 html[data-theme="mecha"]{
   --y:#e5b53a;--y-ink:#2b240f;
   --chamfer:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
@@ -2424,7 +2447,7 @@ html[data-theme="mecha"] .nav{
   border-top:0;box-shadow:inset 0 2px 0 #4a86d8, inset 0 5px 0 #16202f, 0 -3px 6px rgba(20,30,50,.25);padding-top:5px;}
 html[data-theme="mecha"] .nav-ind-pill{background:rgba(74,134,216,.30) !important;box-shadow:inset 0 0 0 1px rgba(130,170,230,.5), inset 0 -3px 0 var(--y);}
 html[data-theme="mecha"] #page-input .input-actions{background:var(--m-plate);box-shadow:inset 0 2px 0 #3a4d6e;}
-/* 0.9.58 メカ: ローレットは端だけ、ボルトはローレットの上、カードの余白を少し広げる */
+/* 0.9.59 メカ: ローレットは端だけ、ボルトはローレットの上、カードの余白を少し広げる */
 html[data-theme="mecha"]{--knurl-img:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><rect width='10' height='6' fill='%2333435e'/><path d='M0 6 L5 0 L10 6 M0 0 L5 6 L10 0' fill='none' stroke='%23556a8c' stroke-width='1'/><path d='M0 3 H10' stroke='%23202b3e' stroke-width='0.6'/></svg>");}
 html[data-theme="mecha"] .topbar{
   background:
@@ -2437,14 +2460,14 @@ html[data-theme="mecha"] .nav{
   background:var(--knurl-img) left 0 top 0/10px 6px repeat-y, var(--knurl-img) right 0 top 0/10px 6px repeat-y, var(--m-plate);}
 html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
 html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{padding:16px 18px 26px 18px;}
-/* 0.9.58 メカのタブのアイコンと文字を落ち着いた黄色に */
+/* 0.9.59 メカのタブのアイコンと文字を落ち着いた黄色に */
 html[data-theme="mecha"] .nav button,html[data-theme="mecha"] .nav button[data-page="input"].active{color:rgba(229,181,58,.72) !important;}
 html[data-theme="mecha"] .nav button.active{color:#ecc04f !important;}
 html[data-theme="mecha"] .nav button.active .tab-lbl{font-weight:900;text-shadow:0 0 6px rgba(229,181,58,.28);}
 html[data-theme="mecha"] .nav button.active .ic svg{filter:drop-shadow(0 0 3px rgba(229,181,58,.25));}
 html[data-theme="mecha"] .nav-ind-pill{background:rgba(74,134,216,.38) !important;}
 
-/* ===== 0.9.58 文字ラベルを外す／新テーマの作り込み ===== */
+/* ===== 0.9.59 文字ラベルを外す／新テーマの作り込み ===== */
 /* --- メカ: コード表記と黄色プレートを外し、留め具を黄色にして黄色の量を保つ --- */
 html[data-theme="mecha"] .topbar::after{content:none !important;}
 html[data-theme="mecha"] .card::after{content:none !important;}
@@ -2587,13 +2610,13 @@ html[data-theme="flower"] .nav-ind-pill{background:#fbeef0 !important;box-shadow
 html[data-theme="flower"] .nav button{color:rgba(165,86,106,.70) !important;}
 html[data-theme="flower"] .nav button.active{color:#a5566a !important;}
 html[data-theme="flower"] .nav button.active .tab-lbl{font-weight:900;}
-/* 0.9.58 ヒュッゲの木目はカード上端だけ */
+/* 0.9.59 ヒュッゲの木目はカード上端だけ */
 html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold{
   background:
     repeating-linear-gradient(179.3deg, rgba(110,72,38,0) 0 2px, rgba(110,72,38,.14) 2px 3px, rgba(110,72,38,0) 3px 5px) left top/100% 6px no-repeat,
     linear-gradient(180deg,#d9b88c,#c9a273) left top/100% 6px no-repeat,
     #fffaf3;}
-/* 0.9.58 インダストリアルのタブは半透明の真ちゅう色にして、スワイプ中も文字が読めるように */
+/* 0.9.59 インダストリアルのタブは半透明の真ちゅう色にして、スワイプ中も文字が読めるように */
 html[data-theme="industrial"] .nav-ind-pill{background:linear-gradient(180deg,rgba(227,180,108,.30),rgba(196,141,69,.20)) !important;
   box-shadow:inset 0 0 0 1px rgba(227,180,108,.55), inset 0 -3px 0 #d6a45c, inset 0 1px 0 rgba(255,255,255,.18) !important;}
 html[data-theme="industrial"] .nav button.active{color:#f2c98a !important;}
@@ -2604,7 +2627,7 @@ html[data-theme="flower"] .card{background:var(--sprig) right -2px bottom -2px/5
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.58</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.59</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3626,8 +3649,9 @@ function shortcutTileHtml(sc, attrs){
       '<span class="icn" style="color:'+escapeHtml(ink)+'">'+shortcutSvg(icon)+'</span><span class="lbl">'+escapeHtml(label)+'</span></button>';
   }
   // 枠は「塗りの色」（なければ線の色）、アイコンと文字は「線の色」（なければ塗りの色）。線の色を変えても枠は変わらない
+  // 線の色を変えても枠と薄い塗りは変わらない（枠・塗りは「塗りの色」だけで決まる）
   const baseCol = look.lineColor || look.color;
-  const borderCol = look.color || look.lineColor;
+  const borderCol = look.color;
   const lineCol = borderCol ? lineTint(borderCol, op) : '';
   const tint = borderCol ? fillBg(borderCol, Math.min(op, 40)) : '';
   const ink = baseCol || '';
@@ -3831,20 +3855,130 @@ function persistShortcuts(ids){
 }
 
 let scReorder = false;
+let scColorMode = false;
+let scSelId = '';
 let scSuppressClick = false;
 let scDrag = null;
 
 function isShortcutReorder(){ return !!scReorder; }
-function scToolbarHtml(){
-  if(scReorder){
-    return '<div class="sc-toolbar" id="scToolbar"><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button></div>';
-  }
-  return '';
-}
+function scToolbarHtml(){ return ''; }
 function setShortcutReorder(on){
   scReorder = !!on;
-  if(!scReorder) endScDrag();
+  if(!scReorder){ endScDrag(); scColorMode = false; scSelId = ''; }
   if(state.tab==='home') renderHome();
+}
+// ---- 配置変更モード: 色変更・ホームから削除 ----
+function scLookKeyFor(sc){
+  if(!sc) return '';
+  if(builtinLook(sc.id)) return sc.id;
+  if(sc.kind==='replace' || String(sc.id).indexOf('repl:')===0) return sc.id;
+  return sc.category || sc.id;
+}
+function scSetColors(id, fields){
+  const sc = shortcutById(id);
+  if(!sc) return;
+  if(sc.customId){
+    const c = customCatById(sc.customId);
+    if(!c) return;
+    if('color' in fields) c.color = safeColor(fields.color);
+    if('lineColor' in fields) c.lineColor = safeColor(fields.lineColor);
+    c.updatedAt = new Date().toISOString();
+    persistCategories();
+  } else {
+    upsertBuiltinLook(scLookKeyFor(sc), fields);
+  }
+}
+function scColorPanelEl(){
+  let el = document.getElementById('scColorPanel');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'scColorPanel';
+    el.className = 'sc-color-panel';
+    document.body.appendChild(el);
+    el.addEventListener('click', function(ev){
+      const b = ev.target.closest('button');
+      if(!b) return;
+      ev.preventDefault();
+      if(b.id==='scpClose'){ scColorMode = false; scSelId = ''; refreshScColorUi(true); return; }
+      const k = b.getAttribute('data-k');
+      if(!k || !scSelId) return;
+      const v = b.getAttribute('data-v') || '';
+      scSetColors(scSelId, k==='fill' ? { color:v } : { lineColor:v });
+      if(state.tab==='home') renderHome();
+    });
+  }
+  return el;
+}
+function swatchRow(kind, cur){
+  const list = [''].concat(CAT_COLORS);
+  return list.map(function(col){
+    return '<button type="button" class="scp-sw'+((cur||'')===col?' on':'')+(col?'':' none')+'" data-k="'+kind+'" data-v="'+escapeHtml(col)+'" style="--c:'+(col||'#555')+'" aria-label="'+(col?escapeHtml(col):'標準')+'">'+(col?'':'標')+'</button>';
+  }).join('');
+}
+function renderScColorPanel(){
+  const el = scColorPanelEl();
+  const open = !!(scReorder && scColorMode);
+  el.classList.toggle('open', open);
+  if(!open){ el.innerHTML = ''; return; }
+  const sc = scSelId ? shortcutById(scSelId) : null;
+  if(!sc){
+    el.innerHTML = '<div class="scp-head"><b>色を変えるアイコンをタップ</b><button type="button" id="scpClose">閉じる</button></div>';
+    return;
+  }
+  const look = resolvedLook(sc);
+  el.innerHTML =
+    '<div class="scp-head"><b>'+escapeHtml(sc.label||sc.category||'')+'</b><button type="button" id="scpClose">閉じる</button></div>'+
+    '<div class="scp-row"><span>塗り</span><div class="scp-sws">'+swatchRow('fill', look.color)+'</div></div>'+
+    '<div class="scp-row"><span>線</span><div class="scp-sws">'+swatchRow('line', look.lineColor)+'</div></div>';
+}
+function renderScBar(){
+  let el = document.getElementById('scBar');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'scBar';
+    el.className = 'sc-bar';
+    document.body.appendChild(el);
+  }
+  const open = !!scReorder;
+  el.classList.toggle('open', open);
+  if(!open){ el.innerHTML = ''; return; }
+  el.innerHTML = '<span class="scb-hint">並べ替え・色・×で整理</span><button type="button" class="sc-color-btn'+(scColorMode?' on':'')+'" id="btnScColor">色変更</button><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button>';
+  const done = document.getElementById('btnScReorderDone');
+  if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
+  bindScColorBtn();
+}
+function refreshScColorUi(rerender){
+  renderScBar();
+  renderScColorPanel();
+  const wrap = document.getElementById('scWrap');
+  if(wrap) wrap.classList.toggle('is-color', !!(scReorder && scColorMode));
+  const b = document.getElementById('btnScColor');
+  if(b) b.classList.toggle('on', !!scColorMode);
+  document.querySelectorAll('#scGrid .sc-tile').forEach(function(t){
+    t.classList.toggle('sc-sel', !!(scColorMode && scSelId && t.getAttribute('data-sc')===scSelId));
+  });
+}
+function scRemoveFromHome(id){
+  const ids = enabledShortcuts().map(function(x){ return x.id; });
+  if(ids.length<=1){ toast('最後の1つは削除できません'); return; }
+  persistShortcuts(ids.filter(function(x){ return x!==id; }));
+  if(scSelId===id) scSelId = '';
+  if(state.tab==='home') renderHome();
+  toast('ホームから外しました（設定で戻せます）');
+}
+function scDecorateReorder(){
+  const grid = document.getElementById('scGrid');
+  if(!grid) return;
+  grid.querySelectorAll('.sc-tile[data-sc]').forEach(function(t){
+    const has = t.querySelector('.sc-del');
+    if(scReorder && !has){
+      const x = document.createElement('span');
+      x.className = 'sc-del';
+      x.setAttribute('aria-hidden', 'true');
+      x.textContent = '×';
+      t.appendChild(x);
+    } else if(!scReorder && has){ has.remove(); }
+  });
 }
 function scSpanClass(el){
   if(!el) return 'sc-m';
@@ -4110,12 +4244,60 @@ function enterReorderInPlace(){
   else if(wrap && html) wrap.insertAdjacentHTML('afterbegin', html);
   const done = document.getElementById('btnScReorderDone');
   if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
+  bindScColorBtn();
+  scDecorateReorder();
+  refreshScColorUi();
+}
+function bindScColorBtn(){
+  const b = document.getElementById('btnScColor');
+  if(b) b.onclick = function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    scColorMode = !scColorMode;
+    if(!scColorMode) scSelId = '';
+    refreshScColorUi();
+  };
 }
 function onScPointerDown(e){
   if(e.button!=null && e.button!==0) return;
   const tile = e.currentTarget;
   const id = tile && tile.getAttribute('data-sc');
   if(!id) return;
+  if(scReorder && e.target && e.target.closest && e.target.closest('.sc-del')){
+    if(e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    scSuppressClick = true;
+    scRemoveFromHome(id);
+    return;
+  }
+  if(scReorder && scColorMode){
+    // 色変更モード: タップで選ぶ。動かしたら並べ替え
+    if(e.cancelable) e.preventDefault();
+    e.stopPropagation();
+    const sx = e.clientX, sy = e.clientY, sp = e.pointerId;
+    function off(){
+      document.removeEventListener('pointermove', mv, true);
+      document.removeEventListener('pointerup', up, true);
+      document.removeEventListener('pointercancel', up, true);
+    }
+    function mv(ev){
+      if(sp!=null && ev.pointerId!==sp) return;
+      if(Math.hypot(ev.clientX-sx, ev.clientY-sy) > 8){
+        off();
+        beginScDrag(tile, id, ev);
+      }
+    }
+    function up(ev){
+      if(sp!=null && ev.pointerId!=null && ev.pointerId!==sp) return;
+      off();
+      scSuppressClick = true;
+      scSelId = id;
+      refreshScColorUi();
+    }
+    document.addEventListener('pointermove', mv, true);
+    document.addEventListener('pointerup', up, true);
+    document.addEventListener('pointercancel', up, true);
+    return;
+  }
   if(scReorder){
     if(e.cancelable) e.preventDefault();
     e.stopPropagation();
@@ -4158,6 +4340,9 @@ function bindShortcutGrid(){
   if(wrap) wrap.classList.toggle('is-reorder', scReorder);
   const done = document.getElementById('btnScReorderDone');
   if(done) done.onclick = function(e){ e.preventDefault(); e.stopPropagation(); setShortcutReorder(false); };
+  bindScColorBtn();
+  scDecorateReorder();
+  refreshScColorUi();
   if(!grid) return;
   grid.onclick = function(e){
     if(scReorder || scSuppressClick){
@@ -4544,7 +4729,7 @@ const HELP_TOPICS = [
     '<p>知っておくと便利な操作です。</p>'+
     '<ol><li><b>タブの移動：</b>画面を左右にスライドすると、下のタブ（ホーム・入力・履歴・点検・設定）が隣へ移ります。下のタブをタップしても移れます。</li>'+
     '<li><b>履歴の費目タブ：</b>タブの列を左右にスライドすると、隠れている費目が出ます。タブより下を左右にスライドすると、画面の位置はそのままで項目（すべて／給油／…）だけが隣に切り替わります（履歴ページだけ。下のタブは移りません）。</li>'+
-    '<li><b>ホームのショートカット：</b>長押しすると並べ替えができます。終わったら「完了」を押します。見た目は、設定のショートカットから、色（塗りの色・線の色）やサイズを変えられます。</li>'+
+    '<li><b>ホームのショートカット：</b>長押しすると並べ替えモードになります。ドラッグで並べ替え、右上の「×」でホームから外せます（設定で戻せます）。下の「色変更」を押してアイコンをタップすると、そのアイコンの塗りと線の色を別々に変えられます。終わったら「完了」を押します。見た目は、設定のショートカットから、色（塗りの色・線の色）やサイズを変えられます。</li>'+
     '<li><b>保存のあと：</b>記録を保存すると履歴に移ります。迫っている点検があるときは、ポップアップで知らせます。「閉じる」で閉じます。</li>'+
     '<li><b>車の切り替え：</b>ホームの車名チップか、画面上の車名で切り替えます。「全車」を選ぶと、履歴だけ全車分になります。</li>'+
     '<li><b>記録の修正・削除：</b>履歴の記録をタップすると、直したり削除したりできます。</li>'+
