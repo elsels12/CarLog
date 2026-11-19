@@ -14,8 +14,8 @@
 <meta name="theme-color" content="#07101c">
 <script>
 (function(){
-  var colors = { glass:'#07101c', 'glass-light':'#e8f3fa', neumo:'#c9ccd1', 'neumo-dark':'#2c2e33', neon:'#0a0908' };
-  var ids = { glass:1, 'glass-light':1, neumo:1, 'neumo-dark':1, neon:1 };
+  var colors = { glass:'#07101c', 'glass-light':'#e8f3fa', neumo:'#c9ccd1', 'neumo-dark':'#2c2e33', neon:'#0a0908', hygge:'#d0ae82', industrial:'#2b2c2e', mecha:'#2b3a56', sf:'#1c1626', marchen:'#fdf0f2', pastel:'#f7f8fd', flower:'#fdf6f3' };
+  var ids = { glass:1, 'glass-light':1, neumo:1, 'neumo-dark':1, neon:1, hygge:1, industrial:1, mecha:1, sf:1, marchen:1, pastel:1, flower:1 };
   var t = 'glass';
   try{
     var raw = localStorage.getItem('carlog_settings');
@@ -26,11 +26,11 @@
   var m = document.querySelector('meta[name="theme-color"]');
   if(m) m.setAttribute('content', colors[t] || colors.glass);
   var bar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-  if(bar) bar.setAttribute('content', (t==='neumo' || t==='glass-light') ? 'default' : 'black-translucent');
+  if(bar) bar.setAttribute('content', (t==='neumo' || t==='glass-light' || t==='hygge' || t==='marchen' || t==='pastel' || t==='flower') ? 'default' : 'black-translucent');
 })();
 </script>
 
-<title>CarLog beta 0.9.56</title>
+<title>CarLog beta 0.9.58</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -268,7 +268,7 @@ details.tax-fold[open]>summary{margin-bottom:6px;}
 .alert-card[style*="--tc"] .badge:not(.unknown):not(.reserved):not(.info){
   color:var(--tc);border-color:color-mix(in srgb, var(--tc) 50%, transparent);background:color-mix(in srgb, var(--tc) 16%, transparent);
 }
-html[data-theme="glass-light"] .alert-card[style*="--tc"] .badge:not(.unknown),html[data-theme="neumo"] .alert-card[style*="--tc"] .badge:not(.unknown){
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-card[style*="--tc"] .badge:not(.unknown),html[data-theme="neumo"] .alert-card[style*="--tc"] .badge:not(.unknown){
   color:color-mix(in srgb, var(--tc) 62%, #1b1b1b);background:color-mix(in srgb, var(--tc) 18%, #ffffff);
 }
 .alert-card[style*="--tc"] .alert-remain{color:var(--tc);}
@@ -276,8 +276,8 @@ html[data-theme="glass-light"] .alert-card[style*="--tc"] .badge:not(.unknown),h
   color:var(--tc);border-color:color-mix(in srgb, var(--tc) 55%, transparent);
   background:color-mix(in srgb, var(--tc) 16%, transparent);
 }
-html[data-theme="glass-light"] .alert-card[style*="--tc"] .alert-remain,html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-remain{color:color-mix(in srgb, var(--tc) 68%, #1b1b1b);}
-html[data-theme="glass-light"] .alert-card[style*="--tc"] .alert-action:not(.is-reserved),html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-action:not(.is-reserved){
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-card[style*="--tc"] .alert-remain,html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-remain{color:color-mix(in srgb, var(--tc) 68%, #1b1b1b);}
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-card[style*="--tc"] .alert-action:not(.is-reserved),html[data-theme="neumo"] .alert-card[style*="--tc"] .alert-action:not(.is-reserved){
   color:color-mix(in srgb, var(--tc) 62%, #1b1b1b);background:color-mix(in srgb, var(--tc) 18%, #ffffff);
 }
 .alert-action{
@@ -300,14 +300,14 @@ html[data-theme] .badge.unknown{
   color:var(--paper-dim);
   border-color:color-mix(in srgb, var(--paper-dim) 40%, transparent);
 }
-html[data-theme="glass-light"] .alert-action,html[data-theme="neumo"] .alert-action{
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-action,html[data-theme="neumo"] .alert-action{
   background:color-mix(in srgb, var(--amber) 16%, #ffffff);
 }
 .alert-action.is-reserved{
   border-color:color-mix(in srgb, var(--ok) 45%, transparent);
   background:color-mix(in srgb, var(--ok) 20%, transparent);color:var(--ok);
 }
-html[data-theme="glass-light"] .alert-action.is-reserved,html[data-theme="neumo"] .alert-action.is-reserved{
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-action.is-reserved,html[data-theme="neumo"] .alert-action.is-reserved{
   background:color-mix(in srgb, var(--ok) 16%, #ffffff);
 }
 html[data-theme="neumo"] .alert-bar,html[data-theme="neumo-dark"] .alert-bar{
@@ -575,8 +575,8 @@ html.sc-drag-lock,body.sc-drag-lock{overflow:hidden;overscroll-behavior:none;tou
 /* ホームの見出し: 点検アラート=点検タブ寄りのやわらかい色、最近の記録=履歴タブ寄りのやわらかい青（テーマで変えない） */
 #alertCard>h2{color:#e8b4a0;}
 #recentCard>h2{color:#8fb4ee;}
-html[data-theme="glass-light"] #alertCard>h2,html[data-theme="neumo"] #alertCard>h2{color:#b2573f;}
-html[data-theme="glass-light"] #recentCard>h2,html[data-theme="neumo"] #recentCard>h2{color:#3d6bb8;}
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) #alertCard>h2,html[data-theme="neumo"] #alertCard>h2{color:#b2573f;}
+html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) #recentCard>h2,html[data-theme="neumo"] #recentCard>h2{color:#3d6bb8;}
 .tint-tax{--_t:#d4bc7d;}
 .tint-sum{--_t:#3ad0c0;}
 .tint-interval{--_t:#5eead4;}
@@ -593,7 +593,7 @@ html[data-theme="glass-light"] #recentCard>h2,html[data-theme="neumo"] #recentCa
 
 /* ===== Themes: glass (default) / neumo / neon ===== */
 html[data-theme="glass"],html[data-theme="neon"],html[data-theme="neumo-dark"]{color-scheme:dark;}
-html[data-theme="neumo"],html[data-theme="glass-light"]{color-scheme:light;}
+html[data-theme="neumo"],html:is([data-theme="glass-light"],[data-theme="hygge"],[data-theme="mecha"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]){color-scheme:light;}
 
 html[data-theme] body{background:var(--asphalt);color:var(--paper);font-family:var(--font-ui);}
 html[data-theme] h1,html[data-theme] h2,html[data-theme] h3{font-family:var(--font-display);}
@@ -1512,12 +1512,1099 @@ html[data-theme] #modal.repl-sheet input[type=date]{
 html[data-theme] #modal.repl-sheet textarea{font-size:16px;min-height:72px;}
 /* 2列の中の日付欄: iOS の日付欄は中身の幅が大きく、隣の欄に被るため、列の幅に収める */
 html[data-theme] #modal .grid2 input[type=date]{min-width:0;max-width:100%;width:100%;display:block;-webkit-appearance:none;appearance:none;font-size:16px;text-align:left;}
+
+/* ===== 0.9.57 追加テーマ: hygge / industrial / mecha / sf（どれも特定の作品・ロゴ・配色をまねないオリジナル） ===== */
+html[data-theme="industrial"],html[data-theme="sf"]{color-scheme:dark;}
+html[data-theme="hygge"],html[data-theme="mecha"]{color-scheme:light;}
+
+/* swatches */
+.sw-hygge{background:
+  radial-gradient(9px 9px at 26% 52%, #c07a5c 0 98%, transparent 100%),
+  radial-gradient(9px 9px at 50% 52%, #8fa98a 0 98%, transparent 100%),
+  radial-gradient(9px 9px at 74% 52%, #c9a77c 0 98%, transparent 100%),
+  #f3ece1;border-color:#dccfbc !important;}
+.sw-industrial{background:
+  linear-gradient(90deg, transparent 0 70%, #d9822b 70% 76%, transparent 76%),
+  repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px),
+  linear-gradient(180deg, #4a4d52, #2c2e31);border-color:#5f636a !important;border-radius:3px !important;}
+.sw-mecha{background:
+  linear-gradient(#2a5fb8,#2a5fb8) 12% 50%/18% 34% no-repeat,
+  linear-gradient(#cf3a32,#cf3a32) 36% 50%/8% 34% no-repeat,
+  linear-gradient(#f0b400,#f0b400) 50% 50%/6% 34% no-repeat,
+  linear-gradient(90deg, transparent 64%, #b9bfc9 64% 65%, transparent 65%),
+  #f4f5f7;border-color:#aeb4be !important;border-radius:3px !important;
+  clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);}
+.sw-sf{background:
+  linear-gradient(#ff8a1f,#ff8a1f) 8% 30%/40% 2px no-repeat,
+  linear-gradient(#a6e23a,#a6e23a) 8% 70%/22% 2px no-repeat,
+  linear-gradient(90deg, transparent 0 60%, rgba(255,138,31,.5) 60% 61%, transparent 61%),
+  #0c0f0d;border-color:#ff8a1f !important;border-radius:2px !important;}
+
+/* ---------- ヒュッゲ: クリーム・オートミール・木の色、テラコッタとセージ ---------- */
+html[data-theme="hygge"]{
+  --asphalt:#f2ebe0;
+  --panel:#fbf7f1;
+  --panel-light:#fffdf9;
+  --line:#e0d3c1;
+  --paper:#3a2e25;
+  --paper-dim:#76685b;
+  --amber:#a8583d;
+  --ok:#527a57;
+  --danger:#b4432f;
+  --cold:#4f7690;
+  --tab-home:#b8664a;--tab-input:#6c9470;--tab-hist:#6a88a0;--tab-alert:#c4553d;--tab-set:#9a7b55;
+  --chip-bg:#f6efe5;--chip-line:#dccdb8;--chip-fg:#3a2e25;
+  --kpi-bg:#f6f0e7;--kpi-line:#e3d7c6;
+  --hairline:#ebe1d3;
+  --input-bg:#fffdf9;--input-line:#d9cab5;--input-fg:#3a2e25;
+  --nav-bg:#fbf7f1;
+  --topbar-bg:rgba(242,235,224,.96);
+  --ink-on-accent:#fffaf4;
+  --radius-card:22px;--radius-tile:18px;--radius-chip:999px;--radius-btn:14px;
+  --card-border-w:1px;
+  --card-shadow:0 6px 18px rgba(120,88,58,.10), 0 1px 2px rgba(120,88,58,.08);
+  --tile-shadow:0 2px 6px rgba(120,88,58,.08);
+  --nav-top-line:1px solid #e3d6c4;
+  --font-display:'Hiragino Maru Gothic ProN','Hiragino Maru Gothic Pro','M PLUS Rounded 1c','Hiragino Sans','Noto Sans JP','Noto Sans CJK JP',system-ui,sans-serif;
+}
+html[data-theme="hygge"]{
+  background-color:#f2ebe0;
+  background-image:
+    radial-gradient(90vw 60vh at 10% -10%, rgba(255,226,190,.55), transparent 65%),
+    radial-gradient(80vw 60vh at 100% 110%, rgba(196,170,135,.28), transparent 62%),
+    repeating-linear-gradient(0deg, rgba(150,120,90,.025) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgba(150,120,90,.02) 0 1px, transparent 1px 5px);
+  background-attachment:fixed;
+}
+html[data-theme="hygge"] body{background:transparent;}
+html[data-theme="hygge"] #app{position:relative;z-index:1;}
+html[data-theme="hygge"] .topbar{border-bottom:1px solid #e3d6c4;}
+html[data-theme="hygge"] .topbar h1{font-weight:800;color:#3a2e25;letter-spacing:0;}
+html[data-theme="hygge"] .topbar .eyebrow{color:#9a7b55;}
+html[data-theme="hygge"] .beta-badge{color:#8a6a45;border-color:#cfb894;background:#f3e7d3;}
+html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold,html[data-theme="hygge"] .modal,
+html[data-theme="hygge"] .tint,html[data-theme="hygge"] .kpi.tint,html[data-theme="hygge"] details.tax-fold.tint{
+  background:#fbf7f1;border:1px solid #e6dacb;border-left:1px solid #e6dacb;box-shadow:var(--card-shadow);
+}
+html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold,html[data-theme="hygge"] .kpi-row{margin-bottom:12px;}
+html[data-theme="hygge"] .card.tint > h2,html[data-theme="hygge"] details.tax-fold.tint > summary,
+html[data-theme="hygge"] .card h2{color:#9c5238;font-weight:800;letter-spacing:.04em;}
+html[data-theme="hygge"] #alertCard>h2{color:#b0452f;}
+html[data-theme="hygge"] #recentCard>h2{color:#4d6f88;}
+html[data-theme="hygge"] .kpi{background:#f6f0e7;border:1px solid #e6dacb;box-shadow:none;}
+html[data-theme="hygge"] .kpi .val{color:#3a2e25;}
+html[data-theme="hygge"] .sc-tile:not(.sc-fill){background:#fffdf9;border:1px solid #e6dacb;box-shadow:var(--tile-shadow);}
+html[data-theme="hygge"] .sc-tile .icn{color:#a8583d;}
+html[data-theme="hygge"] .alert-card{background:#fffdf9;border:1px solid #e6dacb;}
+html[data-theme="hygge"] .veh-chip.on,html[data-theme="hygge"] .filter-bar button.on,html[data-theme="hygge"] .cats button.on,
+html[data-theme="hygge"] .seg button.on,html[data-theme="hygge"] .icon-pick button.on{background:#f5e2d8;border-color:#c98a70;color:#8e4630;}
+html[data-theme="hygge"] .btn.primary,html[data-theme="hygge"] .csv-chips button.on{background:#b0603f;color:#fffaf4;}
+html[data-theme="hygge"] .nav{box-shadow:0 -4px 14px rgba(120,88,58,.08);}
+html[data-theme="hygge"] .nav button{color:#8a7a6a;}
+html[data-theme="hygge"] .nav button.active{color:#fffaf4;}
+html[data-theme="hygge"] .nav-ind-pill{box-shadow:0 3px 10px color-mix(in srgb,var(--tab) 30%, transparent);}
+html[data-theme="hygge"] .nav-ind-bar{display:none;}
+html[data-theme="hygge"] .badge.ok{color:#3f6544;background:#e3ecdf;border-color:#b9cdb4;}
+html[data-theme="hygge"] .badge.overdue,html[data-theme="hygge"] .badge.heavy{color:#8e3424;background:#f6dcd3;border-color:#e0ad9d;}
+html[data-theme="hygge"] .badge.soon,html[data-theme="hygge"] .badge.measu,html[data-theme="hygge"] .badge.caution{color:#7a5420;background:#f3e5c9;border-color:#dcc193;}
+html[data-theme="hygge"] .badge.info{color:#3d6079;background:#e0e9ef;border-color:#b5c8d6;}
+html[data-theme="hygge"] .badge.action{color:#8e4120;background:#f6dfcf;border-color:#e2b394;}
+html[data-theme="hygge"] .badge.reserved{color:#3f6544;background:#e3ecdf;border-color:#b9cdb4;}
+html[data-theme="hygge"] .toast{background:#3a2e25;color:#fbf3e8;border:1px solid #3a2e25;box-shadow:0 6px 18px rgba(60,40,25,.25);}
+html[data-theme="hygge"] .modal-bg{background:rgba(70,50,35,.34);}
+html[data-theme="hygge"] .help,html[data-theme="hygge"] .empty,html[data-theme="hygge"] .topbar .tagline{color:#76685b;font-weight:600;}
+html[data-theme="hygge"] .theme-swatch .sw-name,html[data-theme="hygge"] .btn.ghost{color:#3a2e25;}
+
+/* ---------- インダストリアル: コンクリート・鉄・さび色 ---------- */
+html[data-theme="industrial"]{
+  --asphalt:#2b2c2e;
+  --panel:#36383b;
+  --panel-light:#404347;
+  --line:#575b61;
+  --paper:#ecebe7;
+  --paper-dim:#b0aea8;
+  --amber:#e38b3d;
+  --ok:#9cbf6e;
+  --danger:#ee6446;
+  --cold:#86aec6;
+  --tab-home:#e38b3d;--tab-input:#cfa548;--tab-hist:#86aec6;--tab-alert:#ee6446;--tab-set:#b4b7bb;
+  --chip-bg:#2f3134;--chip-line:#5a5e64;--chip-fg:#ecebe7;
+  --kpi-bg:#2f3134;--kpi-line:#4e5258;
+  --hairline:#4a4d52;
+  --input-bg:#232426;--input-line:#5a5e64;--input-fg:#f2f1ed;
+  --nav-bg:#232426;
+  --topbar-bg:rgba(35,36,38,.97);
+  --ink-on-accent:#1c1a17;
+  --radius-card:4px;--radius-tile:4px;--radius-chip:4px;--radius-btn:3px;
+  --card-border-w:1px;
+  --card-shadow:0 2px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.07);
+  --tile-shadow:0 1px 0 rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+  --nav-top-line:1px solid #4a4d52;
+  --steel:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,0) 60%), repeating-linear-gradient(90deg, rgba(255,255,255,.022) 0 1px, transparent 1px 3px), #36383b;
+}
+html[data-theme="industrial"]{
+  background-color:#2b2c2e;
+  background-image:
+    radial-gradient(110vw 70vh at 50% -10%, rgba(255,255,255,.06), transparent 60%),
+    linear-gradient(180deg, #2f3032, #252628);
+  background-attachment:fixed;
+}
+html[data-theme="industrial"] body{background:transparent;}
+html[data-theme="industrial"] body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.10;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.55' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size:140px 140px;
+}
+html[data-theme="industrial"] #app{position:relative;z-index:1;}
+html[data-theme="industrial"] .topbar{border-bottom:2px solid #1b1c1e;box-shadow:0 1px 0 rgba(255,255,255,.06);}
+html[data-theme="industrial"] .topbar h1{font-weight:800;letter-spacing:.01em;color:#f2f1ed;}
+html[data-theme="industrial"] .beta-badge{color:#e38b3d;border-color:rgba(227,139,61,.6);background:rgba(227,139,61,.12);border-radius:2px;}
+html[data-theme="industrial"] .card,html[data-theme="industrial"] details.tax-fold,html[data-theme="industrial"] .modal,
+html[data-theme="industrial"] .tint,html[data-theme="industrial"] .kpi.tint,html[data-theme="industrial"] details.tax-fold.tint{
+  background:var(--steel);border:1px solid #55595f;border-top-color:#62666c;border-left:1px solid #55595f;box-shadow:var(--card-shadow);
+}
+html[data-theme="industrial"] .card,html[data-theme="industrial"] details.tax-fold,html[data-theme="industrial"] .kpi-row{margin-bottom:10px;}
+html[data-theme="industrial"] .card.tint > h2,html[data-theme="industrial"] details.tax-fold.tint > summary,
+html[data-theme="industrial"] .card h2{color:#e9a062;font-weight:800;letter-spacing:.12em;}
+html[data-theme="industrial"] #alertCard>h2{color:#f08a6e;}
+html[data-theme="industrial"] #recentCard>h2{color:#9cc0d6;}
+html[data-theme="industrial"] .kpi{background:#2f3134;border:1px solid #4e5258;box-shadow:inset 0 1px 2px rgba(0,0,0,.35);}
+html[data-theme="industrial"] .sc-tile:not(.sc-fill){
+  background:
+    radial-gradient(circle at 5px 5px, #74787e 0 1.3px, transparent 1.9px),
+    radial-gradient(circle at calc(100% - 5px) 5px, #74787e 0 1.3px, transparent 1.9px),
+    radial-gradient(circle at 5px calc(100% - 5px), #74787e 0 1.3px, transparent 1.9px),
+    radial-gradient(circle at calc(100% - 5px) calc(100% - 5px), #74787e 0 1.3px, transparent 1.9px),
+    var(--steel);
+  border:1px solid #585c62;box-shadow:var(--tile-shadow);}
+html[data-theme="industrial"] #scGrid .sc-tile.sc-s:not(.sc-fill),html[data-theme="industrial"] #scGrid .sc-tile.sc-w:not(.sc-fill){background:var(--steel);}
+html[data-theme="industrial"] .sc-tile .icn{color:#e38b3d;}
+html[data-theme="industrial"] .alert-card{background:#2f3134;border:1px solid #50545a;}
+html[data-theme="industrial"] .veh-chip.on,html[data-theme="industrial"] .filter-bar button.on,html[data-theme="industrial"] .cats button.on,
+html[data-theme="industrial"] .seg button.on,html[data-theme="industrial"] .icon-pick button.on{background:#3d3129;border-color:#e38b3d;color:#f0a465;}
+html[data-theme="industrial"] .btn.primary,html[data-theme="industrial"] .csv-chips button.on{background:#d9802f;color:#1c1a17;box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 1px 0 rgba(0,0,0,.4);}
+html[data-theme="industrial"] .nav{border-top:2px solid #1b1c1e;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);}
+html[data-theme="industrial"] .nav button{color:#a4a39e;}
+html[data-theme="industrial"] .nav-ind-pill{border-radius:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(0,0,0,.5);}
+html[data-theme="industrial"] .nav-ind-bar{display:none;}
+html[data-theme="industrial"] .nav button .tab-pill{border-radius:4px;}
+html[data-theme="industrial"] .badge{border-radius:2px;}
+html[data-theme="industrial"] .alert-card .badge{border-radius:2px;}
+html[data-theme="industrial"] .alert-action{border-radius:3px;}
+html[data-theme="industrial"] .badge.ok,html[data-theme="industrial"] .badge.reserved{color:#c4e0a0;background:#34402a;border-color:#5f7a44;}
+html[data-theme="industrial"] .badge.overdue,html[data-theme="industrial"] .badge.heavy{color:#ffc0ad;background:#4a2b24;border-color:#8c4a3a;}
+html[data-theme="industrial"] .badge.soon,html[data-theme="industrial"] .badge.measu,html[data-theme="industrial"] .badge.caution{color:#f2d39a;background:#463a24;border-color:#86703f;}
+html[data-theme="industrial"] .badge.info{color:#bcd6e6;background:#2a3a46;border-color:#4b6a80;}
+html[data-theme="industrial"] .badge.action{color:#f6c49a;background:#4a3322;border-color:#8a5b38;}
+html[data-theme="industrial"] .toast{background:#1f2022;color:#f2f1ed;border:1px solid #e38b3d;border-radius:4px;}
+html[data-theme="industrial"] .modal-bg{background:rgba(10,10,11,.62);}
+html[data-theme="industrial"] .help,html[data-theme="industrial"] .empty,html[data-theme="industrial"] .topbar .tagline{color:#b0aea8;font-weight:600;}
+html[data-theme="industrial"] .theme-swatch{border-radius:4px;}
+html[data-theme="industrial"] .theme-swatch .sw-name,html[data-theme="industrial"] .btn.ghost{color:#ecebe7;}
+
+/* ---------- メカ: 白いアーマー板・パネルライン・青赤黄の差し色・面取りの角 ---------- */
+html[data-theme="mecha"]{
+  --asphalt:#dfe2e7;
+  --panel:#f7f8fa;
+  --panel-light:#ffffff;
+  --line:#b7bdc7;
+  --paper:#1a2030;
+  --paper-dim:#545d6e;
+  --amber:#1f58b4;
+  --ok:#23805a;
+  --danger:#c9302a;
+  --cold:#1f58b4;
+  --tab-home:#1f58b4;--tab-input:#e3a600;--tab-hist:#34425e;--tab-alert:#c9302a;--tab-set:#5a6476;
+  --chip-bg:#eef0f3;--chip-line:#b7bdc7;--chip-fg:#1a2030;
+  --kpi-bg:#eef0f3;--kpi-line:#c4c9d1;
+  --hairline:#d3d7de;
+  --input-bg:#ffffff;--input-line:#aeb5c0;--input-fg:#1a2030;
+  --nav-bg:#f4f5f7;
+  --topbar-bg:rgba(244,245,247,.97);
+  --ink-on-accent:#ffffff;
+  --radius-card:3px;--radius-tile:3px;--radius-chip:3px;--radius-btn:3px;
+  --card-border-w:1px;
+  --card-shadow:inset 0 -3px 0 #d0d4db;
+  --tile-shadow:inset 0 -2px 0 #d3d7de;
+  --nav-top-line:1px solid #b7bdc7;
+  --chamfer:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+  --chamfer-s:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+}
+html[data-theme="mecha"]{
+  background-color:#dfe2e7;
+  background-image:
+    linear-gradient(90deg, rgba(40,55,80,.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(40,55,80,.05) 1px, transparent 1px),
+    linear-gradient(180deg, #e6e8ec, #d8dce2);
+  background-size:48px 48px, 48px 48px, auto;
+  background-attachment:fixed;
+}
+html[data-theme="mecha"] body{background:transparent;}
+html[data-theme="mecha"] #app{position:relative;z-index:1;}
+html[data-theme="mecha"] .topbar{border-bottom:3px solid #1f58b4;box-shadow:0 1px 0 #c9302a, 0 2px 0 #f4f5f7;}
+html[data-theme="mecha"] .topbar h1{font-weight:800;letter-spacing:.02em;color:#1a2030;}
+html[data-theme="mecha"] .topbar .eyebrow{color:#1f58b4;}
+html[data-theme="mecha"] .beta-badge{color:#1a2030;border-color:#e3a600;background:#ffd34d;border-radius:2px;}
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{
+  background:
+    linear-gradient(#1f58b4,#1f58b4) right 18px top 0/22px 3px no-repeat,
+    linear-gradient(#c9302a,#c9302a) right 44px top 0/8px 3px no-repeat,
+    #f7f8fa;
+  border:1px solid #c4c9d1;border-left:1px solid #c4c9d1;box-shadow:var(--card-shadow);
+  clip-path:var(--chamfer);
+}
+html[data-theme="mecha"] .modal{background:#f7f8fa;border:1px solid #b7bdc7;box-shadow:inset 0 3px 0 #1f58b4;}
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,html[data-theme="mecha"] .kpi-row{margin-bottom:10px;}
+html[data-theme="mecha"] .card h2,html[data-theme="mecha"] .card.tint > h2,html[data-theme="mecha"] details.tax-fold.tint > summary{
+  color:#1a2030;font-weight:800;letter-spacing:.1em;
+}
+html[data-theme="mecha"] .card > h2{border-left:4px solid #1f58b4;padding-left:6px;}
+html[data-theme="mecha"] #alertCard>h2{color:#1a2030;border-left-color:#c9302a;}
+html[data-theme="mecha"] #recentCard>h2{color:#1a2030;border-left-color:#34425e;}
+html[data-theme="mecha"] .kpi{background:#eef0f3;border:1px solid #c4c9d1;box-shadow:none;clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .sc-tile:not(.sc-fill){
+  background:linear-gradient(135deg, transparent 0 60%, rgba(40,55,80,.035) 60%), #ffffff;
+  border:1px solid #c4c9d1;box-shadow:var(--tile-shadow);clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .sc-tile.sc-fill{clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .sc-tile .icn{color:#1f58b4;}
+html[data-theme="mecha"] .alert-card{background:#ffffff;border:1px solid #c4c9d1;clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .veh-chip.on,html[data-theme="mecha"] .filter-bar button.on,html[data-theme="mecha"] .cats button.on,
+html[data-theme="mecha"] .seg button.on,html[data-theme="mecha"] .icon-pick button.on{background:#e3ebf8;border-color:#1f58b4;color:#18489a;}
+html[data-theme="mecha"] .veh-chip{clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .btn.primary,html[data-theme="mecha"] .csv-chips button.on{background:#1f58b4;color:#ffffff;}
+html[data-theme="mecha"] .btn{clip-path:var(--chamfer-s);}
+html[data-theme="mecha"] .nav{border-top:1px solid #b7bdc7;box-shadow:inset 0 2px 0 #ffffff;}
+html[data-theme="mecha"] .nav button{color:#5a6476;}
+html[data-theme="mecha"] .nav button[data-page="input"].active{color:#1a2030;}
+html[data-theme="mecha"] .nav-ind-pill{border-radius:3px;box-shadow:none;clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);}
+html[data-theme="mecha"] .nav-ind-bar{display:none;}
+html[data-theme="mecha"] .badge,html[data-theme="mecha"] .alert-card .badge{border-radius:2px;}
+html[data-theme="mecha"] .alert-action{border-radius:3px;}
+html[data-theme="mecha"] .badge.ok,html[data-theme="mecha"] .badge.reserved{color:#17573d;background:#dcefe5;border-color:#9fcdb6;}
+html[data-theme="mecha"] .badge.overdue,html[data-theme="mecha"] .badge.heavy{color:#9a201b;background:#f8dcda;border-color:#e3a19d;}
+html[data-theme="mecha"] .badge.soon,html[data-theme="mecha"] .badge.measu,html[data-theme="mecha"] .badge.caution{color:#6e5000;background:#fff0c2;border-color:#e8c766;}
+html[data-theme="mecha"] .badge.info{color:#18489a;background:#e0e9f8;border-color:#a8c0e6;}
+html[data-theme="mecha"] .badge.action{color:#9a3a10;background:#fbe3d4;border-color:#eab394;}
+html[data-theme="mecha"] .toast{background:#1a2030;color:#ffffff;border:1px solid #1a2030;border-left:4px solid #e3a600;border-radius:3px;}
+html[data-theme="mecha"] .modal-bg{background:rgba(26,32,48,.4);}
+html[data-theme="mecha"] .help,html[data-theme="mecha"] .empty,html[data-theme="mecha"] .topbar .tagline{color:#545d6e;font-weight:600;}
+html[data-theme="mecha"] .theme-swatch{border-radius:3px;}
+html[data-theme="mecha"] .theme-swatch .sw-name,html[data-theme="mecha"] .btn.ghost{color:#1a2030;}
+
+/* ---------- SF: 暗い画面に警告オレンジとライム、細い線のHUD・六角グリッド ---------- */
+html[data-theme="sf"]{
+  --asphalt:#0b0e0c;
+  --panel:rgba(14,18,15,.94);
+  --panel-light:#161c18;
+  --line:#3a4a3e;
+  --paper:#eef3e8;
+  --paper-dim:#a3b39e;
+  --amber:#ff8a1f;
+  --ok:#a6e23a;
+  --danger:#ff5236;
+  --cold:#56d0c0;
+  --tab-home:#ff8a1f;--tab-input:#a6e23a;--tab-hist:#ffc23d;--tab-alert:#ff5236;--tab-set:#cfd8c6;
+  --chip-bg:#111612;--chip-line:#3f5244;--chip-fg:#eef3e8;
+  --kpi-bg:#101511;--kpi-line:#34443a;
+  --hairline:#25302a;
+  --input-bg:#0a0d0b;--input-line:#46594b;--input-fg:#f2f7ec;
+  --nav-bg:#0a0d0b;
+  --topbar-bg:rgba(10,13,11,.96);
+  --ink-on-accent:#0b0e0c;
+  --radius-card:2px;--radius-tile:2px;--radius-chip:2px;--radius-btn:2px;
+  --card-border-w:1px;
+  --card-shadow:none;
+  --tile-shadow:none;
+  --nav-top-line:1px solid rgba(255,138,31,.55);
+  --hud:#ff8a1f;
+  --font-display:'Arial Narrow','Roboto Condensed','Helvetica Neue','Hiragino Sans','Noto Sans JP','Noto Sans CJK JP',system-ui,sans-serif;
+  --hud-corners:
+    linear-gradient(var(--hud),var(--hud)) left top/12px 2px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) left top/2px 12px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) right top/12px 2px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) right top/2px 12px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) left bottom/12px 2px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) left bottom/2px 12px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) right bottom/12px 2px no-repeat,
+    linear-gradient(var(--hud),var(--hud)) right bottom/2px 12px no-repeat;
+}
+html[data-theme="sf"]{
+  background-color:#0b0e0c;
+  background-image:
+    radial-gradient(90vw 60vh at 50% -10%, rgba(255,138,31,.10), transparent 62%),
+    radial-gradient(80vw 50vh at 100% 110%, rgba(166,226,58,.07), transparent 60%),
+    linear-gradient(180deg, #0d110e, #080a09);
+  background-attachment:fixed;
+}
+html[data-theme="sf"] body{background:transparent;}
+html[data-theme="sf"] body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'><path d='M28 0 L56 16.2 L56 48.5 L28 64.7 L0 48.5 L0 16.2 Z M28 64.7 L28 97' fill='none' stroke='%23a6e23a' stroke-opacity='0.09' stroke-width='1'/></svg>");
+  background-size:56px 97px;
+}
+html[data-theme="sf"] #app{position:relative;z-index:1;}
+html[data-theme="sf"] .topbar{border-bottom:1px solid rgba(255,138,31,.7);box-shadow:0 3px 0 -2px rgba(255,138,31,.25);}
+html[data-theme="sf"] .topbar h1{font-weight:800;letter-spacing:.06em;color:#f4f8ee;}
+html[data-theme="sf"] .topbar .eyebrow{color:#a6e23a;letter-spacing:.14em;}
+html[data-theme="sf"] .beta-badge{color:#0b0e0c;background:#ff8a1f;border-color:#ff8a1f;border-radius:1px;}
+html[data-theme="sf"] .card,html[data-theme="sf"] details.tax-fold,
+html[data-theme="sf"] .tint,html[data-theme="sf"] .kpi.tint,html[data-theme="sf"] details.tax-fold.tint{
+  background:var(--hud-corners), rgba(14,18,15,.94);
+  border:1px solid rgba(255,138,31,.28);border-left:1px solid rgba(255,138,31,.28);box-shadow:none;
+}
+html[data-theme="sf"] .modal{background:var(--hud-corners), #0e120f;border:1px solid rgba(255,138,31,.45);box-shadow:0 0 0 1px #000;}
+html[data-theme="sf"] .card,html[data-theme="sf"] details.tax-fold,html[data-theme="sf"] .kpi-row{margin-bottom:10px;}
+html[data-theme="sf"] .card h2,html[data-theme="sf"] .card.tint > h2,html[data-theme="sf"] details.tax-fold.tint > summary{
+  color:#ff9a3a;font-weight:800;letter-spacing:.16em;
+}
+html[data-theme="sf"] #alertCard>h2{color:#ff7a5a;}
+html[data-theme="sf"] #recentCard>h2{color:#b8ec5a;}
+html[data-theme="sf"] .card > h2{border-bottom:1px solid rgba(255,138,31,.25);padding-bottom:4px;}
+html[data-theme="sf"] .kpi{background:#101511;border:1px solid #34443a;box-shadow:inset 3px 0 0 #a6e23a;}
+html[data-theme="sf"] .sc-tile:not(.sc-fill){background:#101511;border:1px solid #3a4c3f;box-shadow:inset 0 2px 0 rgba(255,138,31,.55);}
+html[data-theme="sf"] .sc-tile .icn{color:#ff9a3a;}
+html[data-theme="sf"] .alert-card{background:#101511;border:1px solid #34443a;}
+html[data-theme="sf"] .veh-chip.on,html[data-theme="sf"] .filter-bar button.on,html[data-theme="sf"] .cats button.on,
+html[data-theme="sf"] .seg button.on,html[data-theme="sf"] .icon-pick button.on{background:rgba(255,138,31,.14);border-color:#ff8a1f;color:#ffa552;}
+html[data-theme="sf"] .btn.primary,html[data-theme="sf"] .csv-chips button.on{background:#ff8a1f;color:#0b0e0c;font-weight:800;}
+html[data-theme="sf"] .nav{border-top:1px solid rgba(255,138,31,.55);}
+html[data-theme="sf"] .nav button{color:#9fb09a;}
+html[data-theme="sf"] .nav-ind-pill{border-radius:2px;box-shadow:0 0 10px color-mix(in srgb,var(--tab) 35%, transparent);}
+html[data-theme="sf"] .nav-ind-bar{display:none;}
+html[data-theme="sf"] .nav button .tab-pill{border-radius:2px;}
+html[data-theme="sf"] .badge,html[data-theme="sf"] .alert-card .badge{border-radius:1px;}
+html[data-theme="sf"] .alert-action{border-radius:2px;}
+html[data-theme="sf"] .badge.ok,html[data-theme="sf"] .badge.reserved{color:#c8f27a;background:#223014;border-color:#5f8a22;}
+html[data-theme="sf"] .badge.overdue,html[data-theme="sf"] .badge.heavy{color:#ffb4a3;background:#3a1610;border-color:#a8402a;}
+html[data-theme="sf"] .badge.soon,html[data-theme="sf"] .badge.measu,html[data-theme="sf"] .badge.caution{color:#ffd28a;background:#3a2a10;border-color:#9a6a20;}
+html[data-theme="sf"] .badge.info{color:#a8ece2;background:#10302c;border-color:#2f7a70;}
+html[data-theme="sf"] .badge.action{color:#ffc08a;background:#3a2210;border-color:#a05a20;}
+html[data-theme="sf"] .toast{background:#0b0e0c;color:#f2f7ec;border:1px solid #ff8a1f;border-radius:2px;}
+html[data-theme="sf"] .modal-bg{background:rgba(0,0,0,.66);}
+html[data-theme="sf"] .help,html[data-theme="sf"] .empty,html[data-theme="sf"] .topbar .tagline{color:#a3b39e;font-weight:600;}
+html[data-theme="sf"] .theme-swatch{border-radius:2px;}
+html[data-theme="sf"] .theme-swatch .sw-name,html[data-theme="sf"] .btn.ghost{color:#eef3e8;}
+
+/* 最近の記録「履歴を見る」: 新テーマでは小さなチップにする */
+html:is([data-theme="hygge"],[data-theme="industrial"],[data-theme="mecha"],[data-theme="sf"]) button.more-link{
+  background:var(--chip-bg);border:1px solid var(--chip-line);color:var(--amber);border-radius:var(--radius-chip);
+  font-size:11px;font-weight:800;letter-spacing:.02em;padding:3px 10px;line-height:1.3;
+}
+html[data-theme="industrial"] button.more-link{color:#f0a465;}
+html[data-theme="sf"] button.more-link{color:#ffa552;border-color:rgba(255,138,31,.5);}
+html[data-theme="industrial"] #modal.modal{border-radius:4px;}
+html[data-theme="mecha"] #modal.modal{border-radius:3px;clip-path:var(--chamfer);}
+html[data-theme="sf"] #modal.modal{border-radius:2px;}
+html:is([data-theme="hygge"],[data-theme="industrial"],[data-theme="mecha"],[data-theme="sf"]) .nav-alert-badge{box-shadow:0 0 0 2px var(--nav-bg);}
+html[data-theme="sf"] .nav-alert-badge,html[data-theme="industrial"] .nav-alert-badge,html[data-theme="mecha"] .nav-alert-badge{border-radius:3px;}
+
+/* ===== 0.9.58 テーマ調整 ===== */
+/* ヒュッゲ: 木の雰囲気を少しだけ（ヘッダーとタブバーに薄い木目、カード見出しに木の色） */
+html[data-theme="hygge"]{--wood:#c9a57a;--wood-dark:#a9835a;
+  --wood-grain:
+    repeating-linear-gradient(179deg, rgba(120,82,45,0) 0 5px, rgba(120,82,45,.07) 5px 6px, rgba(120,82,45,0) 6px 13px),
+    repeating-linear-gradient(181.5deg, rgba(120,82,45,0) 0 9px, rgba(120,82,45,.05) 9px 11px, rgba(120,82,45,0) 11px 23px),
+    linear-gradient(180deg, #ecdcc3, #e4cfb1);}
+html[data-theme="hygge"] .topbar{background:var(--wood-grain);border-bottom:1px solid #cdb38f;box-shadow:0 1px 0 rgba(255,255,255,.5) inset;}
+html[data-theme="hygge"] .nav{background:linear-gradient(180deg,#fbf7f1,#f6efe4);border-top:0;box-shadow:inset 0 3px 0 #d6bb93, 0 -4px 14px rgba(120,88,58,.08);}
+html[data-theme="hygge"] .card > h2::after{content:none;}
+html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold{
+  background:linear-gradient(90deg,#d9bf98,#d9bf98) left 16px top 0/28px 3px no-repeat, #fbf7f1;}
+html[data-theme="hygge"] .beta-badge{background:#f0e2cb;border-color:#c9a57a;color:#7c5a36;}
+
+/* インダストリアル: 配管っぽさを少し（ヘッダー下とタブバー上に金属のパイプ、継ぎ目のフランジ） */
+html[data-theme="industrial"]{
+  --pipe:linear-gradient(180deg,#3c3f43 0,#8d9197 30%,#b4b8bd 45%,#73777d 70%,#2f3135 100%);
+  --flange:repeating-linear-gradient(90deg, transparent 0 132px, #2a2c2f 132px 133px, #9a9ea4 133px 135px, #5d6166 135px 141px, #2a2c2f 141px 142px, transparent 142px 196px);
+}
+html[data-theme="industrial"] .topbar{
+  border-bottom:0;padding-bottom:15px;
+  background:var(--flange) left bottom/100% 9px no-repeat, var(--pipe) left bottom 1px/100% 7px no-repeat, rgba(35,36,38,.97);
+  box-shadow:0 2px 4px rgba(0,0,0,.35);
+}
+html[data-theme="industrial"] .nav{
+  border-top:0;
+  background:var(--flange) left top/100% 9px no-repeat, var(--pipe) left top 1px/100% 7px no-repeat, #232426;
+  box-shadow:0 -2px 4px rgba(0,0,0,.35);
+}
+html[data-theme="industrial"] .nav-ind-pill{border-radius:999px;
+  background-image:linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 45%, rgba(0,0,0,.18));
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.25), 0 1px 0 rgba(0,0,0,.5);}
+html[data-theme="industrial"] .nav button .tab-pill{border-radius:999px;}
+html[data-theme="industrial"] .card > h2{position:relative;padding-left:14px;}
+html[data-theme="industrial"] .card > h2::before{content:"";position:absolute;left:0;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #c9cdd2, #6b6f75 60%, #3a3c40);box-shadow:0 0 0 1px #24262a;}
+html[data-theme="industrial"] .kpi,html[data-theme="industrial"] .alert-card{border-radius:10px;}
+/* 色を少し落ち着かせる */
+html[data-theme="industrial"]{--amber:#d48a4a;--tab-home:#d48a4a;--tab-input:#c2a05a;--tab-hist:#8aa9bd;--tab-alert:#d96a52;--tab-set:#aeb1b5;}
+
+/* メカ: 白基調・青がメイン、黄と赤はほんの少し。タブの色は全部同じ青にしてスワイプ中の濁りをなくす */
+html[data-theme="mecha"]{
+  --amber:#2659a8;--cold:#2659a8;--danger:#b8433b;
+  --tab-home:#2659a8;--tab-input:#2659a8;--tab-hist:#2659a8;--tab-alert:#2659a8;--tab-set:#2659a8;
+  --asphalt:#e9ecf0;
+}
+html[data-theme="mecha"]{background-image:
+    linear-gradient(90deg, rgba(38,89,168,.05) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(38,89,168,.05) 1px, transparent 1px),
+    linear-gradient(180deg, #eef0f3, #e3e7ec);}
+html[data-theme="mecha"] .topbar{border-bottom:3px solid #2659a8;box-shadow:none;
+  background:linear-gradient(#d9a92c,#d9a92c) right 14px bottom 0/18px 3px no-repeat, linear-gradient(#b8433b,#b8433b) right 36px bottom 0/6px 3px no-repeat, rgba(246,247,249,.97);}
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{
+  background:linear-gradient(#2659a8,#2659a8) right 16px top 0/30px 3px no-repeat, linear-gradient(#d9a92c,#d9a92c) right 50px top 0/6px 3px no-repeat, #fbfcfd;}
+html[data-theme="mecha"] .card > h2,html[data-theme="mecha"] #alertCard>h2,html[data-theme="mecha"] #recentCard>h2{border-left-color:#2659a8;color:#1a2a44;}
+html[data-theme="mecha"] .nav button{color:#56627a;}
+html[data-theme="mecha"] .nav button[data-page="input"].active{color:#fff;}
+html[data-theme="mecha"] .nav button.active{color:#fff;}
+html[data-theme="mecha"] .beta-badge{background:#f3e2b0;border-color:#d9a92c;color:#5a4410;}
+html[data-theme="mecha"] .btn.primary{background:#2659a8;}
+html[data-theme="mecha"] .sc-tile .icn{color:#2659a8;}
+
+/* SF: 落ち着いた深い紫がメイン、緑はほんのり光る程度、黄は少しだけ */
+html[data-theme="sf"]{
+  --asphalt:#17121f;
+  --panel:rgba(36,28,48,.92);
+  --panel-light:#2c2339;
+  --line:#4a3e5e;
+  --paper:#ece8f1;
+  --paper-dim:#b2a9c0;
+  --amber:#a996d0;
+  --ok:#93cfa2;
+  --danger:#d98476;
+  --cold:#93b4d0;
+  --tab-home:#8f7cc0;--tab-input:#8f7cc0;--tab-hist:#8f7cc0;--tab-alert:#8f7cc0;--tab-set:#8f7cc0;
+  --chip-bg:#221a2d;--chip-line:#4a3e5e;--chip-fg:#ece8f1;
+  --kpi-bg:#1f1829;--kpi-line:#3f3450;
+  --hairline:#332a40;
+  --input-bg:#16111d;--input-line:#4d4161;--input-fg:#f1edf5;
+  --nav-bg:#16111d;
+  --topbar-bg:rgba(22,17,29,.96);
+  --ink-on-accent:#15101b;
+  --nav-top-line:1px solid #4a3e5e;
+  --hud:#8f7cc0;
+  --glow-g:#9fd8ad;
+}
+html[data-theme="sf"]{background-color:#17121f;background-image:
+    radial-gradient(90vw 60vh at 50% -10%, rgba(143,124,192,.16), transparent 62%),
+    radial-gradient(80vw 50vh at 100% 110%, rgba(147,207,162,.06), transparent 60%),
+    linear-gradient(180deg, #1a1423, #130f19);}
+html[data-theme="sf"] body::before{opacity:.45;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'><path d='M28 0 L56 16.2 L56 48.5 L28 64.7 L0 48.5 L0 16.2 Z M28 64.7 L28 97' fill='none' stroke='%23b3a3dc' stroke-opacity='0.08' stroke-width='1'/></svg>");}
+html[data-theme="sf"] .topbar{border-bottom:1px solid #4a3e5e;box-shadow:none;}
+html[data-theme="sf"] .topbar h1{color:#f1edf5;}
+html[data-theme="sf"] .topbar .eyebrow{color:var(--glow-g);text-shadow:0 0 6px rgba(159,216,173,.35);}
+html[data-theme="sf"] .beta-badge{color:#2a220c;background:#d6c27e;border-color:#d6c27e;}
+html[data-theme="sf"] .card,html[data-theme="sf"] details.tax-fold,
+html[data-theme="sf"] .tint,html[data-theme="sf"] .kpi.tint,html[data-theme="sf"] details.tax-fold.tint{
+  background:var(--hud-corners), rgba(36,28,48,.92);
+  border:1px solid rgba(143,124,192,.30);border-left:1px solid rgba(143,124,192,.30);}
+html[data-theme="sf"] .modal{background:var(--hud-corners), #221a2d;border:1px solid rgba(143,124,192,.45);}
+html[data-theme="sf"] .card h2,html[data-theme="sf"] .card.tint > h2,html[data-theme="sf"] details.tax-fold.tint > summary{color:#c4b6e4;}
+html[data-theme="sf"] #alertCard>h2{color:#e0a598;}
+html[data-theme="sf"] #recentCard>h2{color:var(--glow-g);text-shadow:0 0 6px rgba(159,216,173,.30);}
+html[data-theme="sf"] .card > h2{border-bottom:1px solid rgba(143,124,192,.25);}
+html[data-theme="sf"] .kpi{background:#1f1829;border:1px solid #3f3450;box-shadow:inset 3px 0 0 #7fb88d;}
+html[data-theme="sf"] .sc-tile:not(.sc-fill){background:#1f1829;border:1px solid #42375a;box-shadow:inset 0 2px 0 rgba(143,124,192,.55);}
+html[data-theme="sf"] .sc-tile .icn{color:var(--glow-g);filter:drop-shadow(0 0 3px rgba(159,216,173,.35));}
+html[data-theme="sf"] .alert-card{background:#1f1829;border:1px solid #3f3450;}
+html[data-theme="sf"] .veh-chip.on,html[data-theme="sf"] .filter-bar button.on,html[data-theme="sf"] .cats button.on,
+html[data-theme="sf"] .seg button.on,html[data-theme="sf"] .icon-pick button.on{background:rgba(143,124,192,.18);border-color:#8f7cc0;color:#d2c6ee;}
+html[data-theme="sf"] .btn.primary,html[data-theme="sf"] .csv-chips button.on{background:#8f7cc0;color:#15101b;}
+html[data-theme="sf"] .nav{border-top:1px solid #4a3e5e;}
+html[data-theme="sf"] .nav button{color:#a89fb6;}
+html[data-theme="sf"] .nav-ind-pill{box-shadow:0 0 8px rgba(143,124,192,.30);}
+html[data-theme="sf"] button.more-link{color:#c4b6e4;border-color:#4a3e5e;}
+html[data-theme="sf"] .toast{background:#16111d;border:1px solid #8f7cc0;}
+html[data-theme="sf"] .help,html[data-theme="sf"] .empty,html[data-theme="sf"] .topbar .tagline{color:#b2a9c0;}
+html[data-theme="sf"] .badge.ok,html[data-theme="sf"] .badge.reserved{color:#bfe6c8;background:#22302a;border-color:#4e7a5c;}
+html[data-theme="sf"] .badge.overdue,html[data-theme="sf"] .badge.heavy{color:#f0c2b8;background:#3a2226;border-color:#87504a;}
+html[data-theme="sf"] .badge.soon,html[data-theme="sf"] .badge.measu,html[data-theme="sf"] .badge.caution{color:#e8dba8;background:#352d1c;border-color:#7d6c3e;}
+html[data-theme="sf"] .swatch-dummy{}
+.sw-sf{background:
+  linear-gradient(#9fd8ad,#9fd8ad) 8% 30%/34% 2px no-repeat,
+  linear-gradient(#d6c27e,#d6c27e) 8% 70%/14% 2px no-repeat,
+  linear-gradient(90deg, transparent 0 60%, rgba(143,124,192,.6) 60% 61%, transparent 61%),
+  #221a2d !important;border-color:#8f7cc0 !important;}
+.sw-mecha{background:
+  linear-gradient(#2659a8,#2659a8) 12% 50%/30% 34% no-repeat,
+  linear-gradient(#d9a92c,#d9a92c) 48% 50%/5% 34% no-repeat,
+  linear-gradient(#b8433b,#b8433b) 56% 50%/3% 34% no-repeat,
+  #f6f7f9 !important;}
+.sw-hygge{background:
+  radial-gradient(9px 9px at 30% 52%, #c07a5c 0 98%, transparent 100%),
+  radial-gradient(9px 9px at 54% 52%, #8fa98a 0 98%, transparent 100%),
+  repeating-linear-gradient(179deg, rgba(120,82,45,0) 0 4px, rgba(120,82,45,.10) 4px 5px),
+  linear-gradient(180deg,#ecdcc3,#e4cfb1) !important;}
+.sw-industrial{background:
+  linear-gradient(180deg,#3c3f43 0,#8d9197 30%,#b4b8bd 45%,#73777d 70%,#2f3135 100%) 0 70%/100% 7px no-repeat,
+  linear-gradient(90deg, transparent 0 62%, #9a9ea4 62% 66%, transparent 66%) 0 70%/100% 10px no-repeat,
+  linear-gradient(180deg, #4a4d52, #2c2e31) !important;}
+
+/* ===== 0.9.58 メカ・SF の機械感／メルヘン・パステル・フラワー ===== */
+/* --- タブのハイライトが文字にかぶらないよう、これらのテーマでは薄い色の面にして文字は常に読める色にする --- */
+html:is([data-theme="mecha"],[data-theme="sf"],[data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav button .tab-pill{position:relative;z-index:1;}
+
+/* ---------------- メカ ---------------- */
+html[data-theme="mecha"]{--m-blue:#2659a8;--m-steel:#8f99a8;--m-seam:#cfd5dd;
+  --m-vent:repeating-linear-gradient(90deg,#9aa4b2 0 2px,transparent 2px 5px);
+  --m-haz:repeating-linear-gradient(135deg,#d9a92c 0 3px,#3a404a 3px 6px);
+  --m-screw:radial-gradient(circle,#aab3c0 0 1.6px,#7d8796 1.7px 2.4px,transparent 2.6px);
+}
+html[data-theme="mecha"] .topbar{
+  background:
+    var(--m-haz) left 0 bottom 3px/46px 4px no-repeat,
+    linear-gradient(#b8433b,#b8433b) left 50px bottom 3px/6px 4px no-repeat,
+    linear-gradient(180deg,#fdfdfe 0,#eef1f5 62%,#e1e6ec 100%);
+  border-bottom:3px solid var(--m-blue);
+  box-shadow:inset 0 -1px 0 #c3cad4, 0 2px 4px rgba(30,45,70,.10);
+}
+html[data-theme="mecha"] .topbar::after{
+  content:"SYS 01";position:absolute;right:12px;bottom:6px;font:700 8px/1 var(--font-ui);letter-spacing:.22em;color:#8a94a6;pointer-events:none;
+  padding-left:30px;background:var(--m-vent) left center/24px 6px no-repeat;
+}
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{
+  position:relative;padding-bottom:22px;
+  background:
+    linear-gradient(var(--m-blue),var(--m-blue)) right 18px top 0/34px 3px no-repeat,
+    linear-gradient(#d9a92c,#d9a92c) right 56px top 0/6px 3px no-repeat,
+    linear-gradient(180deg,#ffffff 0,#f6f8fa 55%,#eef1f5 100%);
+  border:1px solid #c2c8d1;border-left:1px solid #c2c8d1;
+  box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 #d6dbe2, inset 2px 0 0 #fff;
+}
+html[data-theme="mecha"] .card::before{
+  content:"";position:absolute;left:10px;right:10px;bottom:5px;height:11px;pointer-events:none;
+  background:
+    linear-gradient(var(--m-seam),var(--m-seam)) 0 0/100% 1px no-repeat,
+    linear-gradient(#fff,#fff) 0 1px/100% 1px no-repeat,
+    var(--m-screw) 0 6px/7px 7px no-repeat,
+    var(--m-screw) right 0 top 6px/7px 7px no-repeat,
+    var(--m-vent) right 14px bottom 0/30px 5px no-repeat,
+    var(--m-haz) right 50px bottom 0/16px 4px no-repeat;
+}
+html[data-theme="mecha"] .card::after{
+  content:"PNL";position:absolute;left:24px;bottom:4px;font:700 8px/1 var(--font-ui);letter-spacing:.2em;color:#8a94a6;pointer-events:none;
+}
+html[data-theme="mecha"] #vehCard::after{content:"SYS 01  VEHICLE";}
+html[data-theme="mecha"] #scWrap::after{content:"CMD 02  QUICK";}
+html[data-theme="mecha"] #alertCard::after{content:"MNT 03  CHECK";}
+html[data-theme="mecha"] #recentCard::after{content:"LOG 04  RECORD";}
+html[data-theme="mecha"] #page-input .card::after{content:"INP 01  FUEL";}
+html[data-theme="mecha"] #page-alert .card::after{content:"MNT 01  STATUS";}
+html[data-theme="mecha"] .card > h2,html[data-theme="mecha"] #alertCard>h2,html[data-theme="mecha"] #recentCard>h2{
+  border-left:4px solid var(--m-blue);padding-left:7px;letter-spacing:.14em;color:#1a2a44;
+  border-bottom:1px solid var(--m-seam);padding-bottom:5px;box-shadow:0 1px 0 #fff;}
+html[data-theme="mecha"] .sc-tile:not(.sc-fill){
+  background:
+    var(--m-screw) left 3px top 3px/7px 7px no-repeat,
+    var(--m-screw) right 3px bottom 3px/7px 7px no-repeat,
+    linear-gradient(180deg,#ffffff,#eef1f5);
+  border:1px solid #c2c8d1;box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 #d6dbe2;}
+html[data-theme="mecha"] #scGrid .sc-tile.sc-s:not(.sc-fill),html[data-theme="mecha"] #scGrid .sc-tile.sc-w:not(.sc-fill){background:linear-gradient(180deg,#ffffff,#eef1f5);}
+html[data-theme="mecha"] .alert-card{background:linear-gradient(180deg,#ffffff,#f4f6f9);border:1px solid #c8ced6;box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 #e0e4ea;
+  border-left:3px solid var(--m-blue);}
+html[data-theme="mecha"] .kpi{background:linear-gradient(180deg,#f8f9fb,#eceff3);box-shadow:inset 0 -2px 0 #d6dbe2;}
+html[data-theme="mecha"] input[type=text],html[data-theme="mecha"] input[type=number],html[data-theme="mecha"] input[type=date],
+html[data-theme="mecha"] select,html[data-theme="mecha"] textarea{box-shadow:inset 0 2px 3px rgba(30,45,70,.08);}
+html[data-theme="mecha"] .nav{
+  background:
+    var(--m-haz) left 0 top 2px/40px 3px no-repeat,
+    linear-gradient(180deg,#e9edf2,#f7f8fa 40%,#f1f3f6);
+  border-top:2px solid var(--m-blue);box-shadow:0 -2px 4px rgba(30,45,70,.08);}
+html[data-theme="mecha"] .nav-ind-pill{background:#dfe8f6 !important;box-shadow:inset 0 -3px 0 var(--m-blue), inset 0 0 0 1px #b9c9e4;border-radius:3px;}
+html[data-theme="mecha"] .nav button,html[data-theme="mecha"] .nav button.active,html[data-theme="mecha"] .nav button[data-page="input"].active{color:#56627a;}
+html[data-theme="mecha"] .nav button.active{color:#1f4f9c !important;}
+
+/* ---------------- SF ---------------- */
+html[data-theme="sf"]{--g:#8fd0a0;--g-glow:rgba(143,208,160,.30);--hud:#8fd0a0;}
+html[data-theme="sf"] body::before{opacity:1;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'><path d='M28 0 L56 16.2 L56 48.5 L28 64.7 L0 48.5 L0 16.2 Z M28 64.7 L28 97' fill='none' stroke='%23b3a3dc' stroke-opacity='0.07' stroke-width='1'/></svg>");
+  background-size:auto, 56px 97px;}
+html[data-theme="sf"] .topbar{
+  border-bottom:1px solid rgba(143,208,160,.65);
+  box-shadow:0 1px 8px var(--g-glow);
+  background:
+    linear-gradient(var(--g),var(--g)) left 0 bottom 0/70px 2px no-repeat,
+    repeating-linear-gradient(90deg, rgba(143,208,160,.45) 0 1px, transparent 1px 10px) right 0 bottom 0/40% 4px no-repeat,
+    rgba(22,17,29,.97);
+}
+html[data-theme="sf"] .topbar h1{text-shadow:0 0 8px rgba(143,208,160,.18);}
+html[data-theme="sf"] .card,html[data-theme="sf"] details.tax-fold,
+html[data-theme="sf"] .tint,html[data-theme="sf"] .kpi.tint,html[data-theme="sf"] details.tax-fold.tint{position:relative;
+  border:1px solid rgba(143,124,192,.32);border-left:1px solid rgba(143,124,192,.32);}
+html[data-theme="sf"] .card::before{
+  content:"";position:absolute;left:18px;top:-1px;width:38%;height:1px;background:var(--g);box-shadow:0 0 6px var(--g-glow), 0 0 2px var(--g-glow);pointer-events:none;
+}
+html[data-theme="sf"] .card::after{
+  content:"";position:absolute;right:18px;bottom:-1px;width:64px;height:4px;pointer-events:none;
+  background:linear-gradient(var(--g),var(--g)) 0 100%/100% 1px no-repeat,
+    repeating-linear-gradient(90deg, rgba(143,208,160,.6) 0 1px, transparent 1px 8px) 0 0/100% 3px no-repeat;
+  filter:drop-shadow(0 0 3px var(--g-glow));
+}
+html[data-theme="sf"] .card h2,html[data-theme="sf"] .card.tint > h2{color:#c9bde8;}
+html[data-theme="sf"] .card > h2{border-bottom:1px solid rgba(143,208,160,.35);box-shadow:0 1px 4px -2px var(--g-glow);padding-bottom:5px;}
+html[data-theme="sf"] #recentCard>h2,html[data-theme="sf"] .topbar .eyebrow{color:#a6dcb4;text-shadow:0 0 6px var(--g-glow);}
+html[data-theme="sf"] .sc-tile:not(.sc-fill){background:#1f1829;border:1px solid #42375a;
+  box-shadow:inset 0 1px 0 rgba(143,208,160,.55), 0 -1px 5px -2px var(--g-glow);}
+html[data-theme="sf"] .sc-tile .icn{color:#a6dcb4;filter:drop-shadow(0 0 3px rgba(143,208,160,.4));}
+html[data-theme="sf"] .alert-card{border:1px solid #3f3450;box-shadow:inset 2px 0 0 rgba(143,208,160,.5);}
+html[data-theme="sf"] .kpi{box-shadow:inset 2px 0 0 var(--g), -1px 0 6px -2px var(--g-glow);}
+html[data-theme="sf"] .nav{
+  border-top:1px solid rgba(143,208,160,.6);box-shadow:0 -1px 8px var(--g-glow);
+  background:
+    linear-gradient(var(--g),var(--g)) right 0 top 0/70px 2px no-repeat,
+    repeating-linear-gradient(90deg, rgba(143,208,160,.4) 0 1px, transparent 1px 10px) left 0 top 0/36% 4px no-repeat,
+    #16111d;}
+html[data-theme="sf"] .nav-ind-pill{background:rgba(143,124,192,.20) !important;border-radius:2px;
+  box-shadow:inset 0 0 0 1px rgba(143,208,160,.45), 0 0 8px rgba(143,208,160,.16);}
+html[data-theme="sf"] .nav button{color:#aaa1b8 !important;}
+html[data-theme="sf"] .nav button.active{color:#c6ecd0 !important;text-shadow:0 0 6px var(--g-glow);}
+html[data-theme="sf"] #modal.modal{border-color:rgba(143,208,160,.4);box-shadow:0 0 12px rgba(143,208,160,.10);}
+
+/* ---------------- 女の子向け3テーマ 共通 ---------------- */
+html[data-theme="marchen"],html[data-theme="pastel"],html[data-theme="flower"]{color-scheme:light;
+  --card-border-w:1px;--radius-card:22px;--radius-tile:18px;--radius-chip:999px;--radius-btn:14px;--ink-on-accent:#ffffff;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) body{background:transparent;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) #app{position:relative;z-index:1;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .card,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) details.tax-fold,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .modal,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .tint{
+  background:var(--panel);border:1px solid var(--line);border-left:1px solid var(--line);box-shadow:var(--card-shadow);margin-bottom:12px;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .card h2{color:var(--head);letter-spacing:.04em;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .sc-tile:not(.sc-fill){background:var(--panel-light);border:1px solid var(--line);box-shadow:var(--tile-shadow);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .sc-tile .icn{color:var(--amber);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .alert-card{background:var(--panel-light);border:1px solid var(--line);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .kpi{background:var(--kpi-bg);border:1px solid var(--line);box-shadow:none;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .veh-chip.on,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .cats button.on,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .seg button.on,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .filter-bar button.on{background:var(--soft);border-color:var(--amber);color:var(--head);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .btn.primary{background:var(--amber);color:#fff;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) button.more-link{background:var(--soft);border:1px solid var(--line);color:var(--head);border-radius:999px;font-size:11px;font-weight:800;padding:3px 10px;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav{background:var(--nav-bg);border-top:1px solid var(--line);box-shadow:0 -4px 14px rgba(120,90,110,.07);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav-ind-pill{background:var(--soft) !important;box-shadow:inset 0 0 0 1px var(--line);border-radius:14px;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav-ind-bar{display:none;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav button{color:var(--paper-dim) !important;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .nav button.active{color:var(--head) !important;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .help,
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .topbar .tagline{color:var(--paper-dim);font-weight:600;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .toast{background:var(--paper);color:#fff;border:0;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .beta-badge{color:var(--head);border-color:var(--line);background:var(--soft);}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .topbar h1{color:var(--paper);font-weight:800;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .badge.overdue{color:#9a3c3c;background:#fbe3e3;border-color:#eebcbc;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .badge.ok{color:#3f6f55;background:#e2f2e8;border-color:#bfdcc9;}
+html:is([data-theme="marchen"],[data-theme="pastel"],[data-theme="flower"]) .badge.soon{color:#7a5a1a;background:#fbf0d2;border-color:#ecd59a;}
+
+/* メルヘン: クリーム×ピンク×ミント、星のきらめき、ヘッダー下のスカラップ */
+html[data-theme="marchen"]{
+  --asphalt:#fcf6ef;--panel:#fffdf9;--panel-light:#ffffff;--line:#f0dde2;--paper:#4a3b45;--paper-dim:#86727f;
+  --amber:#b8657e;--head:#a4566f;--soft:#fbe9ee;--ok:#4f8a72;--danger:#b9504f;--cold:#5b86a6;
+  --tab-home:#b8657e;--tab-input:#b8657e;--tab-hist:#b8657e;--tab-alert:#b8657e;--tab-set:#b8657e;
+  --chip-bg:#fff7f8;--chip-line:#efd8de;--chip-fg:#4a3b45;--kpi-bg:#fff8f6;--kpi-line:#f0dde2;--hairline:#f3e6e9;
+  --input-bg:#ffffff;--input-line:#ecd5dc;--input-fg:#4a3b45;--nav-bg:#fffaf6;--topbar-bg:#fdf0f2;
+  --card-shadow:0 6px 18px rgba(184,101,126,.10), 0 1px 2px rgba(184,101,126,.08);--tile-shadow:0 2px 6px rgba(184,101,126,.08);
+  --font-display:'Hiragino Maru Gothic ProN','M PLUS Rounded 1c','Hiragino Sans','Noto Sans JP','Noto Sans CJK JP',sans-serif;
+  --star:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0Z' fill='%23e7b5c4'/></svg>");
+  --star-m:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0 C11 7 13 9 20 10 C13 11 11 13 10 20 C9 13 7 11 0 10 C7 9 9 7 10 0Z' fill='%23a9d8c8'/></svg>");
+}
+html[data-theme="marchen"]{background-color:#fcf6ef;background-image:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><g opacity='.5'><path d='M20 12 C20.6 16 22 17.4 26 18 C22 18.6 20.6 20 20 24 C19.4 20 18 18.6 14 18 C18 17.4 19.4 16 20 12Z' fill='%23efc6d2'/><path d='M84 64 C84.5 67 85.5 68 88.5 68.5 C85.5 69 84.5 70 84 73 C83.5 70 82.5 69 79.5 68.5 C82.5 68 83.5 67 84 64Z' fill='%23b9e0d2'/><circle cx='56' cy='98' r='1.6' fill='%23efc6d2'/><circle cx='104' cy='24' r='1.3' fill='%23f2dca0'/></g></svg>"),
+  radial-gradient(70vw 40vh at 85% 8%, rgba(255,255,255,.9), transparent 70%),
+  radial-gradient(60vw 35vh at 10% 60%, rgba(214,238,229,.45), transparent 70%),
+  linear-gradient(180deg,#fdf3f3,#fbf7ef);background-attachment:fixed;}
+html[data-theme="marchen"] .topbar{background:#fdf0f2;border-bottom:0;}
+html[data-theme="marchen"] .topbar::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:8px;pointer-events:none;
+  background:radial-gradient(circle at 7px 0, #fdf0f2 6.4px, #f0d6dd 6.5px 7.3px, transparent 7.6px) 0 0/14px 8px repeat-x;}
+html[data-theme="marchen"] .card > h2{padding-left:18px;background:var(--star) left center/12px 12px no-repeat;}
+html[data-theme="marchen"] #recentCard > h2{background-image:var(--star-m);}
+html[data-theme="marchen"] .card{background:var(--star-m) right 14px bottom 10px/9px 9px no-repeat, #fffdf9;}
+
+/* パステル: ピンク・ラベンダー少し・ミント・ベビーブルー・レモン */
+html[data-theme="pastel"]{
+  --asphalt:#f7f8fd;--panel:rgba(255,255,255,.92);--panel-light:#ffffff;--line:#e4e6f2;--paper:#3d4252;--paper-dim:#747b8e;
+  --amber:#6a74bd;--head:#5a64ad;--soft:#eceefb;--ok:#3f8a72;--danger:#bf5a5a;--cold:#5a86b8;
+  --tab-home:#6a74bd;--tab-input:#6a74bd;--tab-hist:#6a74bd;--tab-alert:#6a74bd;--tab-set:#6a74bd;
+  --chip-bg:#ffffff;--chip-line:#e2e5f2;--chip-fg:#3d4252;--kpi-bg:#f8f9fe;--kpi-line:#e4e6f2;--hairline:#eceef6;
+  --input-bg:#ffffff;--input-line:#dfe2f0;--input-fg:#3d4252;--nav-bg:rgba(255,255,255,.95);--topbar-bg:rgba(255,255,255,.88);
+  --card-shadow:0 6px 18px rgba(110,120,180,.09);--tile-shadow:0 2px 6px rgba(110,120,180,.07);
+}
+html[data-theme="pastel"]{background-color:#f7f8fd;background-image:
+  radial-gradient(60vw 40vh at 5% 5%, rgba(255,214,228,.55), transparent 70%),
+  radial-gradient(60vw 40vh at 100% 30%, rgba(206,226,250,.6), transparent 70%),
+  radial-gradient(60vw 40vh at 0% 80%, rgba(210,240,226,.55), transparent 70%),
+  radial-gradient(50vw 30vh at 95% 100%, rgba(252,240,196,.55), transparent 70%);background-attachment:fixed;}
+html[data-theme="pastel"] .topbar{border-bottom:0;box-shadow:0 1px 0 #e9ebf5;
+  background:linear-gradient(90deg,#f6c9d6 0 20%,#d9d3f1 20% 40%,#bfe3d4 40% 60%,#c6dcf5 60% 80%,#f5e7a8 80%) left bottom/100% 3px no-repeat, rgba(255,255,255,.9);}
+html[data-theme="pastel"] .card{box-shadow:inset 0 4px 0 var(--pc,#d9d3f1), var(--card-shadow);}
+html[data-theme="pastel"] #vehCard{--pc:#c6dcf5;}
+html[data-theme="pastel"] #scWrap{--pc:#f6c9d6;}
+html[data-theme="pastel"] #alertCard{--pc:#f5e1a0;}
+html[data-theme="pastel"] #recentCard{--pc:#bfe3d4;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n+1) .icn{color:#c9708e;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n+2) .icn{color:#5a8fc0;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n+3) .icn{color:#4f9a80;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n) .icn{color:#7a72bd;}
+
+/* フラワー: ローズ×リーフグリーン、小さな花のモチーフ */
+html[data-theme="flower"]{
+  --asphalt:#fbf8f4;--panel:#fffdfb;--panel-light:#ffffff;--line:#eedcd8;--paper:#3f3236;--paper-dim:#7f6c70;
+  --amber:#b65f72;--head:#a5566a;--soft:#f9e8ea;--ok:#5f8a5a;--danger:#b9504f;--cold:#5f86a0;
+  --tab-home:#b65f72;--tab-input:#b65f72;--tab-hist:#b65f72;--tab-alert:#b65f72;--tab-set:#b65f72;
+  --chip-bg:#fffaf9;--chip-line:#ecd8d4;--chip-fg:#3f3236;--kpi-bg:#fdf7f5;--kpi-line:#eedcd8;--hairline:#f3e7e4;
+  --input-bg:#ffffff;--input-line:#e8d3cf;--input-fg:#3f3236;--nav-bg:#fffbf9;--topbar-bg:#fdf6f3;
+  --card-shadow:0 6px 18px rgba(150,90,100,.09);--tile-shadow:0 2px 6px rgba(150,90,100,.07);
+  --flw:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><g fill='%23eab3bf'><circle cx='10' cy='5' r='3.8'/><circle cx='14.8' cy='8.5' r='3.8'/><circle cx='13' cy='14' r='3.8'/><circle cx='7' cy='14' r='3.8'/><circle cx='5.2' cy='8.5' r='3.8'/></g><circle cx='10' cy='10' r='2.4' fill='%23f1d48a'/></svg>");
+  --sprig:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 60'><path d='M78 58 C60 50 46 40 36 24' fill='none' stroke='%239bb58e' stroke-width='1.6'/><ellipse cx='58' cy='46' rx='7' ry='3.2' transform='rotate(-30 58 46)' fill='%23b7cba9'/><ellipse cx='46' cy='34' rx='6' ry='2.8' transform='rotate(-55 46 34)' fill='%23b7cba9'/><g fill='%23efc2cb'><circle cx='34' cy='16' r='5'/><circle cx='41' cy='21' r='5'/><circle cx='38' cy='29' r='5'/><circle cx='29' cy='29' r='5'/><circle cx='26' cy='21' r='5'/></g><circle cx='33.6' cy='23' r='3.2' fill='%23f1d48a'/><g fill='%23f3d3d9'><circle cx='66' cy='30' r='3'/><circle cx='70' cy='33' r='3'/><circle cx='68' cy='38' r='3'/><circle cx='63' cy='38' r='3'/><circle cx='61' cy='33' r='3'/></g><circle cx='65.6' cy='34.4' r='2' fill='%23f1d48a'/></svg>");
+}
+html[data-theme="flower"]{background-color:#fbf8f4;background-image:
+  radial-gradient(60vw 40vh at 100% 0%, rgba(246,220,224,.55), transparent 70%),
+  radial-gradient(60vw 40vh at 0% 100%, rgba(220,234,210,.5), transparent 70%);background-attachment:fixed;}
+html[data-theme="flower"] .topbar{border-bottom:1px solid #eedcd8;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='8' viewBox='0 0 44 8'><path d='M0 4 C11 1 11 7 22 4 C33 1 33 7 44 4' fill='none' stroke='%23b7cba9' stroke-width='1'/><ellipse cx='11' cy='2.6' rx='3' ry='1.3' fill='%23c4d5b8'/><circle cx='33' cy='5.4' r='1.6' fill='%23eab3bf'/></svg>") left bottom 1px/44px 8px repeat-x,
+    #fdf6f3;padding-bottom:14px;}
+html[data-theme="flower"] .card{position:relative;background:var(--sprig) right -2px bottom -2px/76px 57px no-repeat, #fffdfb;}
+html[data-theme="flower"] .card > h2{padding-left:18px;background:var(--flw) left center/13px 13px no-repeat;}
+
+/* swatches */
+.sw-marchen{background:radial-gradient(6px 6px at 30% 50%, #e7b5c4 0 98%, transparent 100%),radial-gradient(5px 5px at 55% 40%, #a9d8c8 0 98%, transparent 100%),radial-gradient(4px 4px at 75% 60%, #f2dca0 0 98%, transparent 100%),#fdf0f2;border-color:#f0d6dd !important;}
+.sw-pastel{background:linear-gradient(90deg,#f6c9d6 0 20%,#d9d3f1 20% 40%,#bfe3d4 40% 60%,#c6dcf5 60% 80%,#f5e7a8 80%);border-color:#e4e6f2 !important;}
+.sw-flower{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><g fill='%23eab3bf'><circle cx='10' cy='5' r='3.8'/><circle cx='14.8' cy='8.5' r='3.8'/><circle cx='13' cy='14' r='3.8'/><circle cx='7' cy='14' r='3.8'/><circle cx='5.2' cy='8.5' r='3.8'/></g><circle cx='10' cy='10' r='2.4' fill='%23f1d48a'/></svg>") 30% 50%/18px 18px no-repeat, #fdf6f3;border-color:#eedcd8 !important;}
+
+/* ===== 0.9.58 メカ（色の段差） ===== */
+html[data-theme="mecha"]{
+  --asphalt:#d3d9e1;--line:#a9b2bf;--paper-dim:#4f5a6c;
+  --chip-bg:#e6ebf2;--chip-line:#aab4c2;--kpi-bg:#e6ebf2;--kpi-line:#bcc5d1;--hairline:#d5dbe3;
+  --nav-bg:#24324a;--topbar-bg:#24324a;
+  --m-plate:linear-gradient(180deg,#2c3c58 0,#24324a 55%,#1e2a3f 100%);
+  --m-vent-l:repeating-linear-gradient(90deg,#6f83a3 0 2px,transparent 2px 5px);
+  --m-screw-d:radial-gradient(circle,#8ea0bd 0 1.5px,#4b5d7a 1.6px 2.3px,transparent 2.5px);
+}
+html[data-theme="mecha"]{background-image:
+    linear-gradient(90deg, rgba(40,55,80,.07) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(40,55,80,.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px),
+    linear-gradient(180deg, #d8dde5, #cdd3dc);
+  background-size:96px 96px, 96px 96px, 96px 96px, auto;background-position:0 0,0 0,1px 0,0 0;}
+/* ヘッダー: 濃いネイビーのプレート */
+html[data-theme="mecha"] .topbar{
+  background:var(--m-screw-d) left 6px top 6px/7px 7px no-repeat, var(--m-screw-d) right 6px top 6px/7px 7px no-repeat, var(--m-plate);
+  border-bottom:2px solid #4a86d8;box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 2px 6px rgba(20,30,50,.25);}
+html[data-theme="mecha"] .topbar h1{color:#f2f6fc;}
+html[data-theme="mecha"] .topbar .eyebrow{color:#9fc0ee;}
+html[data-theme="mecha"] .topbar .tagline{color:#b8c5da !important;}
+html[data-theme="mecha"] .topbar select,html[data-theme="mecha"] .topbar #vehicleTitleWrap,html[data-theme="mecha"] .topbar #vehicleTitleWrap *{color:#f2f6fc;}
+html[data-theme="mecha"] .beta-badge{background:transparent;border-color:#c9a547;color:#ecd79a;}
+html[data-theme="mecha"] .topbar::after{color:#8fa3c4;background:var(--m-vent-l) left center/24px 6px no-repeat;}
+/* 白い装甲板のカード（濃いめの枠で背景から浮かせる） */
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{
+  background:
+    linear-gradient(#2659a8,#2659a8) right 18px top 0/34px 3px no-repeat,
+    linear-gradient(#d9a92c,#d9a92c) right 56px top 0/5px 3px no-repeat,
+    linear-gradient(180deg,#ffffff 0,#f7f9fb 60%,#eff2f6 100%);
+  border:1px solid #9ea8b6;border-left:1px solid #9ea8b6;
+  box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 #d2d8e0, inset 3px 0 0 #e9edf2;}
+html[data-theme="mecha"] .card::before{
+  background:
+    linear-gradient(#cfd5dd,#cfd5dd) 0 0/100% 1px no-repeat,
+    linear-gradient(#fff,#fff) 0 1px/100% 1px no-repeat,
+    var(--m-screw) 0 6px/7px 7px no-repeat,
+    var(--m-screw) right 0 top 6px/7px 7px no-repeat,
+    var(--m-vent) right 14px bottom 0/30px 5px no-repeat,
+    radial-gradient(circle,#c4524a 0 2px,transparent 2.4px) right 52px bottom 0/6px 6px no-repeat;}
+/* 中の箱は別の色（青みのグレー） */
+html[data-theme="mecha"] .sc-tile:not(.sc-fill){
+  background:
+    var(--m-screw) left 3px top 3px/7px 7px no-repeat,
+    var(--m-screw) right 3px bottom 3px/7px 7px no-repeat,
+    linear-gradient(180deg,#e9eef5,#dbe2ec);
+  border:1px solid #b3bdcb;box-shadow:inset 0 1px 0 rgba(255,255,255,.8), inset 0 -2px 0 #c6cfdb;}
+html[data-theme="mecha"] #scGrid .sc-tile.sc-s:not(.sc-fill),html[data-theme="mecha"] #scGrid .sc-tile.sc-w:not(.sc-fill){background:linear-gradient(180deg,#e9eef5,#dbe2ec);}
+html[data-theme="mecha"] .sc-tile .icn{color:#2659a8;}
+html[data-theme="mecha"] .alert-card{background:linear-gradient(180deg,#edf1f7,#e3e9f1);border:1px solid #b7c1ce;border-left:3px solid #2659a8;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85), inset 0 -2px 0 #ccd4df;}
+html[data-theme="mecha"] .kpi{background:linear-gradient(180deg,#edf1f7,#e3e9f1);border:1px solid #b7c1ce;}
+html[data-theme="mecha"] .veh-chip{background:linear-gradient(180deg,#e9eef5,#dbe2ec);border-color:#aab4c2;}
+html[data-theme="mecha"] .veh-chip.on{background:#ffffff;border-color:#2659a8;color:#1f4f9c;}
+html[data-theme="mecha"] button.more-link{background:#e6ebf2;border-color:#aab4c2;color:#1f4f9c;}
+/* タブバー: ヘッダーと同じ濃いプレート */
+html[data-theme="mecha"] .nav{background:var(--m-plate);border-top:2px solid #4a86d8;box-shadow:0 -2px 6px rgba(20,30,50,.22);}
+html[data-theme="mecha"] .nav-ind-pill{background:rgba(74,134,216,.30) !important;box-shadow:inset 0 0 0 1px rgba(130,170,230,.55), inset 0 -3px 0 #6d9be0;border-radius:3px;}
+html[data-theme="mecha"] .nav button,html[data-theme="mecha"] .nav button.active,html[data-theme="mecha"] .nav button[data-page="input"].active{color:#b9c6db !important;}
+html[data-theme="mecha"] .nav button.active{color:#ffffff !important;}
+html[data-theme="mecha"] .nav-alert-badge{box-shadow:0 0 0 2px #24324a;}
+html[data-theme="mecha"] #page-input .input-actions{background:#24324a;}
+html[data-theme="mecha"] .sw-mecha{}
+/* clip-path は固定表示の「保存・クリア」まで切ってしまうので、入力画面のカードには使わない（0.9.57 のメカで保存ボタンが消えていた不具合の修正） */
+html[data-theme="mecha"] #page-input .card,html[data-theme="mecha"] .card:has(.input-actions){clip-path:none;}
+
+/* ===== 0.9.58 メカ（黄色の差し色・ゴツい機械感） ===== */
+html[data-theme="mecha"]{
+  --y:#e5b53a;--y-ink:#2b240f;
+  --chamfer:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
+  --hex:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><polygon points='3,0.8 9,0.8 11.6,6 9,11.2 3,11.2 0.4,6' fill='%23b3bdca' stroke='%23687384' stroke-width='0.9'/><circle cx='6' cy='6' r='2.1' fill='%23828d9d'/><circle cx='5.4' cy='5.3' r='0.8' fill='%23d6dce4'/></svg>");
+  --knurl:repeating-linear-gradient(45deg, rgba(255,255,255,.10) 0 1px, transparent 1px 4px), repeating-linear-gradient(-45deg, rgba(0,0,0,.35) 0 1px, transparent 1px 4px), linear-gradient(90deg,#3a4b68,#2a3850);
+  --rail:linear-gradient(90deg,#6f7a8b 0,#c9d0da 40%,#eef1f5 55%,#8d97a6 100%);
+}
+/* ヘッダー: 厚い枠＋両端のローレット */
+html[data-theme="mecha"] .topbar{
+  padding-left:20px;padding-right:20px;
+  background:
+    var(--knurl) left 0 top 0/10px 100% no-repeat,
+    var(--knurl) right 0 top 0/10px 100% no-repeat,
+    var(--hex) left 13px top 5px/10px 10px no-repeat,
+    var(--hex) right 13px top 5px/10px 10px no-repeat,
+    var(--m-plate);
+  border-bottom:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -2px 0 #4a86d8, inset 0 -5px 0 #16202f, 0 3px 6px rgba(20,30,50,.28);
+  padding-bottom:13px;
+}
+html[data-theme="mecha"] .topbar::after{right:26px;bottom:9px;color:var(--y-ink);background:var(--y);padding:2px 5px;border-radius:1px;letter-spacing:.18em;}
+html[data-theme="mecha"] .beta-badge{background:var(--y);border-color:var(--y);color:var(--y-ink);}
+/* カード: 厚い面取りの装甲板・角の補強板・側面の油圧レール */
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{
+  padding:10px 12px 26px 18px;
+  background:
+    var(--hex) right 7px top 7px/11px 11px no-repeat,
+    linear-gradient(#aeb8c5,#aeb8c5) right 0 top 0/30px 5px no-repeat,
+    linear-gradient(#aeb8c5,#aeb8c5) right 0 top 0/5px 30px no-repeat,
+    linear-gradient(var(--y),var(--y)) right 34px top 0/12px 5px no-repeat,
+    linear-gradient(#2659a8,#2659a8) right 50px top 0/34px 5px no-repeat,
+    var(--rail) left 4px top 24px/6px calc(100% - 52px) no-repeat,
+    linear-gradient(#8d97a6,#8d97a6) left 2px top 20px/10px 4px no-repeat,
+    linear-gradient(#8d97a6,#8d97a6) left 2px bottom 24px/10px 4px no-repeat,
+    linear-gradient(180deg,#ffffff 0,#f6f8fa 60%,#edf0f4 100%);
+  border:2px solid #8e99a9;border-left:2px solid #8e99a9;
+  box-shadow:inset 0 2px 0 #fff, inset 2px 0 0 #fff, inset 0 -3px 0 #c3cbd6, inset -2px 0 0 #d3d9e1;
+}
+html[data-theme="mecha"] .card::before{left:18px;right:12px;bottom:6px;height:13px;
+  background:
+    linear-gradient(#c2c9d3,#c2c9d3) 0 0/100% 1px no-repeat,
+    linear-gradient(#fff,#fff) 0 1px/100% 1px no-repeat,
+    var(--hex) 0 3px/10px 10px no-repeat,
+    var(--hex) right 0 top 3px/10px 10px no-repeat,
+    linear-gradient(#5b6676,#5b6676) center bottom 3px/10px 2px no-repeat,
+    linear-gradient(180deg,#c6ced9,#9fa9b8) center bottom 0/24px 8px no-repeat,
+    var(--m-vent) right 16px bottom 1px/28px 6px no-repeat,
+    radial-gradient(circle,#c4524a 0 2px,transparent 2.4px) right 50px bottom 1px/6px 6px no-repeat;}
+html[data-theme="mecha"] .card::after{left:34px;bottom:6px;color:var(--y-ink);background:var(--y);padding:2px 5px;border-radius:1px;font-size:7.5px;}
+html[data-theme="mecha"] .card > h2,html[data-theme="mecha"] #alertCard>h2,html[data-theme="mecha"] #recentCard>h2{
+  border-left:0;padding-left:13px;
+  background:linear-gradient(#2659a8,#2659a8) left 0 top 0/5px calc(100% - 6px) no-repeat, linear-gradient(var(--y),var(--y)) left 7px top 0/3px calc(100% - 6px) no-repeat;}
+/* ショートカット: くぼんだソケットに収まったボタン */
+html[data-theme="mecha"] .sc-grid{--sc-gap:10px;}
+html[data-theme="mecha"] .sc-tile:not(.sc-fill),html[data-theme="mecha"] .sc-tile.sc-fill{clip-path:none;border-radius:4px;}
+html[data-theme="mecha"] .sc-tile:not(.sc-fill){
+  background:
+    var(--hex) left 4px top 4px/9px 9px no-repeat,
+    linear-gradient(var(--y),var(--y)) right 0 bottom 0/10px 3px no-repeat,
+    linear-gradient(180deg,#eef2f7,#dbe2ec);
+  border:1px solid #9aa5b4;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.9), inset 0 -3px 0 #c2cbd8, 0 0 0 3px #c9d0da, 0 0 0 4px #9ba6b5, 0 0 0 5px #e8ecf1;}
+html[data-theme="mecha"] #scGrid .sc-tile.sc-s:not(.sc-fill),html[data-theme="mecha"] #scGrid .sc-tile.sc-w:not(.sc-fill){background:linear-gradient(180deg,#eef2f7,#dbe2ec);}
+html[data-theme="mecha"] #scGrid{padding:5px;}
+/* アラート: 色つきの内側パネル＋留め具 */
+html[data-theme="mecha"] .alert-card{border:2px solid #a6b0be;border-left:4px solid #2659a8;
+  background:linear-gradient(var(--y),var(--y)) right 0 top 0/14px 4px no-repeat, linear-gradient(180deg,#edf1f7,#e1e7f0);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.85), inset 0 -3px 0 #c8d0db;}
+html[data-theme="mecha"] .alert-card .alert-action:not(.is-reserved),html[data-theme="mecha"] .alert-action{border:1.5px solid var(--y) !important;border-radius:2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.06);}
+html[data-theme="mecha"] .kpi{border:2px solid #a6b0be;}
+html[data-theme="mecha"] .btn.primary{box-shadow:inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 0 #1b4380, inset 0 0 0 1px #1b4380;}
+html[data-theme="mecha"] .btn.ghost{box-shadow:inset 0 -3px 0 #c3cbd6;}
+/* タブバー: 厚い枠＋両端ローレット、選択中は黄色の縁 */
+html[data-theme="mecha"] .nav{
+  background:var(--knurl) left 0 top 0/10px 100% no-repeat, var(--knurl) right 0 top 0/10px 100% no-repeat, var(--m-plate);
+  border-top:0;box-shadow:inset 0 2px 0 #4a86d8, inset 0 5px 0 #16202f, 0 -3px 6px rgba(20,30,50,.25);padding-top:5px;}
+html[data-theme="mecha"] .nav-ind-pill{background:rgba(74,134,216,.30) !important;box-shadow:inset 0 0 0 1px rgba(130,170,230,.5), inset 0 -3px 0 var(--y);}
+html[data-theme="mecha"] #page-input .input-actions{background:var(--m-plate);box-shadow:inset 0 2px 0 #3a4d6e;}
+/* 0.9.58 メカ: ローレットは端だけ、ボルトはローレットの上、カードの余白を少し広げる */
+html[data-theme="mecha"]{--knurl-img:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><rect width='10' height='6' fill='%2333435e'/><path d='M0 6 L5 0 L10 6 M0 0 L5 6 L10 0' fill='none' stroke='%23556a8c' stroke-width='1'/><path d='M0 3 H10' stroke='%23202b3e' stroke-width='0.6'/></svg>");}
+html[data-theme="mecha"] .topbar{
+  background:
+    var(--hex) left 0 top 5px/10px 10px no-repeat,
+    var(--hex) right 0 top 5px/10px 10px no-repeat,
+    var(--knurl-img) left 0 top 0/10px 6px repeat-y,
+    var(--knurl-img) right 0 top 0/10px 6px repeat-y,
+    var(--m-plate);}
+html[data-theme="mecha"] .nav{
+  background:var(--knurl-img) left 0 top 0/10px 6px repeat-y, var(--knurl-img) right 0 top 0/10px 6px repeat-y, var(--m-plate);}
+html[data-theme="mecha"] .card,html[data-theme="mecha"] details.tax-fold,
+html[data-theme="mecha"] .tint,html[data-theme="mecha"] .kpi.tint,html[data-theme="mecha"] details.tax-fold.tint{padding:16px 18px 26px 18px;}
+/* 0.9.58 メカのタブのアイコンと文字を落ち着いた黄色に */
+html[data-theme="mecha"] .nav button,html[data-theme="mecha"] .nav button[data-page="input"].active{color:rgba(229,181,58,.72) !important;}
+html[data-theme="mecha"] .nav button.active{color:#ecc04f !important;}
+html[data-theme="mecha"] .nav button.active .tab-lbl{font-weight:900;text-shadow:0 0 6px rgba(229,181,58,.28);}
+html[data-theme="mecha"] .nav button.active .ic svg{filter:drop-shadow(0 0 3px rgba(229,181,58,.25));}
+html[data-theme="mecha"] .nav-ind-pill{background:rgba(74,134,216,.38) !important;}
+
+/* ===== 0.9.58 文字ラベルを外す／新テーマの作り込み ===== */
+/* --- メカ: コード表記と黄色プレートを外し、留め具を黄色にして黄色の量を保つ --- */
+html[data-theme="mecha"] .topbar::after{content:none !important;}
+html[data-theme="mecha"] .card::after{content:none !important;}
+html[data-theme="mecha"] .card::before{
+  background:
+    linear-gradient(#c2c9d3,#c2c9d3) 0 0/100% 1px no-repeat,
+    linear-gradient(#fff,#fff) 0 1px/100% 1px no-repeat,
+    var(--hex) 0 3px/10px 10px no-repeat,
+    var(--hex) right 0 top 3px/10px 10px no-repeat,
+    linear-gradient(#7a5f1c,#7a5f1c) center bottom 3px/10px 2px no-repeat,
+    linear-gradient(180deg,#efc757,#d9a72f) center bottom 0/26px 8px no-repeat,
+    linear-gradient(var(--y),var(--y)) 16px bottom 2px/22px 3px no-repeat,
+    var(--m-vent) right 16px bottom 1px/28px 6px no-repeat,
+    radial-gradient(circle,#c4524a 0 2px,transparent 2.4px) right 50px bottom 1px/6px 6px no-repeat;}
+
+/* --- ヒュッゲ: 木と温かさ。リネンの地、クリームのカード、オートミールの内側、木の棚板 --- */
+html[data-theme="hygge"]{--panel:#fffaf3;--kpi-bg:#f6ecdf;--chip-bg:#f6ecdf;
+  --wood-plank:
+    repeating-linear-gradient(179.3deg, rgba(110,72,38,0) 0 4px, rgba(110,72,38,.10) 4px 5px, rgba(110,72,38,0) 5px 11px),
+    repeating-linear-gradient(180.8deg, rgba(110,72,38,0) 0 7px, rgba(110,72,38,.07) 7px 9px, rgba(110,72,38,0) 9px 19px),
+    linear-gradient(180deg,#d9b88c,#c9a273);}
+html[data-theme="hygge"]{background-color:#ece2d3;background-image:
+    repeating-linear-gradient(0deg, rgba(140,110,80,.035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(140,110,80,.03) 0 1px, transparent 1px 3px),
+    radial-gradient(90vw 60vh at 10% -10%, rgba(255,232,200,.6), transparent 65%),
+    linear-gradient(180deg,#efe6d8,#e7dbc9);}
+html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold{
+  background:var(--wood-plank) left top/100% 6px no-repeat, #fffaf3;
+  border:1px solid #dcc9ae;border-left:1px solid #dcc9ae;padding-top:12px;
+  box-shadow:0 8px 18px rgba(110,80,50,.12), 0 1px 2px rgba(110,80,50,.10);}
+html[data-theme="hygge"] .card > h2{padding-left:14px;background:linear-gradient(180deg,#c9a273,#a9835a) left center/6px 12px no-repeat;}
+html[data-theme="hygge"] .sc-tile:not(.sc-fill){background:linear-gradient(180deg,#fbf3e7,#f3e7d6);border:1px solid #e0cdb2;box-shadow:0 2px 0 #e3d2ba, 0 3px 6px rgba(110,80,50,.08);}
+html[data-theme="hygge"] .sc-tile .icn{color:#9a5a3c;}
+html[data-theme="hygge"] .alert-card{background:#f7eee2;border:1px solid #e3d1b8;}
+html[data-theme="hygge"] .veh-chip.on{background:#fffaf3;}
+html[data-theme="hygge"] .topbar{background:var(--wood-plank);border-bottom:1px solid #b48f62;box-shadow:inset 0 -2px 0 rgba(255,255,255,.25), 0 2px 6px rgba(110,80,50,.15);}
+html[data-theme="hygge"] .topbar h1{color:#3a2a1c;}
+html[data-theme="hygge"] .topbar .tagline{color:#5e4630 !important;}
+html[data-theme="hygge"] .topbar .eyebrow{color:#6e4f30;}
+html[data-theme="hygge"] .nav{background:var(--wood-plank);border-top:1px solid #b48f62;box-shadow:inset 0 2px 0 rgba(255,255,255,.25), 0 -3px 10px rgba(110,80,50,.12);}
+html[data-theme="hygge"] .nav-ind-pill{background:rgba(255,250,243,.78) !important;box-shadow:inset 0 -3px 0 #a8583d, 0 1px 3px rgba(80,50,25,.2);border-radius:14px;}
+html[data-theme="hygge"] .nav button .tab-pill{position:relative;z-index:1;}
+html[data-theme="hygge"] .nav button{color:rgba(74,48,26,.78) !important;}
+html[data-theme="hygge"] .nav button.active{color:#8e4630 !important;}
+html[data-theme="hygge"] .nav button.active .tab-lbl{font-weight:900;}
+html[data-theme="hygge"] .nav-alert-badge{box-shadow:0 0 0 2px #d2ae80;}
+
+/* --- インダストリアル: コンクリートの地、厚い鋼板、配管、リベット --- */
+html[data-theme="industrial"]{--panel:#2f3236;--kpi-bg:#3a3e43;--chip-bg:#3a3e43;
+  --rivet:radial-gradient(circle at 40% 35%, #a9adb3 0 1.2px, #5d6168 1.8px 2.6px, transparent 3px);
+  --vpipe:linear-gradient(90deg,#3c3f43 0,#8d9197 30%,#b4b8bd 45%,#73777d 70%,#2f3135 100%);}
+html[data-theme="industrial"]{background-color:#484a4d;background-image:
+    radial-gradient(circle, rgba(0,0,0,.35) 0 2.5px, rgba(255,255,255,.06) 3px, transparent 3.6px),
+    linear-gradient(90deg, rgba(0,0,0,.25) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(0,0,0,.25) 1px, transparent 1px),
+    linear-gradient(180deg,#4d4f52,#414346);
+  background-size:120px 120px,240px 240px,240px 240px,auto;background-position:60px 60px,0 0,0 0,0 0;}
+html[data-theme="industrial"] body::before{opacity:.16;}
+html[data-theme="industrial"] .card,html[data-theme="industrial"] details.tax-fold{
+  padding-left:18px;
+  background:
+    var(--rivet) left 6px top 6px/8px 8px no-repeat, var(--rivet) right 6px top 6px/8px 8px no-repeat,
+    var(--rivet) left 6px bottom 6px/8px 8px no-repeat, var(--rivet) right 6px bottom 6px/8px 8px no-repeat,
+    var(--vpipe) left 4px top 22px/6px calc(100% - 44px) no-repeat,
+    linear-gradient(#6b6f75,#6b6f75) left 2px top 18px/10px 4px no-repeat,
+    linear-gradient(#6b6f75,#6b6f75) left 2px bottom 18px/10px 4px no-repeat,
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 50%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px), #2f3236;
+  border:2px solid #1d1f22;border-left:2px solid #1d1f22;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -2px 0 rgba(0,0,0,.35), 0 3px 0 rgba(0,0,0,.35), 0 5px 10px rgba(0,0,0,.25);}
+html[data-theme="industrial"] .sc-tile:not(.sc-fill){
+  background:var(--rivet) left 3px top 3px/7px 7px no-repeat, var(--rivet) right 3px bottom 3px/7px 7px no-repeat, linear-gradient(180deg,#43474c,#373a3f);
+  border:1px solid #1e2023;box-shadow:inset 0 1px 0 rgba(255,255,255,.10), inset 0 -2px 0 rgba(0,0,0,.3);}
+html[data-theme="industrial"] #scGrid .sc-tile.sc-s:not(.sc-fill),html[data-theme="industrial"] #scGrid .sc-tile.sc-w:not(.sc-fill){background:linear-gradient(180deg,#43474c,#373a3f);}
+html[data-theme="industrial"] .alert-card{background:linear-gradient(180deg,#3b3f44,#34373b);border:1px solid #1e2023;box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 3px 0 0 #c98a4d;}
+html[data-theme="industrial"] .kpi{background:#3a3e43;}
+html[data-theme="industrial"] .nav button{color:rgba(214,170,98,.72) !important;}
+html[data-theme="industrial"] .nav button.active{color:#1c1a17 !important;}
+html[data-theme="industrial"] .nav button.active .tab-lbl{font-weight:900;}
+html[data-theme="industrial"] .nav-ind-pill{background:linear-gradient(180deg,#e3b46c,#c48d45) !important;}
+html[data-theme="industrial"] .nav button .tab-pill{position:relative;z-index:1;}
+html[data-theme="industrial"] .veh-chip.on{background:#2f3236;}
+
+/* --- SF: 層の差、回路のライン、アラート色は落ち着かせる --- */
+html[data-theme="sf"]{
+  --circuit:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='40' viewBox='0 0 90 40'><g fill='none' stroke='%238fd0a0' stroke-opacity='0.45' stroke-width='1'><path d='M0 34 H22 L30 26 H56'/><path d='M0 22 H10 L16 16 H34'/><path d='M40 40 V34 L46 28 H70'/></g><g fill='%238fd0a0' fill-opacity='0.6'><circle cx='56' cy='26' r='1.8'/><circle cx='34' cy='16' r='1.8'/><circle cx='70' cy='28' r='1.8'/></g></svg>");
+}
+html[data-theme="sf"]{background-color:#120e18;}
+html[data-theme="sf"] .card,html[data-theme="sf"] details.tax-fold,
+html[data-theme="sf"] .tint{background:var(--hud-corners), var(--circuit) left 6px bottom 4px/90px 40px no-repeat, linear-gradient(180deg,#2a2137,#221a2d);
+  box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 6px 16px rgba(0,0,0,.35);}
+html[data-theme="sf"] .sc-tile:not(.sc-fill){background:linear-gradient(180deg,#1b1524,#17121f);border:1px solid #3a3050;}
+html[data-theme="sf"] .alert-card{background:linear-gradient(180deg,#1b1524,#17121f);}
+html[data-theme="sf"] .alert-card .alert-bar>i,html[data-theme="sf"] .alert-card .alert-remain,html[data-theme="sf"] .alert-card .badge,html[data-theme="sf"] .alert-card .alert-action{filter:saturate(.6) brightness(.95);}
+html[data-theme="sf"] .nav button{color:rgba(150,205,165,.70) !important;}
+html[data-theme="sf"] .nav button.active{color:#cdeed6 !important;}
+html[data-theme="sf"] .nav button.active .tab-lbl{font-weight:900;}
+html[data-theme="sf"] .topbar{background:
+    linear-gradient(var(--g),var(--g)) left 0 bottom 0/70px 2px no-repeat,
+    repeating-linear-gradient(90deg, rgba(143,208,160,.45) 0 1px, transparent 1px 10px) right 0 bottom 0/40% 4px no-repeat,
+    linear-gradient(rgba(143,208,160,.5),rgba(143,208,160,.5)) right 10px top 6px/1px 10px no-repeat,
+    linear-gradient(rgba(143,208,160,.5),rgba(143,208,160,.5)) right 10px top 6px/14px 1px no-repeat,
+    linear-gradient(180deg,#1d1727,#17121f);}
+
+/* --- メルヘン: レースの縁、ピンクとミントの内側、タブは淡いローズ --- */
+html[data-theme="marchen"] .card{background:
+    radial-gradient(circle at 6px 0, #f3d5de 0 3.2px, transparent 3.6px) 0 0/12px 6px repeat-x,
+    var(--star-m) right 14px bottom 10px/9px 9px no-repeat, #fffdf9;padding-top:12px;}
+html[data-theme="marchen"] .sc-tile:not(.sc-fill){background:linear-gradient(180deg,#fff6f8,#fcecf0);border:1px solid #f0d3db;}
+html[data-theme="marchen"] .alert-card{background:#f2f9f6;border:1px solid #cfe5db;}
+html[data-theme="marchen"] .nav{background:#fdf0f2;border-top:0;}
+html[data-theme="marchen"] .nav::before{content:"";position:absolute;left:0;right:0;top:-7px;height:8px;pointer-events:none;
+  background:radial-gradient(circle at 7px 8px, #fdf0f2 6.4px, #f0d6dd 6.5px 7.3px, transparent 7.6px) 0 0/14px 8px repeat-x;}
+html[data-theme="marchen"] .nav-ind-pill{background:#ffffff !important;box-shadow:0 0 0 1px #f0d6dd, inset 0 -3px 0 #e7b5c4;}
+html[data-theme="marchen"] .nav button{color:rgba(164,86,111,.70) !important;}
+html[data-theme="marchen"] .nav button.active{color:#a4566f !important;}
+
+/* --- パステル: 列ごとの淡い色のタイル、レモンのアラート、タブは虹色の線 --- */
+html[data-theme="pastel"] .sc-tile:nth-child(4n+1):not(.sc-fill){background:#fff3f6;border-color:#f6d6df;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n+2):not(.sc-fill){background:#f1f6fe;border-color:#d4e2f6;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n+3):not(.sc-fill){background:#effaf5;border-color:#cde9dc;}
+html[data-theme="pastel"] .sc-tile:nth-child(4n):not(.sc-fill){background:#f4f2fd;border-color:#dcd7f2;}
+html[data-theme="pastel"] .alert-card{background:#fffbec;border:1px solid #f1e4b0;}
+html[data-theme="pastel"] .nav{background:linear-gradient(90deg,#f6c9d6 0 20%,#d9d3f1 20% 40%,#bfe3d4 40% 60%,#c6dcf5 60% 80%,#f5e7a8 80%) left top/100% 3px no-repeat, rgba(255,255,255,.96);border-top:0;}
+html[data-theme="pastel"] .nav-ind-pill{background:#eef0fb !important;box-shadow:inset 0 0 0 1px #dfe2f4, inset 0 -3px 0 #b9bfe8;}
+html[data-theme="pastel"] .nav button{color:rgba(90,100,173,.70) !important;}
+html[data-theme="pastel"] .nav button.active{color:#4f59a3 !important;}
+html[data-theme="pastel"] .nav button.active .tab-lbl{font-weight:900;}
+
+/* --- フラワー: 花びら色の内側、葉色のアラート、タブはつる模様の線 --- */
+html[data-theme="flower"]{background-image:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><g opacity='.35'><g fill='%23efc9cf'><circle cx='30' cy='26' r='3'/><circle cx='34' cy='29' r='3'/><circle cx='32' cy='34' r='3'/><circle cx='27' cy='34' r='3'/><circle cx='26' cy='29' r='3'/></g><circle cx='30' cy='30' r='1.6' fill='%23f1d48a'/><ellipse cx='100' cy='96' rx='5' ry='2.2' transform='rotate(-30 100 96)' fill='%23c4d5b8'/></g></svg>"),
+  radial-gradient(60vw 40vh at 100% 0%, rgba(246,220,224,.55), transparent 70%),
+  radial-gradient(60vw 40vh at 0% 100%, rgba(220,234,210,.5), transparent 70%);}
+html[data-theme="flower"] .sc-tile:not(.sc-fill){background:linear-gradient(180deg,#fff7f6,#fbedec);border:1px solid #efd7d4;}
+html[data-theme="flower"] .alert-card{background:#f5f9f1;border:1px solid #d8e5cd;}
+html[data-theme="flower"] .nav{border-top:1px solid #eedcd8;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='8' viewBox='0 0 44 8'><path d='M0 4 C11 1 11 7 22 4 C33 1 33 7 44 4' fill='none' stroke='%23b7cba9' stroke-width='1'/><ellipse cx='11' cy='2.6' rx='3' ry='1.3' fill='%23c4d5b8'/><circle cx='33' cy='5.4' r='1.6' fill='%23eab3bf'/></svg>") left top 1px/44px 8px repeat-x, #fffbf9;}
+html[data-theme="flower"] .nav-ind-pill{background:#fbeef0 !important;box-shadow:inset 0 0 0 1px #efd7da, inset 0 -3px 0 #d99aa8;}
+html[data-theme="flower"] .nav button{color:rgba(165,86,106,.70) !important;}
+html[data-theme="flower"] .nav button.active{color:#a5566a !important;}
+html[data-theme="flower"] .nav button.active .tab-lbl{font-weight:900;}
+/* 0.9.58 ヒュッゲの木目はカード上端だけ */
+html[data-theme="hygge"] .card,html[data-theme="hygge"] details.tax-fold{
+  background:
+    repeating-linear-gradient(179.3deg, rgba(110,72,38,0) 0 2px, rgba(110,72,38,.14) 2px 3px, rgba(110,72,38,0) 3px 5px) left top/100% 6px no-repeat,
+    linear-gradient(180deg,#d9b88c,#c9a273) left top/100% 6px no-repeat,
+    #fffaf3;}
+/* 0.9.58 インダストリアルのタブは半透明の真ちゅう色にして、スワイプ中も文字が読めるように */
+html[data-theme="industrial"] .nav-ind-pill{background:linear-gradient(180deg,rgba(227,180,108,.30),rgba(196,141,69,.20)) !important;
+  box-shadow:inset 0 0 0 1px rgba(227,180,108,.55), inset 0 -3px 0 #d6a45c, inset 0 1px 0 rgba(255,255,255,.18) !important;}
+html[data-theme="industrial"] .nav button.active{color:#f2c98a !important;}
+/* フラワー: 小枝の飾りが文字に重ならないよう、小さくしてカードの下に余白をとる */
+html[data-theme="flower"] .card{background:var(--sprig) right -2px bottom -2px/50px 38px no-repeat, #fffdfb;padding-bottom:30px;}
 </style>
 </head>
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.56</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.58</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -2370,7 +3457,7 @@ function lookOpacity(style, opacity){
 }
 function isLightTheme(){
   const t = document.documentElement.getAttribute('data-theme');
-  return t==='neumo' || t==='glass-light';
+  return t==='neumo' || t==='glass-light' || t==='hygge' || t==='mecha' || t==='marchen' || t==='pastel' || t==='flower';
 }
 function mixHex(fg, bg, pct){
   const a = safeColor(fg), b = safeColor(bg);
@@ -7336,14 +8423,21 @@ if(typeof ResizeObserver === 'function'){
 }
 
 
-const THEME_IDS = ['glass','glass-light','neumo','neumo-dark','neon'];
-const THEME_COLORS = { glass:'#07101c', 'glass-light':'#e8f3fa', neumo:'#c9ccd1', 'neumo-dark':'#2c2e33', neon:'#0a0908' };
+const THEME_IDS = ['glass','glass-light','neumo','neumo-dark','neon','hygge','industrial','mecha','sf','marchen','pastel','flower'];
+const THEME_COLORS = { glass:'#07101c', 'glass-light':'#e8f3fa', neumo:'#c9ccd1', 'neumo-dark':'#2c2e33', neon:'#0a0908', hygge:'#d0ae82', industrial:'#2b2c2e', mecha:'#2b3a56', sf:'#1c1626', marchen:'#fdf0f2', pastel:'#f7f8fd', flower:'#fdf6f3' };
 const THEME_META = {
   glass: { id:'glass', name:'ガラス', color: THEME_COLORS.glass },
   'glass-light': { id:'glass-light', name:'ガラス・ライト', color: THEME_COLORS['glass-light'] },
   neumo: { id:'neumo', name:'ニューモ', color: THEME_COLORS.neumo },
   'neumo-dark': { id:'neumo-dark', name:'ニューモ・ダーク', color: THEME_COLORS['neumo-dark'] },
-  neon: { id:'neon', name:'ネオン', color: THEME_COLORS.neon }
+  neon: { id:'neon', name:'ネオン', color: THEME_COLORS.neon },
+  hygge: { id:'hygge', name:'ヒュッゲ', color: THEME_COLORS.hygge },
+  industrial: { id:'industrial', name:'インダストリアル', color: THEME_COLORS.industrial },
+  mecha: { id:'mecha', name:'メカ', color: THEME_COLORS.mecha },
+  sf: { id:'sf', name:'SF', color: THEME_COLORS.sf },
+  marchen: { id:'marchen', name:'メルヘン', color: THEME_COLORS.marchen },
+  pastel: { id:'pastel', name:'パステル', color: THEME_COLORS.pastel },
+  flower: { id:'flower', name:'フラワー', color: THEME_COLORS.flower }
 };
 function normalizeTheme(id){
   id = String(id == null ? '' : id).trim();
@@ -7352,11 +8446,17 @@ function normalizeTheme(id){
   if(id === 'ニューモ・ダーク' || id === 'neumo_dark' || id === 'neumoDark') id = 'neumo-dark';
   else if(id === 'I' || id === 'ニューモ') id = 'neumo';
   if(id === 'D' || id === 'ネオン') id = 'neon';
+  if(id === 'ヒュッゲ') id = 'hygge';
+  else if(id === 'インダストリアル') id = 'industrial';
+  else if(id === 'メカ') id = 'mecha';
+  else if(id === 'SF' || id === 'ＳＦ') id = 'sf';
   return THEME_IDS.indexOf(id) >= 0 ? id : 'glass';
 }
 function isLightTheme(id){
+  // 引数なしで呼ばれたときは今のテーマで判定する（同じ名前の関数が2つあり、こちらが優先されるため）
+  if(id === undefined) id = document.documentElement.getAttribute('data-theme');
   id = normalizeTheme(id);
-  return id === 'neumo' || id === 'glass-light';
+  return id === 'neumo' || id === 'glass-light' || id === 'hygge' || id === 'mecha' || id === 'marchen' || id === 'pastel' || id === 'flower';
 }
 function applyTheme(id, persist){
   id = normalizeTheme(id);
@@ -7365,7 +8465,8 @@ function applyTheme(id, persist){
   const meta = document.querySelector('meta[name="theme-color"]');
   if(meta) meta.setAttribute('content', color);
   const bar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
-  if(bar) bar.setAttribute('content', isLightTheme(id) ? 'default' : 'black-translucent');
+  // メカは上の帯が濃い紺なので、ステータスバーの文字は白にする
+  if(bar) bar.setAttribute('content', (isLightTheme(id) && id !== 'mecha') ? 'default' : 'black-translucent');
   if(persist !== false && state && state.settings){
     state.settings.theme = id;
     persistSettings();
