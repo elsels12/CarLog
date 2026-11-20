@@ -2622,6 +2622,12 @@ html[data-theme="industrial"] .nav-ind-pill{background:linear-gradient(180deg,rg
 html[data-theme="industrial"] .nav button.active{color:#f2c98a !important;}
 /* フラワー: 小枝の飾りが文字に重ならないよう、小さくしてカードの下に余白をとる */
 html[data-theme="flower"] .card{background:var(--sprig) right -2px bottom -2px/50px 38px no-repeat, #fffdfb;padding-bottom:30px;}
+/* 0.9.59 メカ: 並べ替えバーと色変更パネルは濃い紺の上なので、文字と枠を明るくする */
+html[data-theme="mecha"] .sc-bar,html[data-theme="mecha"] .sc-color-panel{color:#e6ebf3;border-top:1px solid #3a4a68;}
+html[data-theme="mecha"] .sc-bar .scb-hint{opacity:.85;}
+html[data-theme="mecha"] .sc-color-panel .scp-head button{border-color:#5a6b8a;color:#e6ebf3;}
+html[data-theme="mecha"] .sc-color-panel .scp-sw.on{box-shadow:0 0 0 2px #E5B53A;}
+html[data-theme="mecha"] .sc-tile.sc-sel{outline-color:#E5B53A;}
 </style>
 </head>
 <body data-tab="home">
@@ -3624,13 +3630,15 @@ function resolvedLook(sc, override){
   color = safeColor(color);
   lineColor = safeColor(lineColor);
   style = safeStyle(style) || globalIconStyle();
+  // 色変更パネルで「標準」を選べるように、補う前の色も返す（塗りで色なしのときは表示だけ #dfac58 で補う）
+  const rawColor = color;
   if(style==='fill' && !color) color = '#dfac58';
   opacity = lookOpacity(style, opacity);
   let size = '';
   if(Object.prototype.hasOwnProperty.call(override, 'size')) size = override.size;
   else size = shortcutSizeOf(sc);
   size = normalizeShortcutIconSize(size) || defaultShortcutIconSize();
-  return { color: color, lineColor: lineColor, style: style, opacity: opacity, size: size };
+  return { color: color, lineColor: lineColor, rawColor: rawColor, style: style, opacity: opacity, size: size };
 }
 function shortcutTileHtml(sc, attrs){
   sc = sc || {};
@@ -3928,7 +3936,7 @@ function renderScColorPanel(){
   const look = resolvedLook(sc);
   el.innerHTML =
     '<div class="scp-head"><b>'+escapeHtml(sc.label||sc.category||'')+'</b><button type="button" id="scpClose">閉じる</button></div>'+
-    '<div class="scp-row"><span>塗り</span><div class="scp-sws">'+swatchRow('fill', look.color)+'</div></div>'+
+    '<div class="scp-row"><span>塗り</span><div class="scp-sws">'+swatchRow('fill', look.rawColor)+'</div></div>'+
     '<div class="scp-row"><span>線</span><div class="scp-sws">'+swatchRow('line', look.lineColor)+'</div></div>';
 }
 function renderScBar(){
