@@ -1,4 +1,4 @@
-/* CarLog beta 0.9.59 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
+/* CarLog beta 0.9.62 — 税額・燃費・点検期限の計算（ブラウザ / Node 共用）
  * 税額はすべて「目安」。グリーン化特例・減免・月割・離島/沖縄の自賠責は含まない。
  */
 (function (root, factory) {
@@ -940,6 +940,17 @@
   ];
 
 
+  // 0.9.61 入力画面の内訳を見出しつきで並べる（保存される値は subs の名前のまま）
+  var SUB_GROUPS = {
+    "メンテナンス": [
+      { label: "エンジンまわり", subs: ["プラグ", "エアフィルター", "オイルフィルター", "クーラント", "ベルト類", "エンジンマウント", "バッテリー"] },
+      { label: "ブレーキ", subs: ["ブレーキパッド", "ブレーキローター", "ブレーキフルード", "ブレーキホース"] },
+      { label: "足回り・駆動系", subs: ["ブッシュ", "ショック・車高調OH", "アライメント", "ハブベアリング", "ドライブシャフトブーツ", "クラッチ"] },
+      { label: "電装・そのほか", subs: ["灯火類", "ワイパー", "消耗品", "その他"] }
+    ]
+  };
+  function subGroupsFor(catId) { return SUB_GROUPS[catId] || null; }
+
   var CATEGORY_MERGES = {
     "高速代": { id: "交通費", defaultSub: "高速代" },
     "装備品": { id: "カスタム費用", defaultSub: "装備品" }
@@ -947,16 +958,16 @@
 
   var CATEGORIES = [
     { id: "燃費", label: "給油", subs: ["給油"] },
-    { id: "オイル", label: "オイル", subs: ["エンジン", "ミッション", "デフ"] },
+    { id: "オイル", label: "オイル", subs: ["エンジン", "ミッション", "ATF", "デフ"] },
     { id: "車検", label: "車検", subs: ["車検"] },
     { id: "税金", label: "税金", subs: ["自動車税", "重量税", "その他"] },
     { id: "保険", label: "保険", subs: ["自賠責", "任意"] },
     { id: "定期点検", label: "定期点検", subs: ["定期点検"] },
-    { id: "メンテナンス", label: "メンテナンス", subs: ["プラグ", "エアフィルター", "オイルフィルター", "ブレーキフルード", "クーラント", "その他"] },
+    { id: "メンテナンス", label: "メンテナンス", subs: ["プラグ", "エアフィルター", "オイルフィルター", "クーラント", "ベルト類", "エンジンマウント", "バッテリー", "ブレーキパッド", "ブレーキローター", "ブレーキフルード", "ブレーキホース", "ブッシュ", "ショック・車高調OH", "アライメント", "ハブベアリング", "ドライブシャフトブーツ", "クラッチ", "灯火類", "ワイパー", "消耗品", "その他"] },
     { id: "修理", label: "修理", subs: ["修理"] },
     { id: "タイヤ", label: "タイヤ", subs: ["タイヤ"] },
     { id: "カスタム費用", label: "カスタム・装備品", subs: ["ドラレコ", "ETC車載器", "ナビ・オーディオ", "ホイール", "エアロ", "マフラー", "足回り", "内装", "電装品", "ヘルメット", "グローブ", "シューズ", "その他"] },
-    { id: "サーキット", label: "サーキット", subs: ["走行料", "ライセンス", "年会費", "パッド・フルード等消耗品"] },
+    { id: "サーキット", label: "サーキット", subs: ["走行料", "ライセンス", "年会費"] },
     { id: "洗車・コーティング・ケミカル", label: "洗車・コーティング・ケミカル", subs: ["洗車", "コーティング", "ケミカル"] },
     { id: "駐車場・車庫代", label: "駐車場・車庫代", subs: ["駐車場", "車庫代"] },
     { id: "交通費", label: "交通費", subs: ["高速代", "有料道路", "フェリー", "カーシェア・レンタカー", "代行運転", "レッカー・ロードサービス", "その他"] },
@@ -999,7 +1010,115 @@
     }
     var id = canonicalizeCategory(raw);
     if (id && id !== raw) rec.category = id;
+    // 0.9.60: パッド・ローター・フルードなどの消耗品は「サーキット」ではなく「メンテナンス」に入れる
+    if (rec.categoryId) return rec; // カスタム費目の記録はさわらない
+    if ((id || raw) === "サーキット") {
+      var moved = circuitPartsSub(rec.subcategory, rec.memo);
+      if (moved) { rec.category = "メンテナンス"; rec.subcategory = moved; }
+    }
+    // 0.9.61: 「ブレーキパッド・ローター」を「ブレーキパッド」「ブレーキローター」に分ける
+    if (rec.category === "メンテナンス" && String(rec.subcategory || "").trim() === "ブレーキパッド・ローター") {
+      rec.subcategory = mentionsRotor(rec.memo) ? "ブレーキローター" : "ブレーキパッド";
+    }
     return rec;
+  }
+  // サーキットの内訳がパッドなどの消耗品なら、メンテナンスでの内訳名を返す（それ以外は ""）
+  function mentionsRotor(text) { return /ローター|ﾛｰﾀｰ|rotor/i.test(String(text == null ? "" : text)); }
+  function circuitPartsSub(sub, memo) {
+    var s = String(sub == null ? "" : sub).trim();
+    if (!s) return "";
+    if (/パッド|ローター|ﾊﾟｯﾄﾞ|ﾛｰﾀｰ|pad|rotor/i.test(s)) return (mentionsRotor(s) || mentionsRotor(memo)) ? "ブレーキローター" : "ブレーキパッド";
+    if (/フルード|fluid/i.test(s)) return "ブレーキフルード";
+    if (/消耗/.test(s)) return "消耗品";
+    return "";
+  }
+
+  /* ---- 0.9.60 ローン（元利均等・ボーナス加算） ---- */
+  function ymAdd(ym, n) {
+    var m = /^(\d{4})-(\d{1,2})$/.exec(String(ym || ""));
+    if (!m) return "";
+    var t = Number(m[1]) * 12 + (Number(m[2]) - 1) + (n || 0);
+    var y = Math.floor(t / 12), mo = t - y * 12 + 1;
+    return y + "-" + (mo < 10 ? "0" : "") + mo;
+  }
+  function ymDiff(a, b) { // b - a (months)
+    var ma = /^(\d{4})-(\d{1,2})$/.exec(String(a || "")), mb = /^(\d{4})-(\d{1,2})$/.exec(String(b || ""));
+    if (!ma || !mb) return NaN;
+    return (Number(mb[1]) * 12 + Number(mb[2])) - (Number(ma[1]) * 12 + Number(ma[2]));
+  }
+  // その月の支払日（31日などは月末に寄せる）
+  function dueDateFor(ym, day) {
+    var m = /^(\d{4})-(\d{1,2})$/.exec(String(ym || ""));
+    if (!m) return "";
+    var y = Number(m[1]), mo = Number(m[2]);
+    var last = new Date(y, mo, 0).getDate();
+    var d = Math.max(1, Math.min(last, Math.floor(Number(day) || 1)));
+    return y + "-" + (mo < 10 ? "0" : "") + mo + "-" + (d < 10 ? "0" : "") + d;
+  }
+  /*
+   * 元利均等。毎月 M ＋ ボーナス月は加算額 A。月利 r = 年利/12。
+   * 借入額 P = M × Σv^k ＋ A × Σ(ボーナス月の)v^k（v = 1/(1+r)）から M を出す。
+   * 毎月額は1円未満切り捨て、利息は毎月 残高×r の1円未満切り捨て、最終回で端数を調整して残高0にする。
+   */
+  function loanSchedule(plan) {
+    plan = plan || {};
+    var P = Math.round(Number(plan.principal) || 0);
+    var n = Math.floor(Number(plan.months) || 0);
+    var rate = Number(plan.ratePct) || 0;
+    var A = Math.max(0, Math.round(Number(plan.bonusAmount) || 0));
+    var bm = {};
+    (plan.bonusMonths || []).forEach(function (x) { var k = Math.floor(Number(x)); if (k >= 1 && k <= 12) bm[k] = true; });
+    var start = plan.startYm;
+    if (!(P > 0) || !(n > 0) || n > 600 || !ymAdd(start, 0) || rate < 0 || rate > 30) return { ok: false, error: "借入額・回数・年利・初回の月を確かめてください", rows: [] };
+    var r = rate / 100 / 12, S = 0, Sb = 0, k, ym, isB, v;
+    var bonusFlags = [];
+    for (k = 1; k <= n; k++) {
+      ym = ymAdd(start, k - 1);
+      isB = A > 0 && !!bm[Number(ym.slice(5))];
+      bonusFlags.push(isB);
+      v = Math.pow(1 + r, -k);
+      S += v; if (isB) Sb += v;
+    }
+    var Mexact = (P - A * Sb) / S;
+    if (!(Mexact > 0)) return { ok: false, error: "ボーナスの加算額が大きすぎます", rows: [] };
+    var M = Math.floor(Mexact);
+    var bal = P, rows = [], totalPay = 0, totalInt = 0;
+    for (k = 1; k <= n; k++) {
+      ym = ymAdd(start, k - 1);
+      var interest = Math.floor(bal * r);
+      var pay = M + (bonusFlags[k - 1] ? A : 0);
+      if (k === n || pay - interest > bal) pay = bal + interest;
+      var prin = pay - interest;
+      bal = bal - prin;
+      totalPay += pay; totalInt += interest;
+      rows.push({ no: k, ym: ym, date: dueDateFor(ym, plan.day), payment: pay, principal: prin, interest: interest, balance: bal, bonus: bonusFlags[k - 1] });
+      if (bal <= 0) break;
+    }
+    return { ok: true, monthly: M, monthlyExact: Mexact, bonusPayment: A ? M + A : 0, bonusCount: bonusFlags.filter(function (x) { return x; }).length, totalPayment: totalPay, totalInterest: totalInt, rows: rows, lastYm: rows.length ? rows[rows.length - 1].ym : "" };
+  }
+  // 自動追加の対象になる月（支払日が today 以前のもの）を順に返す。done に入っている月は飛ばす
+  function autoPlanDueMonths(plan, todayYmd) {
+    plan = plan || {};
+    var out = [];
+    var first = plan.kind === "loan" ? plan.startYm : plan.startYm;
+    if (!ymAdd(first, 0)) return out;
+    var from = plan.addFromYm && ymDiff(first, plan.addFromYm) > 0 ? plan.addFromYm : first;
+    var today = String(todayYmd || "").slice(0, 10);
+    var curYm = today.slice(0, 7);
+    var last = curYm;
+    if (plan.kind === "loan") {
+      var sch = loanSchedule(plan);
+      if (!sch.ok) return out;
+      if (ymDiff(sch.lastYm, last) > 0) last = sch.lastYm;
+    } else if (plan.endYm && ymAdd(plan.endYm, 0) && ymDiff(plan.endYm, last) > 0) last = plan.endYm;
+    var done = plan.done || {};
+    for (var ym = from, guard = 0; ymDiff(ym, last) >= 0 && guard < 1200; ym = ymAdd(ym, 1), guard++) {
+      var due = dueDateFor(ym, plan.day);
+      if (due > today) break;
+      if (done[ym]) continue;
+      out.push({ ym: ym, date: due });
+    }
+    return out;
   }
   function migrateHiddenCategories(arr) {
     if (!Array.isArray(arr)) return [];
@@ -1022,6 +1141,15 @@
     categoryLabel: categoryLabel,
     canonicalizeCategory: canonicalizeCategory,
     migrateRecordCategory: migrateRecordCategory,
+    circuitPartsSub: circuitPartsSub,
+    mentionsRotor: mentionsRotor,
+    subGroupsFor: subGroupsFor,
+    SUB_GROUPS: SUB_GROUPS,
+    loanSchedule: loanSchedule,
+    autoPlanDueMonths: autoPlanDueMonths,
+    dueDateFor: dueDateFor,
+    ymAdd: ymAdd,
+    ymDiff: ymDiff,
     migrateHiddenCategories: migrateHiddenCategories,
     fyStart: fyStart,
     fyLabel: fyLabel,

@@ -30,7 +30,7 @@
 })();
 </script>
 
-<title>CarLog beta 0.9.59</title>
+<title>CarLog beta 0.9.62</title>
 <style>
 :root{
   --asphalt:#0c0e11;
@@ -1427,6 +1427,36 @@ html[data-theme] #page-input select#fSub:focus-visible{
 html[data-theme] #page-input select#fSub[size]:not([size="1"]){
   height:auto;min-height:52px;padding-right:14px;
 }
+/* 0.9.62 設定の折りたたみカード（アニメーションなし） */
+.card.fold-card > h2.fold-h2{display:block;margin:-6px -4px 0;letter-spacing:inherit;text-transform:none;}
+.card.fold-card .fold-head{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:6px 4px;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:10px;transition:none;}
+.card.fold-card .fold-head:focus-visible{outline:2px solid var(--amber);outline-offset:2px;}
+.card.fold-card .fold-title{flex:0 1 auto;min-width:0;font-size:11px;letter-spacing:.1em;font-weight:800;color:inherit;}
+.card.fold-card .fold-sum{flex:1 1 auto;min-width:0;text-align:right;font-size:12px;font-weight:700;letter-spacing:0;color:var(--paper-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-ui);}
+.card.fold-card .fold-chev{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:999px;border:1px solid var(--line);color:var(--paper-dim);transition:none;}
+.card.fold-card .fold-chev svg{width:16px;height:16px;display:block;transition:none;}
+.card.fold-card.fold-open .fold-chev svg{transform:rotate(180deg);}
+.card.fold-card .fold-body[hidden]{display:none !important;}
+.card.fold-card.fold-open .fold-body{margin-top:4px;}
+html[data-theme="mecha"] .card.fold-card:not(.fold-open):not(#builtinSubSet) > h2.fold-h2{border-bottom:0;box-shadow:none;padding-bottom:0;}
+html[data-theme="mecha"] .card.fold-card:not(.fold-open){padding-bottom:18px;}
+/* 0.9.61 組み込み費目の内訳 */
+#builtinSubSet select#bsCat{width:100%;}
+#builtinSubSet .bs-h{font-size:12px;font-weight:800;opacity:.8;margin:12px 0 4px;}
+#builtinSubSet .bs-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);min-height:40px;}
+#builtinSubSet .bs-row:last-child{border-bottom:0;}
+#builtinSubSet .bs-name{font-weight:700;min-width:0;overflow-wrap:anywhere;}
+#builtinSubSet .bs-row.off .bs-name{opacity:.5;}
+#builtinSubSet .bs-tag{font-style:normal;font-size:11px;font-weight:700;margin-left:6px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);opacity:.85;white-space:nowrap;}
+#builtinSubSet .bs-acts{display:flex;gap:6px;flex-shrink:0;}
+#builtinSubSet .bs-lock{font-size:11px;opacity:.6;}
+#builtinSubSet .bs-empty{margin:10px 0 0;}
+#builtinSubSet .bs-add{display:flex;gap:8px;margin-top:12px;}
+#builtinSubSet .bs-add input{flex:1;min-width:0;}
+#builtinSubSet .bs-add .btn{flex:0 0 auto;white-space:nowrap;}
+/* 0.9.61 内訳の見出し（optgroup） */
+html[data-theme] #page-input select#fSub optgroup{font-size:13px;font-weight:800;font-style:normal;color:var(--paper-dim);}
+html[data-theme] #page-input select#fSub option{font-size:16px;font-weight:700;color:var(--input-fg);padding:4px 0 4px 8px;}
 html[data-theme] #page-input .cats{gap:8px;}
 html[data-theme] #page-input #catBtns,
 html[data-theme] #modal.cat-sheet #catBtns{
@@ -2628,12 +2658,49 @@ html[data-theme="mecha"] .sc-bar .scb-hint{opacity:.85;}
 html[data-theme="mecha"] .sc-color-panel .scp-head button{border-color:#5a6b8a;color:#e6ebf3;}
 html[data-theme="mecha"] .sc-color-panel .scp-sw.on{box-shadow:0 0 0 2px #E5B53A;}
 html[data-theme="mecha"] .sc-tile.sc-sel{outline-color:#E5B53A;}
+/* ===== 0.9.60 毎月の自動追加（ローン・駐車場）／ホームの見た目 ===== */
+.ap-item{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line);}
+.ap-item:first-of-type{border-top:0;}
+.ap-main{flex:1;min-width:0;}
+.ap-title{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.ap-title b{font-size:15px;}
+.ap-veh{font-size:12px;opacity:.75;}
+.ap-off{font-size:11px;font-weight:800;padding:1px 8px;border-radius:999px;border:1px solid var(--line);opacity:.85;}
+.ap-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 10px;margin:4px 0;}
+.ap-grid>div{display:flex;flex-direction:column;min-width:0;}
+.ap-grid span{font-size:11px;opacity:.75;}
+.ap-grid span.ap-sub{font-size:12px;opacity:.85;font-variant-numeric:tabular-nums;}
+.ap-grid b{font-size:14px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ap-btns{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;}
+.ap-btns .chip-btn{min-width:64px;}
+.ap-months{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 4px;}
+.ap-mchip{min-width:44px;height:32px;padding:0 8px;border-radius:999px;border:1px solid var(--line);background:transparent;color:inherit;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+.ap-mchip.on{background:var(--amber);border-color:var(--amber);color:var(--ink-on-accent);}
+.ap-preview{margin:10px 0 4px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;}
+.modal.ap-editor .ap-body{max-height:calc(100dvh - 210px);overflow:auto;-webkit-overflow-scrolling:touch;padding-right:2px;}
+.ap-tbl-wrap{max-height:calc(100dvh - 300px);overflow:auto;margin:8px 0;border:1px solid var(--line);border-radius:10px;-webkit-overflow-scrolling:touch;}
+.ap-tbl{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums;}
+.ap-tbl th,.ap-tbl td{padding:6px 4px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line);}
+.ap-tbl th:first-child,.ap-tbl td:first-child,.ap-tbl th:nth-child(2),.ap-tbl td:nth-child(2){text-align:left;}
+.ap-tbl thead th{position:sticky;top:0;background:var(--panel);font-weight:800;z-index:1;}
+html[data-theme="glass"] .ap-tbl thead th{background:#18243a;}
+html[data-theme="glass-light"] .ap-tbl thead th{background:#e3edf5;}
+html[data-theme="neon"] .ap-tbl thead th{background:#0d0b0a;}
+html[data-theme="sf"] .ap-tbl thead th{background:#241c30;}
+html[data-theme="industrial"] .ap-tbl thead th{background:#141815;}
+.ap-tbl tr.paid td{opacity:.5;}
+.ap-tbl tr.bonus td{font-weight:800;}
+.ap-del-btns{flex-wrap:wrap;}
+.sc-color-panel .scp-acts{display:flex;gap:6px;align-items:center;}
+.sc-color-panel .scp-head button.scp-more{border-color:var(--amber);color:var(--amber);font-weight:800;}
+html[data-theme="mecha"] .sc-color-panel .scp-head button.scp-more{border-color:#E5B53A;color:#E5B53A;}
+html[data-theme="mecha"] .ap-mchip.on{background:#2f5aa8;border-color:#2f5aa8;color:#fff;}
 </style>
 </head>
 <body data-tab="home">
 <header class="topbar">
   <div class="brand">
-    <div class="eyebrow"><span id="verTag">beta 0.9.59</span></div>
+    <div class="eyebrow"><span id="verTag">beta 0.9.62</span></div>
     <h1><span class="brand-logo">CarLog</span> <span class="beta-badge">BETA</span></h1>
     <div class="tagline">愛車の維持費・メンテ記録</div>
   </div>
@@ -3560,6 +3627,7 @@ function builtinLook(name){
 }
 function applyBuiltinLookFromRow(row){
   if(!row || !row.id) return;
+  if(typeof applyBuiltinSubsFromRow==='function') applyBuiltinSubsFromRow(row);
   const key = String(row.id).indexOf('bi:')===0 ? String(row.id).slice(3) : String(row.id);
   if(!key) return;
   const cur = state.builtinLooks[key] || {};
@@ -3576,6 +3644,7 @@ function applyBuiltinLookFromRow(row){
   }
   const parsed = parseLookField(row.style);
   const uc = unpackColors(row.color);
+  const meta = lookMetaFromSubs(row.subs);
   state.builtinLooks[key] = {
     color: uc.color,
     lineColor: uc.lineColor,
@@ -3583,10 +3652,30 @@ function applyBuiltinLookFromRow(row){
     opacity: clampOpacity(row.opacity!=null?row.opacity:parsed.opacity, cur.opacity),
     icon: row.icon || cur.icon || '',
     size: normalizeShortcutIconSize(row.size!=null&&row.size!==''?row.size:cur.size) || cur.size || '',
+    glyph: meta ? meta.glyph : (cur.glyph||''),
+    label: meta ? meta.label : (cur.label||''),
+    metaTouched: !!(meta || cur.metaTouched),
     deleted: !!row.deleted,
     updatedAt: row.updatedAt || new Date().toISOString()
   };
   persistLooks();
+}
+// 組み込みの見た目の「絵柄・表示名」は、費目シートのサブカテゴリ欄に m:… の1項目で入れる（Code.gs は変えない）
+function lookMetaToSubs(look){
+  if(!look || (!look.glyph && !look.label && !look.metaTouched)) return [];
+  return ['m:'+encodeURIComponent(JSON.stringify({ g: look.glyph||'', l: look.label||'' }))];
+}
+function lookMetaFromSubs(subs){
+  const list = Array.isArray(subs) ? subs : (typeof subs==='string' && subs ? String(subs).split('|') : []);
+  for(let i=0;i<list.length;i++){
+    const x = String(list[i]||'');
+    if(x.indexOf('m:')!==0) continue;
+    try{
+      const o = JSON.parse(decodeURIComponent(x.slice(2)));
+      return { glyph: String(o.g||''), label: String(o.l||'').slice(0,20) };
+    }catch(e){}
+  }
+  return null;
 }
 function upsertBuiltinLook(name, fields){
   if(!name) return null;
@@ -3598,6 +3687,10 @@ function upsertBuiltinLook(name, fields){
     opacity: fields && 'opacity' in fields ? clampOpacity(fields.opacity, null) : (prev.opacity!=null?prev.opacity:null),
     icon: (fields && fields.icon) || prev.icon || '',
     size: fields && 'size' in fields ? (normalizeShortcutIconSize(fields.size)||'') : (prev.size||''),
+    // 0.9.60: ホームのアイコンの絵柄と表示名（空＝標準）
+    glyph: fields && 'glyph' in fields ? String(fields.glyph||'') : (prev.glyph||''),
+    label: fields && 'label' in fields ? String(fields.label||'').trim().slice(0,20) : (prev.label||''),
+    metaTouched: !!(prev.metaTouched || (fields && ('glyph' in fields || 'label' in fields))),
     deleted: false,
     updatedAt: new Date().toISOString()
   };
@@ -3689,10 +3782,25 @@ function categoriesForSync(){
       style: safeStyle(look.style) || (key==='_default' ? globalIconStyle() : ''),
       opacity: look.opacity!=null ? look.opacity : null,
       size: normalizeShortcutIconSize(look.size||'') || '',
+      subs: lookMetaToSubs(look).concat(bsToken(key) ? [bsToken(key)] : []),
+      updatedAtLook: '',
       deleted: !!look.deleted,
       updatedAt: look.updatedAt || new Date().toISOString()
     });
   });
+  // 0.9.61 見た目のない組み込み費目でも、内訳の設定があれば bi: 行で送る
+  Object.keys(builtinSubsAll()).forEach(function(key){
+    const tok = bsToken(key);
+    if(!tok) return;
+    const row = list.find(function(r){ return r.id==='bi:'+key; });
+    const u = (builtinSubsCfg(key)||{}).u || '';
+    if(row){
+      if((Date.parse(u)||0) > (Date.parse(row.updatedAt)||0)) row.updatedAt = u;
+      return;
+    }
+    list.push({ id:'bi:'+key, name:key, icon:'', color:'', style:'', opacity:null, size:'', subs:[tok], deleted:false, updatedAt: u || new Date().toISOString() });
+  });
+  list.forEach(function(r){ delete r.updatedAtLook; });
   if(!looks._default){
     list.push({ id:'bi:_default', name:'_default', icon:'', color:'', style: globalIconStyle(), size:'', deleted:false, updatedAt: new Date().toISOString() });
   }
@@ -3715,7 +3823,7 @@ function visibleCategories(opts){
   const list = C.CATEGORIES.filter(function(c){
     return hidden.indexOf(c.id)<0 || c.id===keep;
   }).map(function(c){
-    return { id:c.id, label:c.label||c.id, subs:c.subs, builtin:true };
+    return { id:c.id, label:c.label||c.id, subs:effectiveBuiltinSubs(c), builtin:true };
   });
   activeCustomCats().forEach(function(c){
     list.push({
@@ -3838,6 +3946,15 @@ function allShortcutDefs(){
     });
   });
   replacementShortcutDefs().forEach(function(s){ list.push(s); });
+  // 0.9.60: 組み込みのショートカットは、見た目で選んだ絵柄・表示名を使う（空なら標準）
+  list.forEach(function(s){
+    if(s.customId) return;
+    s.defaultIcon = s.icon; s.defaultLabel = s.label;
+    const look = builtinLook(s.kind==='replace' ? s.id : s.category);
+    if(!look) return;
+    if(look.glyph) s.icon = look.glyph;
+    if(look.label) s.label = look.label;
+  });
   return list;
 }
 function shortcutById(id){
@@ -3908,6 +4025,7 @@ function scColorPanelEl(){
       if(!b) return;
       ev.preventDefault();
       if(b.id==='scpClose'){ scColorMode = false; scSelId = ''; refreshScColorUi(true); return; }
+      if(b.id==='scpMore'){ const sc = shortcutById(scSelId); if(sc) openShortcutLookEditor(sc); return; }
       const k = b.getAttribute('data-k');
       if(!k || !scSelId) return;
       const v = b.getAttribute('data-v') || '';
@@ -3923,6 +4041,13 @@ function swatchRow(kind, cur){
     return '<button type="button" class="scp-sw'+((cur||'')===col?' on':'')+(col?'':' none')+'" data-k="'+kind+'" data-v="'+escapeHtml(col)+'" style="--c:'+(col||'#555')+'" aria-label="'+(col?escapeHtml(col):'標準')+'">'+(col?'':'標')+'</button>';
   }).join('');
 }
+// ホームでも設定でも、同じ「見た目」編集画面を開く
+function openShortcutLookEditor(sc){
+  if(!sc) return;
+  if(sc.customId) openCategoryEditor(sc.customId);
+  else if(sc.kind==='replace') openCategoryEditor('bi:'+sc.id, { builtin:true, shortcut:sc });
+  else openCategoryEditor('bi:'+sc.category, { builtin:true, shortcut:sc });
+}
 function renderScColorPanel(){
   const el = scColorPanelEl();
   const open = !!(scReorder && scColorMode);
@@ -3930,12 +4055,12 @@ function renderScColorPanel(){
   if(!open){ el.innerHTML = ''; return; }
   const sc = scSelId ? shortcutById(scSelId) : null;
   if(!sc){
-    el.innerHTML = '<div class="scp-head"><b>色を変えるアイコンをタップ</b><button type="button" id="scpClose">閉じる</button></div>';
+    el.innerHTML = '<div class="scp-head"><b>見た目を変えるアイコンをタップ</b><button type="button" id="scpClose">閉じる</button></div>';
     return;
   }
   const look = resolvedLook(sc);
   el.innerHTML =
-    '<div class="scp-head"><b>'+escapeHtml(sc.label||sc.category||'')+'</b><button type="button" id="scpClose">閉じる</button></div>'+
+    '<div class="scp-head"><b>'+escapeHtml(sc.label||sc.category||'')+'</b><span class="scp-acts"><button type="button" id="scpMore" class="scp-more">アイコン・名前・形…</button><button type="button" id="scpClose">閉じる</button></span></div>'+
     '<div class="scp-row"><span>塗り</span><div class="scp-sws">'+swatchRow('fill', look.rawColor)+'</div></div>'+
     '<div class="scp-row"><span>線</span><div class="scp-sws">'+swatchRow('line', look.lineColor)+'</div></div>';
 }
@@ -3950,7 +4075,7 @@ function renderScBar(){
   const open = !!scReorder;
   el.classList.toggle('open', open);
   if(!open){ el.innerHTML = ''; return; }
-  el.innerHTML = '<span class="scb-hint">並べ替え・色・×で整理</span><button type="button" class="sc-color-btn'+(scColorMode?' on':'')+'" id="btnScColor">色変更</button><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button>';
+  el.innerHTML = '<span class="scb-hint">並べ替え・見た目・×で整理</span><button type="button" class="sc-color-btn'+(scColorMode?' on':'')+'" id="btnScColor">見た目変更</button><button type="button" class="sc-reorder-done" id="btnScReorderDone">完了</button>';
   const done = document.getElementById('btnScReorderDone');
   if(done) done.onclick = function(ev){ ev.preventDefault(); ev.stopPropagation(); setShortcutReorder(false); };
   bindScColorBtn();
@@ -5973,16 +6098,40 @@ function buildCatBtns(active, rec){
 }
 function fillSubs(cat, selected, customId){
   const def = findCatDef(cat, customId || (document.getElementById('fCatId') && document.getElementById('fCatId').value));
-  const subs = (def && def.subs && def.subs.length) ? def.subs : [cat || 'その他'];
+  const subs = (def && def.subs && def.subs.length) ? def.subs.slice() : [cat || 'その他'];
   const sel = document.getElementById('fSub');
+  const subsLen = subs.length;
   let cur = selected && subs.indexOf(selected)>=0 ? selected : subs[0];
   if(selected && subs.indexOf(selected)<0){
     subs.push(selected);
     cur = selected;
   }
-  sel.innerHTML = subs.map(function(s){
-    return '<option value="'+escapeHtml(s)+'"'+(s===cur?' selected':'')+'>'+escapeHtml(s)+'</option>';
-  }).join('');
+  const opt = function(s){ return '<option value="'+escapeHtml(s)+'"'+(s===cur?' selected':'')+'>'+escapeHtml(s)+'</option>'; };
+  // 0.9.61 組み込みのメンテナンスなどは見出し（optgroup）つきで並べる。値は今までどおり内訳名
+  const groups = (def && !def.customId && !(customId) && C.subGroupsFor) ? C.subGroupsFor(def.id) : null;
+  if(groups){
+    const used = {};
+    let html = groups.map(function(g){
+      const items = g.subs.filter(function(x){ return subs.indexOf(x)>=0; });
+      items.forEach(function(x){ used[x]=1; });
+      return items.length ? '<optgroup label="'+escapeHtml(g.label)+'">'+items.map(opt).join('')+'</optgroup>' : '';
+    }).join('');
+    let rest = subs.filter(function(x){ return !used[x]; });
+    if(rest.length){
+      // 自分で足した内訳は「その他」の前にまとめる（その他はいつも最後）
+      const mine = rest.filter(function(x){ return x!==selected || subs.indexOf(x)<subsLen; });
+      const legacy = rest.filter(function(x){ return mine.indexOf(x)<0; });
+      if(mine.length){
+        const other = used['その他'] ? 'その他' : '';
+        if(other) html = html.replace(opt(other), '').replace(/<optgroup label="[^"]*"><\/optgroup>/g,'');
+        html += '<optgroup label="自分で追加">'+mine.map(opt).join('')+'</optgroup>'+(other ? opt(other) : '');
+      }
+      html += legacy.map(opt).join('');
+    }
+    sel.innerHTML = html;
+  } else {
+    sel.innerHTML = subs.map(opt).join('');
+  }
   // 内訳の選択肢がない（1つだけ）カテゴリでは内訳の行を隠す（値は今までどおり保存される）
   const subRow = document.getElementById('subRow');
   if(subRow) subRow.style.display = subs.length>1 ? '' : 'none';
@@ -6423,12 +6572,14 @@ function renderSet(){
     calendarCardHtml()+
     '<div class="card tint tint-vehicle"><h2>車両</h2>'+vehList+
     '<div class="btn-row"><button type="button" class="btn ghost" id="btnAddVeh">車両を追加</button></div></div>'+
+    autoPlanCardHtml()+
     '<div class="card tint tint-cat" id="customCatSet"><h2>カスタム費目</h2>'+
     '<div class="help">ブレーキパッドやドラレコなど、自分で費目を追加できます。アイコン・色・内訳・点検間隔を設定できます。</div>'+customCatListHtml()+
     '<div class="btn-row"><button type="button" class="btn ghost" id="btnAddCat">費目を追加</button></div></div>'+
     '<div class="card tint tint-hide" id="hideCatSet"><h2>組み込み費目の表示</h2>'+
     '<div class="help">入力の選択肢から外します。記録は消えません。</div>'+hideBuiltinHtml()+
     '</div>'+
+    builtinSubsCardHtml()+
     '<div class="card tint tint-shortcut" id="shortcutSet"><h2>ホームのショートカット</h2>'+
     '<div class="help">表示する項目と順番を変えられます。各ショートカットの「見た目」から色、線／塗り、不透明度、アイコンサイズ（特大・大・中横・中・小横・小。小は中の半分の幅・高さ（4つで中1つ分）、小横は中と同じ幅・小と同じ高さ、中横は特大と同じ幅・中と同じ高さ、大は小横を横に2つ・縦に3つ分、特大は中2つ分の幅×2段）を項目ごとに設定できます。ホームではショートカットを長押しすると並べ替えできます。終わったら「完了」を押します。サイズは設定の「見た目」から変えられます。「オイル交換」など点検項目の交換ボタンも足せます。タップすると確認シートが開き、保存すると記録と前回交換が更新されます。</div>'+
     shortcutSettingsHtml()+
@@ -6459,6 +6610,9 @@ function renderSet(){
   document.getElementById('btnTestConn').onclick = function(){ testGasConnection(); };
   bindCodeGsUi();
   bindCalendarUi();
+  bindAutoPlanUi();
+  bindBuiltinSubsUi();
+  applySetFolds();
   document.getElementById('btnAddVeh').onclick = function(){ openVehicleEditor(null); };
   document.querySelectorAll('[data-ed]').forEach(function(b){
     b.onclick = function(){ openVehicleEditor(b.getAttribute('data-ed')); };
@@ -6640,7 +6794,8 @@ function syncOpacityUi(){
 function updateEditorPreview(){
   const box = document.getElementById('tilePreview');
   if(!box) return;
-  const name = (document.getElementById('cName') && document.getElementById('cName').value.trim()) || (box.getAttribute('data-label')||'プレビュー');
+  const lblEl = document.getElementById('cLabel');
+  const name = lblEl ? (lblEl.value.trim() || box.getAttribute('data-label') || 'プレビュー') : ((document.getElementById('cName') && document.getElementById('cName').value.trim()) || (box.getAttribute('data-label')||'プレビュー'));
   const icon = (document.getElementById('cIcon') && document.getElementById('cIcon').value) || 'star';
   const color = document.getElementById('cColor') ? document.getElementById('cColor').value : '';
   const lineColor = document.getElementById('cLineColor') ? document.getElementById('cLineColor').value : '';
@@ -6664,6 +6819,9 @@ function openCategoryEditor(id, opts){
       id: 'bi:'+builtinKey,
       name: builtinKey,
       icon: (shortcut && (shortcut.icon||shortcut.id)) || look.icon || 'star',
+      defaultIcon: (shortcut && (shortcut.defaultIcon||shortcut.icon||shortcut.id)) || 'star',
+      defaultLabel: (shortcut && (shortcut.defaultLabel||shortcut.label)) || C.categoryLabel(builtinKey) || builtinKey,
+      label: look.label || '',
       color: look.color || '',
       lineColor: look.lineColor || '',
       style: look.style || '',
@@ -6690,12 +6848,12 @@ function openCategoryEditor(id, opts){
   const titleName = isBuiltin ? ((shortcut && shortcut.label) || C.categoryLabel(cat.name) || cat.name) : (cat.name||''); const title = isBuiltin ? (titleName+'の見た目') : (id ? '費目を編集' : '費目を追加');
   box.innerHTML =
     '<h3 id="catEditorTitle">'+escapeHtml(title)+'</h3>'+
-    '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?((shortcut&&shortcut.label)||C.categoryLabel(cat.name)||cat.name): (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
+    '<div id="tilePreview" data-label="'+escapeHtml((isBuiltin?cat.defaultLabel: (cat.name||'プレビュー')))+'" data-cid="'+escapeHtml(isBuiltin?'':(cat.id||''))+'" data-category="'+escapeHtml(cat.name||'')+'"></div>'+
     '<div id="catEditor">'+
     (isBuiltin ? '<input type="hidden" id="cName" value="'+escapeHtml(cat.name)+'">' :
       '<label class="f">名前</label><input type="text" id="cName" value="'+escapeHtml(cat.name||'')+'" placeholder="ブレーキパッド、ドラレコ など">')+
-    (isBuiltin ? '<input type="hidden" id="cIcon" value="'+escapeHtml(cat.icon||'star')+'">' :
-      '<label class="f">アイコン</label><div class="icon-pick" id="cIcons">'+iconBtns+'</div><input type="hidden" id="cIcon" value="'+escapeHtml(cat.icon||'star')+'">')+
+    (isBuiltin ? '<label class="f">表示名（空なら標準の「'+escapeHtml(cat.defaultLabel)+'」）</label><input type="text" id="cLabel" maxlength="20" value="'+escapeHtml(cat.label||'')+'" placeholder="'+escapeHtml(cat.defaultLabel)+'">' : '')+
+      '<label class="f">アイコン</label><div class="icon-pick" id="cIcons">'+iconBtns+'</div><input type="hidden" id="cIcon" value="'+escapeHtml(cat.icon||'star')+'">'+
     '<label class="f">塗りの色（任意）</label><div class="color-pick" id="cColors">'+colorBtns+'</div>'+
     '<input type="hidden" id="cColor" value="'+escapeHtml(safeColor(cat.color)||'')+'">'+
     '<label class="f">線の色（任意）</label><div class="color-pick" id="cLineColors">'+lineColorBtns+'</div>'+
@@ -6714,6 +6872,7 @@ function openCategoryEditor(id, opts){
     '</div>'+
     '<div class="btn-row"><button type="button" class="btn primary" id="cSave">保存</button>'+
     ((!isBuiltin && id)?'<button type="button" class="btn danger" id="cDel">削除</button>':'')+
+    (isBuiltin?'<button type="button" class="btn ghost" id="cReset">標準に戻す</button>':'')+
     '<button type="button" class="btn ghost" id="cCancel">閉じる</button></div>';
   box.className = 'modal cat-editor';
   bg.classList.add('show');
@@ -6765,6 +6924,18 @@ function openCategoryEditor(id, opts){
   };
   const nameEl = document.getElementById('cName');
   if(nameEl && nameEl.type!=='hidden') nameEl.addEventListener('input', updateEditorPreview);
+  const labelEl = document.getElementById('cLabel');
+  if(labelEl) labelEl.addEventListener('input', updateEditorPreview);
+  const resetBtn = document.getElementById('cReset');
+  if(resetBtn) resetBtn.onclick = function(){
+    upsertBuiltinLook(builtinKey, { color:'', lineColor:'', style:'', opacity:null, glyph:'', label:'', size:'' });
+    const map = shortcutSizeMap();
+    if(shortcut && shortcut.id && map[shortcut.id]){ delete map[shortcut.id]; persistSettings(); }
+    if(map[builtinKey]){ delete map[builtinKey]; persistSettings(); }
+    closeModal();
+    renderAll();
+    toast('標準の見た目に戻しました');
+  };
   updateEditorPreview();
   document.getElementById('cSave').onclick = function(){
     const style = readEditorStyle();
@@ -6773,7 +6944,10 @@ function openCategoryEditor(id, opts){
     const opacity = readEditorOpacity();
     if(isBuiltin){
       const size = readEditorSize();
-      upsertBuiltinLook(builtinKey, { color:color, lineColor:lineColor, style:style, opacity:opacity, icon:cat.icon, size:size });
+      const pickIcon = (document.getElementById('cIcon') && document.getElementById('cIcon').value) || cat.defaultIcon;
+      const pickLabel = ((document.getElementById('cLabel') && document.getElementById('cLabel').value) || '').trim();
+      upsertBuiltinLook(builtinKey, { color:color, lineColor:lineColor, style:style, opacity:opacity, icon:cat.icon, size:size,
+        glyph: pickIcon===cat.defaultIcon ? '' : pickIcon, label: pickLabel===cat.defaultLabel ? '' : pickLabel });
       if(shortcut && shortcut.id) setShortcutSize(shortcut.id, size, true);
       else setShortcutSize(builtinKey, size, true);
       closeModal();
@@ -6866,9 +7040,7 @@ function bindShortcutSettings(){
       const sid = row && row.getAttribute('data-sid');
       const sc = shortcutById(sid);
       if(!sc) return;
-      if(sc.customId) openCategoryEditor(sc.customId);
-      else if(sc.kind==='replace') openCategoryEditor('bi:'+sc.id, { builtin:true, shortcut:sc });
-      else openCategoryEditor('bi:'+sc.category, { builtin:true, shortcut:sc });
+      openShortcutLookEditor(sc);
       return;
     }
     const up = e.target.closest('.sc-up');
@@ -8551,6 +8723,7 @@ function go(page, opts){
     if(mid) opts = Object.assign({}, opts, { animate:false });
   }
   const from = state.tab;
+  if(from==='set' && page!=='set' && typeof setFold==='function'){ try{ setFold('builtinSubSet', false); }catch(e){} }
   const animate = !!(opts.animate && from && page && page!==from && !reduceMotion() && !scDrag);
   if(animate){
     const dir = (TAB_ORDER.indexOf(page) > TAB_ORDER.indexOf(from)) ? 1 : -1;
@@ -8696,7 +8869,631 @@ function bindThemeUi(){
 
 
 
+/* ===== 0.9.60 毎月の自動追加（ローン・駐車場） =====
+ * 設定は state.settings.autoPlans（この端末に保存。JSON バックアップに含まれる）。
+ * アプリを開いたとき・戻ったときに、支払日が今日までの月を記録に追加する。
+ * 記録IDは ap_<プランID>_<YYYYMM> で決まり、追加した月は plan.done に残すので二重に入らない。
+ * 自動で入った記録を消しても、その月は二度と追加しない。ローンは最終回で止まる。 */
+function autoPlans(){
+  if(!Array.isArray(state.settings.autoPlans)) state.settings.autoPlans = [];
+  return state.settings.autoPlans;
+}
+function autoPlanById(id){ return autoPlans().find(function(p){ return p && p.id===id; }) || null; }
+function autoPlanRecordId(plan, ym){ return 'ap_'+plan.id+'_'+String(ym).replace('-',''); }
+function autoPlanRecords(plan){
+  const pre = 'ap_'+plan.id+'_';
+  return state.records.filter(function(r){ return r && String(r.id||'').indexOf(pre)===0; });
+}
+function thisYm(){ return todayYmd().slice(0,7); }
+function runAutoPlans(){
+  const today = todayYmd();
+  let added = 0, changed = false;
+  const have = {};
+  state.records.forEach(function(r){ if(r && r.id) have[r.id] = true; });
+  autoPlans().forEach(function(plan){
+    if(!plan || plan.enabled===false) return;
+    const veh = state.vehicles.find(function(v){ return v.id===plan.vehicleId; });
+    if(!veh) return;
+    if(!plan.done || typeof plan.done!=='object' || Array.isArray(plan.done)) plan.done = {};
+    const sch = plan.kind==='loan' ? C.loanSchedule(plan) : null;
+    C.autoPlanDueMonths(plan, today).forEach(function(d){
+      const rid = autoPlanRecordId(plan, d.ym);
+      if(have[rid] || (state.pendingDel && state.pendingDel[rid])){ plan.done[d.ym] = rid; changed = true; return; }
+      let amount, memo, cat, sub;
+      if(plan.kind==='loan'){
+        const row = sch && sch.ok ? sch.rows[C.ymDiff(plan.startYm, d.ym)] : null;
+        if(!row) return;
+        amount = row.payment;
+        memo = (plan.name||'ローン')+' '+row.no+'/'+sch.rows.length+'回目'+(row.bonus?'（ボーナス月）':'')+'・自動追加';
+        cat = 'ローン・車両代'; sub = 'ローン';
+      } else {
+        amount = Math.round(Number(plan.amount)||0);
+        if(!(amount>0)) return;
+        memo = (plan.name||'駐車場')+'・毎月の自動追加';
+        cat = '駐車場・車庫代'; sub = '駐車場';
+      }
+      const now = new Date().toISOString();
+      const rec = {
+        id: rid, vehicle: veh.name, vehicleId: veh.id, date: d.date,
+        category: cat, categoryId: '', maintenanceItemId: '', subcategory: sub,
+        amount: amount, odometer: null, memo: memo,
+        liters: null, unitPrice: null, isFullTank: false, fuelGrade: '',
+        weightTax: null, liability: null, stampFee: null, serviceFee: null,
+        deviceId: getDeviceId(), updatedAt: now
+      };
+      state.records.push(rec);
+      have[rid] = true;
+      markPending(rec.id, now);
+      plan.done[d.ym] = rid;
+      added++; changed = true;
+    });
+  });
+  if(changed) persistSettings();
+  if(added){ persistRecords(); if(typeof updateSyncBtn==='function') updateSyncBtn(); }
+  return added;
+}
+function runAutoPlansAndNotify(){
+  let n = 0;
+  try{ n = runAutoPlans(); }catch(e){ n = 0; }
+  if(n){
+    renderAll();
+    setTimeout(function(){ toast('毎月の自動追加：'+n+'件を記録しました'); }, 600);
+  }
+  return n;
+}
+function loanStatus(plan){
+  const sch = C.loanSchedule(plan);
+  if(!sch.ok) return { ok:false, error:sch.error };
+  const today = todayYmd();
+  let paid = 0;
+  sch.rows.forEach(function(r){ if(r.date <= today) paid++; });
+  const n = sch.rows.length;
+  const next = sch.rows[paid] || null;
+  return {
+    ok: true, sch: sch, paid: paid, remaining: n - paid,
+    balance: paid ? sch.rows[paid-1].balance : Math.round(Number(plan.principal)||0),
+    next: next, end: sch.rows[n-1]
+  };
+}
+function ymLabel(ym){ const m = /^(\d{4})-(\d{2})$/.exec(ym||''); return m ? (m[1]+'年'+Number(m[2])+'月') : ''; }
+function ymShort(ym){ const m = /^(\d{4})-(\d{2})$/.exec(ym||''); return m ? (m[1].slice(2)+'/'+m[2]) : ''; }
+function dayLabel(d){ d = Number(d)||1; return d>=31 ? '末日' : d+'日'; }
+function autoPlanSummaryHtml(plan){
+  const veh = state.vehicles.find(function(v){ return v.id===plan.vehicleId; });
+  const vehTxt = veh ? veh.name : '（車両なし）';
+  const off = plan.enabled===false ? '<span class="ap-off">停止中</span>' : '';
+  if(plan.kind==='loan'){
+    const st = loanStatus(plan);
+    if(!st.ok) return '<div class="ap-item" data-apid="'+escapeHtml(plan.id)+'"><div class="ap-main"><b>'+escapeHtml(plan.name||'ローン')+'</b>'+off+'<div class="help" style="margin:0">'+escapeHtml(st.error)+'</div></div>'+autoPlanBtns(plan)+'</div>';
+    const s = st.sch;
+    return '<div class="ap-item" data-apid="'+escapeHtml(plan.id)+'"><div class="ap-main">'+
+      '<div class="ap-title"><b>'+escapeHtml(plan.name||'ローン')+'</b><span class="ap-veh">'+escapeHtml(vehTxt)+'</span>'+off+'</div>'+
+      '<div class="ap-grid">'+
+        '<div><span>毎月</span><b>'+yen(s.monthly)+'</b></div>'+
+        (s.bonusPayment ? '<div><span>ボーナス月</span><b>'+yen(s.bonusPayment)+'</b></div>' : '')+
+        '<div><span>利息の合計</span><b>'+yen(s.totalInterest)+'</b></div>'+
+        '<div><span>残高</span><b>'+yen(st.balance)+'</b></div>'+
+        '<div><span>残り</span><b>'+st.remaining+' / '+s.rows.length+'回</b></div>'+
+        '<div><span>'+(st.next?'次回':'完済')+'</span><b>'+(st.next ? escapeHtml(st.next.date.slice(2).replace(/-/g,'/')) : escapeHtml(st.end.date.slice(2).replace(/-/g,'/')))+'</b>'+(st.next ? '<span class="ap-sub">'+escapeHtml(yen(st.next.payment))+'</span>' : '')+'</div>'+
+      '</div>'+
+      '<div class="help" style="margin:2px 0 0">毎月'+dayLabel(plan.day)+'に「ローン・車両代」へ自動で追加。完済 '+escapeHtml(ymLabel(s.lastYm))+'</div>'+
+      '</div>'+autoPlanBtns(plan, true)+'</div>';
+  }
+  return '<div class="ap-item" data-apid="'+escapeHtml(plan.id)+'"><div class="ap-main">'+
+    '<div class="ap-title"><b>'+escapeHtml(plan.name||'駐車場')+'</b><span class="ap-veh">'+escapeHtml(vehTxt)+'</span>'+off+'</div>'+
+    '<div class="ap-grid"><div><span>毎月</span><b>'+yen(plan.amount)+'</b></div><div><span>追加する日</span><b>'+dayLabel(plan.day)+'</b></div>'+
+    '<div><span>期間</span><b>'+escapeHtml(ymShort(plan.startYm))+'〜'+(plan.endYm?escapeHtml(ymShort(plan.endYm)):'')+'</b>'+(plan.endYm?'':'<span class="ap-sub">終了なし</span>')+'</div></div>'+
+    '<div class="help" style="margin:2px 0 0">「駐車場・車庫代」へ自動で追加します。</div>'+
+    '</div>'+autoPlanBtns(plan)+'</div>';
+}
+function autoPlanBtns(plan, withTable){
+  return '<div class="ap-btns"><button type="button" class="chip-btn" data-ap-ed="'+escapeHtml(plan.id)+'">編集</button>'+
+    (withTable ? '<button type="button" class="chip-btn" data-ap-tbl="'+escapeHtml(plan.id)+'">返済表</button>' : '')+
+    '<button type="button" class="chip-btn" data-ap-del="'+escapeHtml(plan.id)+'">削除</button></div>';
+}
+function autoPlanCardHtml(){
+  const list = autoPlans();
+  return '<div class="card tint tint-auto" id="autoPlanSet"><h2>毎月の自動追加（ローン・駐車場）</h2>'+
+    '<div class="help">決まった日に、毎月の支払いを記録へ自動で追加します。アプリを開いたときに、今日までの分をまとめて追加します（同じ月が二重に入ることはありません）。</div>'+
+    (list.length ? list.map(autoPlanSummaryHtml).join('') : '<div class="empty">まだありません。</div>')+
+    '<div class="btn-row"><button type="button" class="btn ghost" id="btnAddLoan">ローンを追加</button>'+
+    '<button type="button" class="btn ghost" id="btnAddPark">駐車場を追加</button></div></div>';
+}
+function bindAutoPlanUi(){
+  const box = document.getElementById('autoPlanSet');
+  if(!box) return;
+  const al = document.getElementById('btnAddLoan');
+  if(al) al.onclick = function(){ openAutoPlanEditor(null, 'loan'); };
+  const ap = document.getElementById('btnAddPark');
+  if(ap) ap.onclick = function(){ openAutoPlanEditor(null, 'parking'); };
+  box.querySelectorAll('[data-ap-ed]').forEach(function(b){ b.onclick = function(){ openAutoPlanEditor(b.getAttribute('data-ap-ed')); }; });
+  box.querySelectorAll('[data-ap-tbl]').forEach(function(b){ b.onclick = function(){ openLoanTable(b.getAttribute('data-ap-tbl')); }; });
+  box.querySelectorAll('[data-ap-del]').forEach(function(b){ b.onclick = function(){ openAutoPlanDelete(b.getAttribute('data-ap-del')); }; });
+}
+function vehicleOptionsHtml(sel){
+  return state.vehicles.map(function(v){ return '<option value="'+escapeHtml(v.id)+'"'+(v.id===sel?' selected':'')+'>'+escapeHtml(v.name)+'</option>'; }).join('');
+}
+function dayOptionsHtml(sel){
+  let h = '';
+  for(let d=1; d<=31; d++) h += '<option value="'+d+'"'+(Number(sel)===d?' selected':'')+'>'+(d===31?'末日':d+'日')+'</option>';
+  return h;
+}
+function openAutoPlanEditor(id, kind){
+  const veh = currentVehicle();
+  if(!veh){ toast('まずは車を登録しましょう'); openVehicleEditor(null); return; }
+  const cur = id ? autoPlanById(id) : null;
+  if(id && !cur) return;
+  kind = cur ? cur.kind : (kind==='parking' ? 'parking' : 'loan');
+  const ym = thisYm();
+  const p = cur ? Object.assign({}, cur) : (kind==='loan'
+    ? { id:newId('ap'), kind:'loan', name:'ローン', vehicleId:veh.id, principal:'', months:60, ratePct:'', bonusAmount:'', bonusMonths:[6,12], startYm:ym, day:27, addFromYm:ym, enabled:true, done:{} }
+    : { id:newId('ap'), kind:'parking', name:'駐車場', vehicleId:veh.id, amount:'', startYm:ym, endYm:'', day:1, addFromYm:'', enabled:true, done:{} });
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.className = 'modal ap-editor';
+  const bmSet = {}; (p.bonusMonths||[]).forEach(function(m){ bmSet[Number(m)] = true; });
+  let monthsChips = '';
+  for(let m=1; m<=12; m++) monthsChips += '<button type="button" class="ap-mchip'+(bmSet[m]?' on':'')+'" data-bm="'+m+'" aria-pressed="'+(bmSet[m]?'true':'false')+'">'+m+'月</button>';
+  const common =
+    '<label class="f">名前</label><input type="text" id="apName" value="'+escapeHtml(p.name||'')+'" placeholder="'+(kind==='loan'?'ローン':'駐車場')+'">'+
+    '<div class="grid2"><div><label class="f">車両</label><select id="apVeh">'+vehicleOptionsHtml(p.vehicleId)+'</select></div>'+
+    '<div><label class="f">'+(kind==='loan'?'支払日（毎月）':'追加する日（毎月）')+'</label><select id="apDay">'+dayOptionsHtml(p.day)+'</select></div></div>';
+  let body;
+  if(kind==='loan'){
+    body = common+
+      '<div class="grid2"><div><label class="f">借入額（円）</label><input type="number" id="apP" inputmode="numeric" value="'+escapeHtml(p.principal)+'" placeholder="2000000"></div>'+
+      '<div><label class="f">返済回数（か月）</label><input type="number" id="apN" inputmode="numeric" value="'+escapeHtml(p.months)+'" placeholder="60"></div></div>'+
+      '<div class="grid2"><div><label class="f">金利（年 %）</label><input type="number" id="apR" inputmode="decimal" step="0.01" value="'+escapeHtml(p.ratePct)+'" placeholder="3.9"></div>'+
+      '<div><label class="f">初回の支払月</label><input type="month" id="apStart" value="'+escapeHtml(p.startYm||ym)+'"></div></div>'+
+      '<label class="f">ボーナス払い（1回の加算額・円。なしは空のまま）</label><input type="number" id="apB" inputmode="numeric" value="'+escapeHtml(p.bonusAmount)+'" placeholder="例 100000">'+
+      '<label class="f">ボーナス月</label><div class="ap-months" id="apBm">'+monthsChips+'</div>'+
+      '<label class="f">自動で追加し始める月</label><input type="month" id="apFrom" value="'+escapeHtml(p.addFromYm||p.startYm||ym)+'">'+
+      '<div class="help">初回の月にすると、過去の支払いもまとめて記録します。すでに手で記録している月があるときは、その次の月にしてください。</div>'+
+      '<div class="ap-preview" id="apPrev"></div>';
+  } else {
+    body = common+
+      '<label class="f">金額（円・毎月）</label><input type="number" id="apAmt" inputmode="numeric" value="'+escapeHtml(p.amount)+'" placeholder="15000">'+
+      '<div class="grid2"><div><label class="f">開始の月</label><input type="month" id="apStart" value="'+escapeHtml(p.startYm||ym)+'"></div>'+
+      '<div><label class="f">終了の月（任意）</label><input type="month" id="apEnd" value="'+escapeHtml(p.endYm||'')+'"></div></div>'+
+      '<div class="help">開始の月から、毎月この日に「駐車場・車庫代」を記録します。前の月にすると、その月の分もまとめて記録します。</div>';
+  }
+  box.innerHTML = '<h3>'+(kind==='loan' ? (cur?'ローンを編集':'ローンを追加') : (cur?'駐車場の自動追加を編集':'駐車場の自動追加'))+'</h3>'+
+    '<div class="ap-body">'+body+
+    '<label class="check"><input type="checkbox" id="apOn"'+(p.enabled!==false?' checked':'')+'>自動で追加する</label>'+
+    (cur ? '<div class="help">変更は、これから追加する月に使います。すでに追加された記録はそのままです（履歴から1件ずつ直せます）。</div>' : '')+
+    '</div>'+
+    '<div class="btn-row"><button type="button" class="btn primary" id="apSave">保存</button><button type="button" class="btn ghost" id="apCancel">閉じる</button></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('apCancel').onclick = closeModal;
+  function num(id){ const el = document.getElementById(id); if(!el || el.value==='') return ''; const n = Number(el.value); return isFinite(n) ? n : ''; }
+  function read(){
+    const o = Object.assign({}, p, {
+      name: (document.getElementById('apName').value||'').trim(),
+      vehicleId: document.getElementById('apVeh').value,
+      day: Number(document.getElementById('apDay').value)||1,
+      startYm: document.getElementById('apStart').value || ym,
+      enabled: document.getElementById('apOn').checked
+    });
+    if(kind==='loan'){
+      o.principal = num('apP'); o.months = num('apN'); o.ratePct = num('apR'); o.bonusAmount = num('apB');
+      o.bonusMonths = Array.prototype.map.call(document.querySelectorAll('#apBm .ap-mchip.on'), function(b){ return Number(b.getAttribute('data-bm')); });
+      o.addFromYm = document.getElementById('apFrom').value || o.startYm;
+    } else {
+      o.amount = num('apAmt');
+      o.endYm = document.getElementById('apEnd').value || '';
+      o.addFromYm = '';
+    }
+    return o;
+  }
+  function preview(){
+    const el = document.getElementById('apPrev');
+    if(!el) return;
+    const o = read();
+    if(o.principal==='' || o.months===''){ el.innerHTML = '<div class="help">借入額と回数を入れると、毎月の支払額が出ます。</div>'; return; }
+    if(o.ratePct==='') o.ratePct = 0;
+    const s = C.loanSchedule(o);
+    if(!s.ok){ el.innerHTML = '<div class="help">'+escapeHtml(s.error)+'</div>'; return; }
+    el.innerHTML = '<div class="ap-grid">'+
+      '<div><span>毎月</span><b>'+yen(s.monthly)+'</b></div>'+
+      (s.bonusPayment ? '<div><span>ボーナス月（'+s.bonusCount+'回）</span><b>'+yen(s.bonusPayment)+'</b></div>' : '')+
+      '<div><span>支払の合計</span><b>'+yen(s.totalPayment)+'</b></div>'+
+      '<div><span>利息の合計</span><b>'+yen(s.totalInterest)+'</b></div>'+
+      '<div><span>完済</span><b>'+escapeHtml(ymLabel(s.lastYm))+'</b></div>'+
+      '<div><span>最終回</span><b>'+yen(s.rows[s.rows.length-1].payment)+'</b></div></div>'+
+      '<div class="help" style="margin:4px 0 0">元利均等。最終回で端数を調整します（目安です）。</div>';
+  }
+  const bm = document.getElementById('apBm');
+  if(bm) bm.onclick = function(e){
+    const b = e.target.closest('[data-bm]'); if(!b) return;
+    b.classList.toggle('on'); b.setAttribute('aria-pressed', b.classList.contains('on')?'true':'false');
+    preview();
+  };
+  box.querySelectorAll('input,select').forEach(function(el){ el.addEventListener('input', preview); el.addEventListener('change', preview); });
+  preview();
+  document.getElementById('apSave').onclick = function(){
+    const o = read();
+    if(!o.name) o.name = kind==='loan' ? 'ローン' : '駐車場';
+    if(kind==='loan'){
+      if(o.ratePct==='') o.ratePct = 0;
+      const s = C.loanSchedule(o);
+      if(!s.ok){ toast(s.error); return; }
+      if(o.addFromYm && C.ymDiff(o.startYm, o.addFromYm) < 0) o.addFromYm = o.startYm;
+    } else {
+      if(!(Number(o.amount)>0)){ toast('金額を入れてください'); return; }
+      if(o.endYm && C.ymDiff(o.startYm, o.endYm) < 0){ toast('終了の月は開始の月より後にしてください'); return; }
+    }
+    o.updatedAt = new Date().toISOString();
+    const list = autoPlans();
+    const i = list.findIndex(function(x){ return x.id===o.id; });
+    if(i>=0) list[i] = o; else list.push(o);
+    persistSettings();
+    closeModal();
+    const n = runAutoPlans();
+    renderAll();
+    toast(n ? ('保存しました（'+n+'件を記録）') : '保存しました');
+  };
+}
+function openLoanTable(id){
+  const tn = function(v){ return (Math.round(Number(v)||0)).toLocaleString('ja-JP'); };
+  const plan = autoPlanById(id);
+  if(!plan) return;
+  const st = loanStatus(plan);
+  if(!st.ok){ toast(st.error); return; }
+  const today = todayYmd();
+  const rows = st.sch.rows.map(function(r){
+    const paid = r.date <= today;
+    return '<tr class="'+(paid?'paid':'')+(r.bonus?' bonus':'')+'"><td>'+r.no+(r.bonus?'★':'')+'</td><td>'+escapeHtml(r.date.slice(2).replace(/-/g,'/'))+'</td><td>'+tn(r.payment)+'</td><td>'+tn(r.principal)+'</td><td>'+tn(r.interest)+'</td><td>'+tn(r.balance)+'</td></tr>';
+  }).join('');
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.className = 'modal ap-table';
+  box.innerHTML = '<h3>'+escapeHtml(plan.name||'ローン')+'の返済表</h3>'+
+    '<div class="ap-grid"><div><span>残高</span><b>'+yen(st.balance)+'</b></div><div><span>残り</span><b>'+st.remaining+'回</b></div><div><span>利息の合計</span><b>'+yen(st.sch.totalInterest)+'</b></div></div>'+
+    '<div class="ap-tbl-wrap"><table class="ap-tbl"><thead><tr><th>回</th><th>日付</th><th>支払</th><th>元金</th><th>利息</th><th>残高</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="help">金額の単位は円。薄い行は支払日をすぎた回、★はボーナス月です。</div>'+
+    '<div class="btn-row"><button type="button" class="btn ghost" id="apTblClose">閉じる</button></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('apTblClose').onclick = closeModal;
+  const next = box.querySelector('tbody tr:not(.paid)');
+  const wrap = box.querySelector('.ap-tbl-wrap');
+  if(next && wrap) wrap.scrollTop = Math.max(0, next.offsetTop - 60);
+}
+function openAutoPlanDelete(id){
+  const plan = autoPlanById(id);
+  if(!plan) return;
+  const recs = autoPlanRecords(plan);
+  const bg = document.getElementById('modalBg');
+  const box = document.getElementById('modal');
+  box.className = 'modal ap-del';
+  box.innerHTML = '<h3>「'+escapeHtml(plan.name||'')+'」を削除</h3>'+
+    '<div class="help">これまでに自動で追加された記録：<b>'+recs.length+'件</b>（合計 '+yen(recs.reduce(function(s,r){ return s+(Number(r.amount)||0); },0))+'）</div>'+
+    '<div class="help">「設定だけ削除」は、今後の自動追加を止めて、追加済みの記録は支払いの記録として残します。</div>'+
+    '<div class="btn-row ap-del-btns"><button type="button" class="btn primary" id="apDelKeep">設定だけ削除（記録は残す）</button>'+
+    (recs.length ? '<button type="button" class="btn danger" id="apDelAll">記録もまとめて削除</button>' : '')+
+    '<button type="button" class="btn ghost" id="apDelCancel">やめる</button></div>';
+  bg.classList.add('show');
+  bindModalBackdrop(bg);
+  document.getElementById('apDelCancel').onclick = closeModal;
+  function removePlan(){
+    state.settings.autoPlans = autoPlans().filter(function(x){ return x.id!==id; });
+    persistSettings();
+  }
+  document.getElementById('apDelKeep').onclick = function(){ removePlan(); closeModal(); renderAll(); toast('設定を削除しました（記録は残しています）'); };
+  const all = document.getElementById('apDelAll');
+  if(all) all.onclick = function(){
+    const ids = {}; recs.forEach(function(r){ ids[r.id] = true; });
+    state.records = state.records.filter(function(r){ return !ids[r.id]; });
+    persistRecords();
+    Object.keys(ids).forEach(function(rid){ markPendingDelete(rid); });
+    removePlan(); closeModal(); updateSyncBtn(); renderAll();
+    toast('設定と記録'+recs.length+'件を削除しました');
+  };
+}
+
+/* ---- 0.9.61 組み込み費目の内訳（自分で追加・名前変更・削除／組み込みの内訳を隠す） ----
+   設定(settings.builtinSubs)に保存し、JSONバックアップにも入る。
+   同期は費目シートの「bi:<費目>」行のサブカテゴリ欄に s:… の1項目で入れる（Code.gs は変えない）。 */
+const BS_EXCLUDE = ['燃費','車検'];
+function builtinSubsAll(){
+  const s = state.settings;
+  if(!s.builtinSubs || typeof s.builtinSubs!=='object' || Array.isArray(s.builtinSubs)) s.builtinSubs = {};
+  return s.builtinSubs;
+}
+function builtinSubsCfg(catId){
+  const c = builtinSubsAll()[catId];
+  return (c && typeof c==='object') ? c : null;
+}
+function cleanSubName(s){ return String(s==null?'':s).replace(/[|\r\n\t]/g,' ').replace(/\s+/g,' ').trim().slice(0,30); }
+function builtinCatDef(catId){ return C.CATEGORIES.find(function(c){ return c.id===catId; }) || null; }
+function bsAdds(catId){
+  const cfg = builtinSubsCfg(catId), def = builtinCatDef(catId);
+  const base = def ? def.subs : [];
+  return (cfg && Array.isArray(cfg.add) ? cfg.add : []).filter(function(x){ return x && base.indexOf(x)<0; });
+}
+function bsHidden(catId){
+  const cfg = builtinSubsCfg(catId);
+  return cfg && Array.isArray(cfg.hide) ? cfg.hide : [];
+}
+// 入力で使う内訳：組み込み（隠したものを除く）＋自分で足したもの（「その他」の前）
+function effectiveBuiltinSubs(c){
+  const base = (c && c.subs ? c.subs : []).slice();
+  if(!c || BS_EXCLUDE.indexOf(c.id)>=0) return base;
+  const hide = bsHidden(c.id), add = bsAdds(c.id);
+  if(!hide.length && !add.length) return base;
+  let list = base.filter(function(x){ return hide.indexOf(x)<0; });
+  const oi = list.indexOf('その他');
+  list = oi>=0 ? list.slice(0,oi).concat(add, list.slice(oi)) : list.concat(add);
+  return list.length ? list : base.slice(0,1);
+}
+function setBuiltinSubsCfg(catId, cfg){
+  const all = builtinSubsAll();
+  const add = (cfg.add||[]).map(cleanSubName).filter(Boolean).filter(function(x,i,a){ return a.indexOf(x)===i; });
+  const hide = (cfg.hide||[]).filter(function(x,i,a){ return x && a.indexOf(x)===i; });
+  all[catId] = { add:add, hide:hide, u:new Date().toISOString() };
+  persistSettings();
+}
+function bsToken(catId){
+  const cfg = builtinSubsCfg(catId);
+  if(!cfg) return null;
+  return 's:'+encodeURIComponent(JSON.stringify({ a: cfg.add||[], h: cfg.hide||[], u: cfg.u||'' }));
+}
+function bsFromSubs(subs){
+  const list = Array.isArray(subs) ? subs : (typeof subs==='string' && subs ? String(subs).split('|') : []);
+  for(let i=0;i<list.length;i++){
+    const x = String(list[i]||'');
+    if(x.indexOf('s:')!==0) continue;
+    try{
+      const o = JSON.parse(decodeURIComponent(x.slice(2)));
+      return { add: Array.isArray(o.a)?o.a.map(cleanSubName).filter(Boolean):[], hide: Array.isArray(o.h)?o.h.map(String):[], u: String(o.u||'') };
+    }catch(e){}
+  }
+  return null;
+}
+function applyBuiltinSubsFromRow(row){
+  if(!row || !row.id || String(row.id).indexOf('bi:')!==0) return;
+  const key = String(row.id).slice(3);
+  if(!builtinCatDef(key)) return;
+  const inc = bsFromSubs(row.subs);
+  if(!inc) return;
+  const cur = builtinSubsCfg(key);
+  const it = Date.parse(inc.u||'')||0, lt = cur ? (Date.parse(cur.u||'')||0) : 0;
+  if(cur && it <= lt) return;
+  builtinSubsAll()[key] = { add: inc.add, hide: inc.hide, u: inc.u || new Date().toISOString() };
+  persistSettings();
+}
+function bsRecordCount(catId, sub){
+  return state.records.filter(function(r){ return !r.deleted && !r.categoryId && r.category===catId && r.subcategory===sub; }).length;
+}
+let bsCurCat = 'メンテナンス';
+function builtinSubsCardHtml(){
+  const cats = C.CATEGORIES.filter(function(c){ return BS_EXCLUDE.indexOf(c.id)<0; });
+  if(!cats.some(function(c){ return c.id===bsCurCat; })) bsCurCat = cats[0].id;
+  return '<div class="card tint tint-cat" id="builtinSubSet"><h2>組み込み費目の内訳</h2>'+
+    '<div class="help">メンテナンスやオイルなどの内訳を自分で足せます（入力では「その他」の前に出ます）。使わない組み込みの内訳は隠せます。消しても隠しても記録は消えず、内訳の名前もそのまま残ります。</div>'+
+    '<label class="f" for="bsCat">費目</label><select id="bsCat">'+cats.map(function(c){
+      const n = bsAdds(c.id).length, h = bsHidden(c.id).length;
+      const note = (n||h) ? '（'+[n?('追加'+n):'', h?('非表示'+h):''].filter(Boolean).join('・')+'）' : '';
+      return '<option value="'+escapeHtml(c.id)+'"'+(c.id===bsCurCat?' selected':'')+'>'+escapeHtml((c.label||c.id)+note)+'</option>';
+    }).join('')+'</select>'+
+    '<div id="bsList">'+builtinSubsListHtml(bsCurCat)+'</div>'+
+    '<div class="bs-add"><input type="text" id="bsNew" maxlength="30" placeholder="例 キャリパーOH" aria-label="追加する内訳"><button type="button" class="btn ghost" id="bsAddBtn">内訳を追加</button></div>'+
+    '</div>';
+}
+function builtinSubsListHtml(catId){
+  const def = builtinCatDef(catId);
+  if(!def) return '';
+  const hide = bsHidden(catId), add = bsAdds(catId);
+  const visibleBase = def.subs.filter(function(x){ return hide.indexOf(x)<0; });
+  const rowsAdd = add.map(function(s){
+    return '<div class="bs-row mine"><span class="bs-name">'+escapeHtml(s)+'<em class="bs-tag">追加</em></span>'+
+      '<span class="bs-acts"><button type="button" class="chip-btn" data-bs-ren="'+escapeHtml(s)+'">名前変更</button><button type="button" class="chip-btn danger" data-bs-del="'+escapeHtml(s)+'">削除</button></span></div>';
+  }).join('');
+  const rowsBase = def.subs.map(function(s){
+    const hidden = hide.indexOf(s)>=0;
+    const lock = s==='その他' || (!hidden && visibleBase.length<=1 && !add.length);
+    return '<div class="bs-row'+(hidden?' off':'')+'"><span class="bs-name">'+escapeHtml(s)+(hidden?'<em class="bs-tag">非表示</em>':'')+'</span>'+
+      '<span class="bs-acts">'+(lock ? '<span class="bs-lock">'+(s==='その他'?'いつも最後':'必要')+'</span>' :
+      '<button type="button" class="chip-btn" data-bs-hide="'+escapeHtml(s)+'">'+(hidden?'表示する':'隠す')+'</button>')+'</span></div>';
+  }).join('');
+  return (add.length ? '<div class="bs-h">自分で追加した内訳</div>'+rowsAdd : '<div class="help bs-empty">まだ追加していません。</div>')+
+    '<div class="bs-h">組み込みの内訳</div>'+rowsBase;
+}
+function bindBuiltinSubsUi(){
+  const card = document.getElementById('builtinSubSet');
+  if(!card) return;
+  const sel = document.getElementById('bsCat');
+  function refresh(){
+    const y = window.scrollY;
+    const tmp = document.createElement('div'); tmp.innerHTML = builtinSubsCardHtml();
+    card.replaceWith(tmp.firstChild);
+    bindBuiltinSubsUi();
+    setFoldById('builtinSubSet');
+    window.scrollTo(0, y);
+  }
+  sel.onchange = function(){ bsCurCat = sel.value; rememberFold('builtinSubSet', true); refresh(); };
+  document.getElementById('bsAddBtn').onclick = function(){
+    const name = cleanSubName(document.getElementById('bsNew').value);
+    if(!name){ toast('内訳の名前を入れてください'); return; }
+    const def = builtinCatDef(bsCurCat);
+    const hide = bsHidden(bsCurCat).slice(), add = bsAdds(bsCurCat).slice();
+    if(def.subs.indexOf(name)>=0){
+      const hi = hide.indexOf(name);
+      if(hi>=0){ hide.splice(hi,1); setBuiltinSubsCfg(bsCurCat,{add:add,hide:hide}); refresh(); toast('「'+name+'」を表示に戻しました'); }
+      else toast('「'+name+'」はもうあります');
+      return;
+    }
+    if(add.indexOf(name)>=0){ toast('「'+name+'」はもうあります'); return; }
+    add.push(name);
+    setBuiltinSubsCfg(bsCurCat,{add:add,hide:hide});
+    refresh(); toast('「'+name+'」を追加しました');
+  };
+  card.onclick = function(e){
+    const b = e.target.closest('button');
+    if(!b) return;
+    const hideKey = b.getAttribute('data-bs-hide'), delKey = b.getAttribute('data-bs-del'), renKey = b.getAttribute('data-bs-ren');
+    if(hideKey!=null){
+      const hide = bsHidden(bsCurCat).slice(), i = hide.indexOf(hideKey);
+      if(i>=0) hide.splice(i,1); else hide.push(hideKey);
+      setBuiltinSubsCfg(bsCurCat,{add:bsAdds(bsCurCat),hide:hide}); refresh();
+    } else if(delKey!=null){
+      openBuiltinSubDelete(bsCurCat, delKey, refresh);
+    } else if(renKey!=null){
+      openBuiltinSubRename(bsCurCat, renKey, refresh);
+    }
+  };
+}
+function openBuiltinSubDelete(catId, sub, done){
+  const n = bsRecordCount(catId, sub);
+  const bg = document.getElementById('modalBg'), box = document.getElementById('modal');
+  box.className = 'modal bs-modal';
+  box.innerHTML = '<h3>「'+escapeHtml(sub)+'」を削除</h3>'+
+    '<div class="help">入力の選択肢から外します。'+(n ? 'この内訳の記録 <b>'+n+'件</b> は消えず、内訳の名前もそのまま残ります。' : 'この内訳の記録はありません。')+'</div>'+
+    '<div class="btn-row"><button type="button" class="btn danger" id="bsDelOk">削除</button><button type="button" class="btn ghost" id="bsDelNo">やめる</button></div>';
+  bg.classList.add('show'); bindModalBackdrop(bg);
+  document.getElementById('bsDelNo').onclick = closeModal;
+  document.getElementById('bsDelOk').onclick = function(){
+    setBuiltinSubsCfg(catId,{ add: bsAdds(catId).filter(function(x){ return x!==sub; }), hide: bsHidden(catId) });
+    closeModal(); if(done) done(); toast('「'+sub+'」を削除しました（記録は残しています）');
+  };
+}
+function openBuiltinSubRename(catId, sub, done){
+  const n = bsRecordCount(catId, sub);
+  const bg = document.getElementById('modalBg'), box = document.getElementById('modal');
+  box.className = 'modal bs-modal';
+  box.innerHTML = '<h3>「'+escapeHtml(sub)+'」の名前を変える</h3>'+
+    '<label class="f" for="bsRenName">新しい名前</label><input type="text" id="bsRenName" maxlength="30" value="'+escapeHtml(sub)+'">'+
+    (n ? '<label class="check"><input type="checkbox" id="bsRenRecs" checked>この内訳の記録 '+n+'件も新しい名前にする</label>' : '')+
+    '<div class="btn-row"><button type="button" class="btn primary" id="bsRenOk">保存</button><button type="button" class="btn ghost" id="bsRenNo">やめる</button></div>';
+  bg.classList.add('show'); bindModalBackdrop(bg);
+  document.getElementById('bsRenNo').onclick = closeModal;
+  document.getElementById('bsRenOk').onclick = function(){
+    const name = cleanSubName(document.getElementById('bsRenName').value);
+    if(!name){ toast('名前を入れてください'); return; }
+    if(name===sub){ closeModal(); return; }
+    const def = builtinCatDef(catId), add = bsAdds(catId);
+    if(def.subs.indexOf(name)>=0 || add.indexOf(name)>=0){ toast('「'+name+'」はもうあります'); return; }
+    setBuiltinSubsCfg(catId,{ add: add.map(function(x){ return x===sub ? name : x; }), hide: bsHidden(catId) });
+    const chk = document.getElementById('bsRenRecs');
+    let moved = 0;
+    if(chk && chk.checked){
+      const now = new Date().toISOString();
+      state.records.forEach(function(r){
+        if(!r.deleted && !r.categoryId && r.category===catId && r.subcategory===sub){ r.subcategory = name; r.updatedAt = now; markPending(r.id, now); moved++; }
+      });
+      if(moved){ persistRecords(); updateSyncBtn(); }
+    }
+    closeModal(); if(done) done(); if(moved) renderAll();
+    toast('名前を変えました'+(moved ? '（記録'+moved+'件も変更）' : ''));
+  };
+}
+
+/* ---- 0.9.62 設定の長いカードを折りたたむ（開閉は一瞬・アニメーションなし。開いた状態はこのタブのあいだ覚える） ---- */
+const SET_FOLDS = [
+  { id:'autoPlanSet', summary:function(){
+      const l = autoPlans(); const nl = l.filter(function(p){ return p.kind==='loan'; }).length, np = l.length - nl;
+      return l.length ? [nl?('ローン'+nl):'', np?('駐車場'+np):''].filter(Boolean).join('・') : 'まだありません';
+    } },
+  { id:'customCatSet', summary:function(){ const n = activeCustomCats().length; return n ? n+'件' : 'まだありません'; } },
+  { id:'hideCatSet', summary:function(){ const n = hiddenBuiltins().length; return n ? '非表示 '+n+'件' : 'すべて表示'; } },
+  { id:'builtinSubSet', keep:['label[for="bsCat"]','#bsCat'], summary:function(){
+      const all = builtinSubsAll();
+      const bits = Object.keys(all).map(function(k){
+        const n = bsAdds(k).length, h = bsHidden(k).length;
+        if(!n && !h) return '';
+        const def = builtinCatDef(k);
+        return ((def && def.label) || k)+' '+[n?('追加'+n):'', h?('非表示'+h):''].filter(Boolean).join('・');
+      }).filter(Boolean);
+      return bits.length ? bits.join(' / ') : '変更なし';
+    } },
+  { id:'shortcutSet', summary:function(){
+      const ids = (state.settings.shortcuts && state.settings.shortcuts.length) ? state.settings.shortcuts : SHORTCUT_CATALOG.map(function(s){ return s.id; });
+      return ids.length+'個を表示中';
+    } }
+];
+const FOLD_KEY = 'carlog_set_folds';
+function foldStates(){
+  try{ const o = JSON.parse(sessionStorage.getItem(FOLD_KEY)||'{}'); return (o && typeof o==='object') ? o : {}; }catch(e){ return {}; }
+}
+function isFoldOpen(id){ return !!foldStates()[id]; }
+function rememberFold(id, open){
+  const o = foldStates(); if(open) o[id] = 1; else delete o[id];
+  try{ sessionStorage.setItem(FOLD_KEY, JSON.stringify(o)); }catch(e){}
+}
+function setFold(id, open){
+  rememberFold(id, open);
+  const card = document.getElementById(id);
+  if(!card) return;
+  const head = card.querySelector('.fold-head'), body = card.querySelector('.fold-body');
+  if(!head || !body) return;
+  card.classList.toggle('fold-open', !!open);
+  head.setAttribute('aria-expanded', open ? 'true' : 'false');
+  body.hidden = !open;
+}
+function applySetFold(def){
+  const card = document.getElementById(def.id);
+  if(!card || card.querySelector('.fold-head')) return;
+  const h2 = card.querySelector(':scope > h2');
+  if(!h2) return;
+  const title = h2.textContent;
+  const bodyId = def.id+'Body';
+  const sum = def.summary ? String(def.summary()||'') : '';
+  h2.classList.add('fold-h2');
+  h2.innerHTML = '<button type="button" class="fold-head" aria-controls="'+bodyId+'">'+
+    '<span class="fold-title">'+escapeHtml(title)+'</span>'+
+    '<span class="fold-sum">'+escapeHtml(sum)+'</span>'+
+    '<span class="fold-chev" aria-hidden="true">'+ICO_CHEVRON_DOWN+'</span></button>';
+  const keep = (def.keep||[]).map(function(sel){ return card.querySelector(sel); }).filter(Boolean);
+  const body = document.createElement('div');
+  body.className = 'fold-body'; body.id = bodyId;
+  Array.prototype.slice.call(card.children).forEach(function(el){
+    if(el===h2 || keep.indexOf(el)>=0) return;
+    body.appendChild(el);
+  });
+  card.appendChild(body);
+  card.classList.add('fold-card');
+  const head = h2.querySelector('.fold-head');
+  head.onclick = function(e){ e.stopPropagation(); setFold(def.id, !isFoldOpen(def.id)); };
+  setFold(def.id, isFoldOpen(def.id));
+}
+function refreshFoldSummaries(){
+  SET_FOLDS.forEach(function(def){
+    const el = document.querySelector('#'+def.id+' .fold-sum');
+    if(el && def.summary){ try{ el.textContent = String(def.summary()||''); }catch(e){} }
+  });
+}
+function applySetFolds(){
+  SET_FOLDS.forEach(applySetFold);
+  const ps = document.getElementById('page-set');
+  if(ps && !ps._foldSumBound){
+    ps._foldSumBound = true;
+    const later = function(){ setTimeout(refreshFoldSummaries, 0); };
+    ps.addEventListener('change', later);
+    ps.addEventListener('click', later);
+  }
+}
+function setFoldById(id){ const d = SET_FOLDS.find(function(x){ return x.id===id; }); if(d) applySetFold(d); }
+
 window.KakeLog = {
+  setFold: setFold,
+  isFoldOpen: isFoldOpen,
+  builtinSubsCfg: builtinSubsCfg,
+  effectiveBuiltinSubs: effectiveBuiltinSubs,
+  setBuiltinSubsCfg: setBuiltinSubsCfg,
+  categoriesForSync: categoriesForSync,
+  applyBuiltinLookFromRow: applyBuiltinLookFromRow,
+  fillSubs: fillSubs,
+  runAutoPlans: runAutoPlans,
+  autoPlans: autoPlans,
+  loanStatus: loanStatus,
+  openAutoPlanEditor: openAutoPlanEditor,
+  openLoanTable: openLoanTable,
+  openAutoPlanDelete: openAutoPlanDelete,
+  openShortcutLookEditor: openShortcutLookEditor,
+  shortcutById: shortcutById,
+  allShortcutDefs: allShortcutDefs,
+  setShortcutReorder: setShortcutReorder,
   getState: function(){ return state; },
   taxBundle: taxBundle,
   currentVehicle: currentVehicle,
@@ -8844,6 +9641,7 @@ window.KakeLog = {
 };
 
 loadState();
+const _autoAddedAtOpen = (function(){ try{ return runAutoPlans(); }catch(e){ return 0; } })();
 fillVehicleSelect();
 bindTabSwipe();
 loadCodeGs();
@@ -8857,6 +9655,9 @@ if(typeof ResizeObserver === 'function'){
 }
 go('home');
 requestAnimationFrame(syncNavInd);
+if(_autoAddedAtOpen) setTimeout(function(){ toast('毎月の自動追加：'+_autoAddedAtOpen+'件を記録しました'); }, 700);
+// 開いたまま日付が変わったときも、戻ってきたら今日までの分を追加する
+document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') runAutoPlansAndNotify(); });
 scheduleCalendarSync();
 initBanners().then(function(){ if(state.tab==='home') renderHome(); }).catch(function(){});
 
